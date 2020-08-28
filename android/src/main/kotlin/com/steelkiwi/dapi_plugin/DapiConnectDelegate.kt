@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
+import com.dapi.connect.data.endpoint_models.AccountMetaData
 import com.dapi.connect.data.endpoint_models.GetAccounts
 import com.dapi.connect.data.models.DapiBeneficiaryInfo
 import com.dapi.connect.data.models.DapiConnection
@@ -76,12 +77,48 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         dapiClient.data.getAccounts({ finishCurrentAccountWithSuccess(it); }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-            finishCurrentAccountWithWithError(errorCode = error.type.toString(), errorMessage = errorMessage, throwable = Throwable(message = errorMessage));
+            finishWithError(error.type.toString(), errorMessage)
+        }
+    }
+
+    fun getCurrentMetaDataAccount(call: MethodCall, result: MethodChannel.Result?) {
+        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        pendingResult = result
+        sourcePath?.let { dapiClient.setUserID(it) };
+        dapiClient.metadata.getAccountMetaData(
+                { accountMetaData ->
+                    finishCurrentAccountMetaDataWithSuccess(accountMetaData)
+                }
+        ) { error ->
+            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
+
+            finishWithError(error.type.toString(), errorMessage)
         }
 
 
+//        getAccounts({ finishCurrentAccountWithSuccess(it); }
+//        ) { error ->
+//            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
+//            finishCurrentAccountWithWithError(errorCode = error.type.toString(), errorMessage = errorMessage, throwable = Throwable(message = errorMessage));
+//        }
     }
 
+
+    private fun finishCurrentAccountMetaDataWithSuccess(metaData: AccountMetaData) {
+        val json = Gson().toJson(metaData)
+        if (pendingResult != null) {
+            uiThreadHandler.post {
+                pendingResult!!.success(json)
+                clearMethodCallAndResult()
+            };
+        }
+    }
+
+    private fun finishWithError(errorCode: String, errorMessage: String) {
+        if (pendingResult != null) {
+            pendingResult!!.error(errorCode, errorMessage, null);
+        }
+    }
 
     private fun finishCurrentAccountWithSuccess(connections: GetAccounts) {
         val json = Gson().toJson(connections)
@@ -93,12 +130,6 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         }
     }
 
-
-    private fun finishCurrentAccountWithWithError(errorCode: String, errorMessage: String, throwable: Throwable) {
-        if (pendingResult != null) {
-            pendingResult!!.error(errorCode, errorMessage, null);
-        }
-    }
 
     private fun finishActiveConnectionWithSuccess(connections: List<DapiConnection>) {
         val json = Gson().toJson(connections)

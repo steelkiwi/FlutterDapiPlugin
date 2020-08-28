@@ -36,7 +36,8 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         private val CHANNEL = "plugins.steelkiwi.com/dapi"
         private val ACTION_CHANEL_DAPI_CONNECT = "dapi_connect"
         private val ACTION_CHANEL_DAPI_ACTIVE_CONNECTION = "dapi_active_connection"
-        private val ACTION_CHANEL_DAPI_CURRENT_ACCOUNT = "dapi_current_account"
+        private val ACTION_CHANEL_DAPI_USER_ACCOUNT = "dapi_user_accounts"
+        private val ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT = "dapi_user_accounts_meta_deta"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -54,7 +55,8 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         when (call.method) {
             ACTION_CHANEL_DAPI_CONNECT -> delegate?.openDapiConnect(call, result);
             ACTION_CHANEL_DAPI_ACTIVE_CONNECTION -> delegate?.getActiveConnection(call, result);
-            ACTION_CHANEL_DAPI_CURRENT_ACCOUNT -> delegate?.getCurrentAccount(call, result);
+            ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.getCurrentAccount(call, result);
+            ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT -> delegate?.getCurrentMetaDataAccount(call, result);
         }
 
 
