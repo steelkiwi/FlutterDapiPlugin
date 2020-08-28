@@ -7,7 +7,7 @@
 <!--&lt;!&ndash;            android:name=".TrimmerActivity"&ndash;&gt;-->
 <!--&lt;!&ndash;            android:screenOrientation="fullSensor" />&ndash;&gt;-->
 <!--    </application>-->
-    <application android:theme="@style/AppTheme">
+    <application android:theme="@style/AppThemeTheme.AppCompat">
         <activity
             android:name=".DapiConnectActivity"
             android:screenOrientation="fullSensor" />
