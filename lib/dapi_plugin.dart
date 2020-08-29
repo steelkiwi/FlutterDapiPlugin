@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dapi_plugin/models/Account.dart';
+import 'package:dapi_plugin/models/account.dart';
 import 'package:dapi_plugin/models/AccountsMetaData.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 import 'models/Connections.dart';
 import 'models/beneficiaries.dart';
@@ -16,10 +15,12 @@ class DapiPlugin {
   static const KEY_DAPI_ACTIVE_CONNECTION = "dapi_active_connection";
   static const KEY_DAPI_CURRENT_ACCOUNT = "dapi_user_accounts";
   static const KEY_DAPI_ACCOUNT_META_DATE = "dapi_user_accounts_meta_deta";
-  static const KEY_DAPI_TRANSFER = "dapi_transfer";
+  static const KEY_DAPI_CREATED_TRANSFER = "dapi_create_transfer";
   static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
 
   static const PARAM_USER_ID = "user_id";
+  static const PARAM_BENEFICIARIES_ID = "beneficiary_id";
+  static const PARAM_ACCOUNT_ID = "account_id";
 
   static Future<String> dapiConnect() async {
     final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);
@@ -64,6 +65,23 @@ class DapiPlugin {
     return accounts;
   }
 
+  static Future<AccountsMetadata> createTransfer(
+      {String userId, String beneficiaryId, String accountId}) async {
+    final arguments = <String, dynamic>{
+      PARAM_BENEFICIARIES_ID: beneficiaryId,
+      PARAM_ACCOUNT_ID: accountId,
+      PARAM_USER_ID: userId,
+    };
+    final String resultPath =
+        await _channel.invokeMethod(KEY_DAPI_CREATED_TRANSFER, arguments);
+
+    Map map = jsonDecode(resultPath)["accountsMetadata"];
+
+    var account = AccountsMetadata.fromJson(map);
+
+    return account;
+  }
+
   static Future<AccountsMetadata> getUserAccountsMetaData(
       {String userId}) async {
     final arguments = <String, dynamic>{
@@ -77,18 +95,5 @@ class DapiPlugin {
     var account = AccountsMetadata.fromJson(map);
 
     return account;
-  }
-
-  static Future<String> createTransfer({
-    @required String senderAccess,
-    @required String receiverAccess,
-  }) async {
-    final arguments = <String, dynamic>{
-      'senderAccess': senderAccess,
-      'receiverAccess': receiverAccess,
-    };
-    final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_TRANSFER, arguments);
-    return resultPath;
   }
 }

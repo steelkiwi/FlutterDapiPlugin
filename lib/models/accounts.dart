@@ -1,5 +1,5 @@
 
-import 'package:dapi_plugin/models/Account.dart';
+import 'package:dapi_plugin/models/account.dart';
 
 class Accounts {
     List<Account> accounts;
@@ -18,7 +18,13 @@ class Accounts {
         );
     }
 
-    Map<String, dynamic> toJson() {
+
+    @override
+  String toString() {
+    return 'Accounts{accounts: $accounts, jobID: $jobID, status: $status, success: $success}';
+  }
+
+  Map<String, dynamic> toJson() {
         final Map<String, dynamic> data = new Map<String, dynamic>();
         data['jobID'] = this.jobID;
         data['status'] = this.status;

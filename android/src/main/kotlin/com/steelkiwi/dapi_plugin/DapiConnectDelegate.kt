@@ -108,9 +108,27 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
             finishWithError(error.type.toString(), errorMessage)
-
         }
+    }
 
+    fun createTransfer(call: MethodCall, result: MethodChannel.Result?) {
+        val beneficiaryId = call.argument<String>(Consts.PARAMET_BENEFICIARY_ID);
+        val accountId = call.argument<String>(Consts.PARAMET_ACCOUNT_ID);
+        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        pendingResult = result
+        userId?.let { dapiClient.setUserID(it) };
+        if (beneficiaryId == null || accountId == null) {
+        } else {
+            dapiClient.payment.createTransfer(beneficiaryId!!, accountId!!, 1.0,
+                    { createTransfer ->
+                        print("sd");
+                    }
+            ) { error ->
+                print("sd");
+
+
+            }
+        }
 
     }
 

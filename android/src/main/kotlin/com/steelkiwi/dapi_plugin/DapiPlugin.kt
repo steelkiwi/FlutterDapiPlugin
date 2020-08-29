@@ -37,6 +37,7 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         private val ACTION_CHANEL_DAPI_USER_ACCOUNT = "dapi_user_accounts"
         private val ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT = "dapi_user_accounts_meta_deta"
         private val ACTION_CHANEL_DAPI_BENEFICIARIES = "dapi_beneficiaries"
+        private val ACTION_CHANEL_CREATE_TRANSFER = "dapi_create_transfer"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -57,6 +58,7 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.getCurrentAccount(call, result);
             ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT -> delegate?.getCurrentMetaDataAccount(call, result);
             ACTION_CHANEL_DAPI_BENEFICIARIES -> delegate?.getBeneficiaries(call, result);
+            ACTION_CHANEL_CREATE_TRANSFER -> delegate?.createTransfer(call, result);
         }
 
 

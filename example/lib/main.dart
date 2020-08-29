@@ -17,6 +17,9 @@ class _MyAppState extends State<MyApp> {
   String _activeConnection = 'null';
   String _acountMetaData = 'null';
   String _beneficiaries = 'null';
+  String _beneficiariarId = 'null';
+  String _accountId = 'null';
+  String _transferStatus = 'No actions';
 
   @override
   void initState() {
@@ -102,6 +105,45 @@ class _MyAppState extends State<MyApp> {
                     Text(_beneficiaries),
                   ],
                 ),
+                SizedBox(
+                  height: 16,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "beneficiariar Id ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(_beneficiariarId),
+                  ],
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Account Id ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(_accountId),
+                  ],
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Transfer status ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(_transferStatus),
+                  ],
+                ),
                 Divider(),
                 InkWell(
                   child: FlatButton(
@@ -138,6 +180,7 @@ class _MyAppState extends State<MyApp> {
 
                         if (result.isNotEmpty) {
                           _account = result.first.toString();
+                          _accountId = result.first.id;
                         } else {
                           _account = "No accounts";
                         }
@@ -178,8 +221,32 @@ class _MyAppState extends State<MyApp> {
                       try {
                         var result = await DapiPlugin.getBeneficiaries(
                             userId: _accessId);
-
                         _beneficiaries = result.toString();
+                        _beneficiariarId = result.beneficiaries.first?.id;
+
+                        setState(() {});
+                      } on PlatformException catch (e) {
+                        setState(() {
+                          _account = e.message;
+                        });
+                      }
+                    },
+                  ),
+                ),
+                InkWell(
+                  child: FlatButton(
+                    color: Colors.green.withOpacity(0.5),
+                    child: Text(
+                        "Create transfer for first available beneficiaries"),
+                    onPressed: () async {
+                      try {
+                        var result = await DapiPlugin.createTransfer(
+                          userId: _accessId,
+                          accountId: _accountId,
+                          beneficiaryId: _beneficiariarId,
+                        );
+                        // _beneficiaries = result.toString();
+                        // _beneficiariarId = result.beneficiaries.first?.id;
 
                         setState(() {});
                       } on PlatformException catch (e) {
