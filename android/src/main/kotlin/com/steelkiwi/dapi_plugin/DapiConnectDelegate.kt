@@ -8,6 +8,7 @@ import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
 import com.dapi.connect.data.endpoint_models.AccountMetaData
 import com.dapi.connect.data.endpoint_models.GetAccounts
+import com.dapi.connect.data.endpoint_models.GetBeneficiaries
 import com.dapi.connect.data.models.DapiBeneficiaryInfo
 import com.dapi.connect.data.models.DapiConnection
 import com.dapi.connect.data.models.DapiError
@@ -94,13 +95,34 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
             finishWithError(error.type.toString(), errorMessage)
         }
+    }
+
+    fun getBeneficiaries(call: MethodCall, result: MethodChannel.Result?) {
+        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        pendingResult = result
+        sourcePath?.let { dapiClient.setUserID(it) };
+        dapiClient.payment.getBeneficiaries(
+                { benefs ->
+                    finishBeneficiariesWithSuccess(benefs);
+                }
+        ) { error ->
+            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
+            finishWithError(error.type.toString(), errorMessage)
+
+        }
 
 
-//        getAccounts({ finishCurrentAccountWithSuccess(it); }
-//        ) { error ->
-//            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-//            finishCurrentAccountWithWithError(errorCode = error.type.toString(), errorMessage = errorMessage, throwable = Throwable(message = errorMessage));
-//        }
+    }
+
+
+    private fun finishBeneficiariesWithSuccess(beneficiaries: GetBeneficiaries) {
+        val json = Gson().toJson(beneficiaries)
+        if (pendingResult != null) {
+            uiThreadHandler.post {
+                pendingResult!!.success(json)
+                clearMethodCallAndResult()
+            };
+        }
     }
 
 

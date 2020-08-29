@@ -25,8 +25,6 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var delegate: DapiConnectDelegate? = null
 
 
-
-
     override fun onAttachedToEngine(@NonNull plugin: FlutterPlugin.FlutterPluginBinding) {
         setupEngine(plugin.binaryMessenger);
 
@@ -38,6 +36,7 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         private val ACTION_CHANEL_DAPI_ACTIVE_CONNECTION = "dapi_active_connection"
         private val ACTION_CHANEL_DAPI_USER_ACCOUNT = "dapi_user_accounts"
         private val ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT = "dapi_user_accounts_meta_deta"
+        private val ACTION_CHANEL_DAPI_BENEFICIARIES = "dapi_beneficiaries"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -57,6 +56,7 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
             ACTION_CHANEL_DAPI_ACTIVE_CONNECTION -> delegate?.getActiveConnection(call, result);
             ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.getCurrentAccount(call, result);
             ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT -> delegate?.getCurrentMetaDataAccount(call, result);
+            ACTION_CHANEL_DAPI_BENEFICIARIES -> delegate?.getBeneficiaries(call, result);
         }
 
 

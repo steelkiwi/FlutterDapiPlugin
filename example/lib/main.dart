@@ -16,6 +16,7 @@ class _MyAppState extends State<MyApp> {
   String _account = 'null';
   String _activeConnection = 'null';
   String _acountMetaData = 'null';
+  String _beneficiaries = 'null';
 
   @override
   void initState() {
@@ -88,6 +89,19 @@ class _MyAppState extends State<MyApp> {
                     Text(_acountMetaData),
                   ],
                 ),
+                SizedBox(
+                  height: 16,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Beneficiaries ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(_beneficiaries),
+                  ],
+                ),
                 Divider(),
                 InkWell(
                   child: FlatButton(
@@ -146,6 +160,26 @@ class _MyAppState extends State<MyApp> {
                             userId: _accessId);
 
                         _acountMetaData = result.toString();
+
+                        setState(() {});
+                      } on PlatformException catch (e) {
+                        setState(() {
+                          _account = e.message;
+                        });
+                      }
+                    },
+                  ),
+                ),
+                InkWell(
+                  child: FlatButton(
+                    color: Colors.green.withOpacity(0.5),
+                    child: Text("Get beneficiaries"),
+                    onPressed: () async {
+                      try {
+                        var result = await DapiPlugin.getBeneficiaries(
+                            userId: _accessId);
+
+                        _beneficiaries = result.toString();
 
                         setState(() {});
                       } on PlatformException catch (e) {

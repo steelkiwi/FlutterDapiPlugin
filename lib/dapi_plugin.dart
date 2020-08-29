@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'models/Connections.dart';
+import 'models/beneficiaries.dart';
 
 class DapiPlugin {
   static const MethodChannel _channel =
@@ -16,6 +17,7 @@ class DapiPlugin {
   static const KEY_DAPI_CURRENT_ACCOUNT = "dapi_user_accounts";
   static const KEY_DAPI_ACCOUNT_META_DATE = "dapi_user_accounts_meta_deta";
   static const KEY_DAPI_TRANSFER = "dapi_transfer";
+  static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
 
   static const PARAM_USER_ID = "user_id";
 
@@ -33,6 +35,19 @@ class DapiPlugin {
     var connection = (list).map((i) => Connections.fromJson(i)).toList();
 
     return connection;
+  }
+
+  static Future<Beneficiaries> getBeneficiaries({String userId}) async {
+    final arguments = <String, dynamic>{
+      PARAM_USER_ID: userId,
+    };
+    final String resultPath =
+        await _channel.invokeMethod(KEY_DAPI_BENEFICIARIES, arguments);
+
+    Map map = jsonDecode(resultPath);
+
+    var beneficiaries = Beneficiaries.fromJson(map);
+    return beneficiaries;
   }
 
   static Future<List<Account>> getUserAccounts({String userId}) async {
@@ -62,17 +77,6 @@ class DapiPlugin {
     var account = AccountsMetadata.fromJson(map);
 
     return account;
-  }
-
-  static Future<String> getBeneficiaries({
-    @required String userId,
-  }) async {
-    final arguments = <String, dynamic>{
-      PARAM_USER_ID: userId,
-    };
-    final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_TRANSFER, arguments);
-    return resultPath;
   }
 
   static Future<String> createTransfer({
