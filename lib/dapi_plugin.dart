@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:dapi_plugin/models/account.dart';
 import 'package:dapi_plugin/models/accounts_metadata.dart';
 import 'package:flutter/services.dart';
-
 import 'models/connections.dart';
 import 'models/beneficiaries.dart';
 

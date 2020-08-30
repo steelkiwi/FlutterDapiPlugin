@@ -18,7 +18,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** DapiPlugin */
-public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
+public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
     private var channel: MethodChannel? = null
     private var activityPluginBinding: ActivityPluginBinding? = null
 
@@ -41,7 +41,7 @@ public class DapiPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
-            val plugin = DapiPlugin()
+            val plugin = Dapi()
             plugin.setupEngine(registrar.messenger())
             val delegate: DapiConnectDelegate = plugin.setupActivity(registrar.activity())!!
             registrar.addActivityResultListener(delegate)
