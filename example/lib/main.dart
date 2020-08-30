@@ -1,4 +1,4 @@
-import 'package:dapi_plugin/dapi_plugin.dart';
+import 'package:dapi/dapi_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -150,7 +150,7 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Open connect"),
                     onPressed: () async {
-                      _accessId = await DapiPlugin.dapiConnect();
+                      _accessId = await Dapi.dapiConnect();
                       setState(() {});
                     },
                   ),
@@ -160,7 +160,7 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Get active connection"),
                     onPressed: () async {
-                      var connections = await DapiPlugin.getActiveConnect();
+                      var connections = await Dapi.getActiveConnect();
                       if (connections.isNotEmpty) {
                         _activeConnection = connections.first.toString();
                         _accessId = connections.first.userID;
@@ -176,7 +176,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       try {
                         var result =
-                            await DapiPlugin.getUserAccounts(userId: _accessId);
+                            await Dapi.getUserAccounts(userId: _accessId);
 
                         if (result.isNotEmpty) {
                           _account = result.first.toString();
@@ -199,7 +199,7 @@ class _MyAppState extends State<MyApp> {
                     child: Text("Get account META DATA"),
                     onPressed: () async {
                       try {
-                        var result = await DapiPlugin.getUserAccountsMetaData(
+                        var result = await Dapi.getUserAccountsMetaData(
                             userId: _accessId);
 
                         _acountMetaData = result.toString();
@@ -219,7 +219,7 @@ class _MyAppState extends State<MyApp> {
                     child: Text("Get beneficiaries"),
                     onPressed: () async {
                       try {
-                        var result = await DapiPlugin.getBeneficiaries(
+                        var result = await Dapi.getBeneficiaries(
                             userId: _accessId);
                         _beneficiaries = result.toString();
                         _beneficiariarId = result.beneficiaries.first?.id;
@@ -240,7 +240,7 @@ class _MyAppState extends State<MyApp> {
                         "Create transfer for first available beneficiaries"),
                     onPressed: () async {
                       try {
-                        var result = await DapiPlugin.createTransfer(
+                        var result = await Dapi.createTransfer(
                           userId: _accessId,
                           accountId: _accountId,
                           beneficiaryId: _beneficiariarId,

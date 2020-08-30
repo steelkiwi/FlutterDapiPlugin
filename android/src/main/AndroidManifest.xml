@@ -9,7 +9,7 @@
     <!--&lt;!&ndash;            android:screenOrientation="fullSensor" />&ndash;&gt;-->
     <!--    </application>-->
     <application
-        android:theme="@style/AppTheme"
+        android:theme="@android:style/Theme.Black.NoTitleBar"
         tools:replace="android:theme"></application>
 
 </manifest>

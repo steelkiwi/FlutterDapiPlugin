@@ -1,5 +1,4 @@
-
-import 'package:dapi_plugin/models/account.dart';
+import 'account.dart';
 
 class Accounts {
     List<Account> accounts;

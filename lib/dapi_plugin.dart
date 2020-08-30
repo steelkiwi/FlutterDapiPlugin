@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:dapi_plugin/models/account.dart';
-import 'package:dapi_plugin/models/accounts_metadata.dart';
+
 import 'package:flutter/services.dart';
+import 'models/account.dart';
+import 'models/accounts_metadata.dart';
 import 'models/connections.dart';
 import 'models/beneficiaries.dart';
 
-class DapiPlugin {
+class Dapi {
   static const MethodChannel _channel =
       const MethodChannel('plugins.steelkiwi.com/dapi');
   static const KEY_DAPI_CONNECT = "dapi_connect";
