@@ -1,5 +1,5 @@
 
-import 'Currency.dart';
+import 'currency.dart';
 
 class TransferBound {
     Currency currency;

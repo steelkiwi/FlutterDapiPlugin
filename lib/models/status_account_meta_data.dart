@@ -1,5 +1,5 @@
 
-import 'AccountsMetaData.dart';
+import 'accounts_metadata.dart';
 
 class StatusAccountMetaData {
     AccountsMetadata accountsMetadata;

@@ -1,14 +1,8 @@
 
-import 'Currency.dart';
+import 'currency.dart';
 
 class Account {
     Currency currency;
-
-    @override
-  String toString() {
-    return 'Account{currency: $currency, iban: $iban, id: $id, isFavourite: $isFavourite, name: $name, number: $number, type: $type}';
-  }
-
   String iban;
     String id;
     bool isFavourite;
@@ -18,15 +12,23 @@ class Account {
 
     Account({this.currency, this.iban, this.id, this.isFavourite, this.name, this.number, this.type});
 
+
+
+
+    @override
+    String toString() {
+      return 'Account{currency: $currency, iban: $iban, id: $id, isFavourite: $isFavourite, name: $name, number: $number, type: $type}';
+    }
+
     factory Account.fromJson(Map<String, dynamic> json) {
         return Account(
-            currency: json['currency'] != null ? Currency.fromJson(json['currency']) : null, 
-            iban: json['iban'], 
-            id: json['id'], 
-            isFavourite: json['isFavourite'], 
-            name: json['name'], 
-            number: json['number'], 
-            type: json['type'], 
+            currency: json['currency'] != null ? Currency.fromJson(json['currency']) : null,
+            iban: json['iban'],
+            id: json['id'],
+            isFavourite: json['isFavourite'],
+            name: json['name'],
+            number: json['number'],
+            type: json['type'],
         );
     }
 

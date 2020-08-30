@@ -1,5 +1,5 @@
 
-import 'Currency.dart';
+import 'currency.dart';
 
 class Balance {
     String accountNumber;

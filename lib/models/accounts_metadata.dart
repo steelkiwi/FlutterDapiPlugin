@@ -1,7 +1,7 @@
-import 'Address.dart';
-import 'Country.dart';
-import 'TransactionRange.dart';
-import 'TransferBound.dart';
+import 'address.dart';
+import 'country.dart';
+import 'transaction_range.dart';
+import 'transfer_bound.dart';
 
 class AccountsMetadata {
   Address address;
