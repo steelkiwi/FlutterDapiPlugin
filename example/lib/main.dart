@@ -19,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   String _beneficiaries = 'null';
   String _beneficiariarId = 'null';
   String _accountId = 'null';
-  String _transferStatus = 'No actions';
+  String _transferStatus = 'null';
 
   @override
   void initState() {
@@ -247,7 +247,7 @@ class _MyAppState extends State<MyApp> {
                             amount: 1.0);
                         // _beneficiaries = result.toString();
                         // _beneficiariarId = result.beneficiaries.first?.id;
-
+                        _transferStatus=result.toString();
                         setState(() {});
                       } on PlatformException catch (e) {
                         setState(() {

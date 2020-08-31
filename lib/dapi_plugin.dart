@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dapi/models/create_transfer_response.dart';
 import 'package:flutter/services.dart';
 
 import 'models/account.dart';
@@ -66,7 +67,7 @@ class Dapi {
     return accounts;
   }
 
-  static Future<AccountsMetadata> createTransfer(
+  static Future<CreateTransferResponse> createTransfer(
       {String userId,
       String beneficiaryId,
       String accountId,
@@ -79,11 +80,8 @@ class Dapi {
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_CREATED_TRANSFER, arguments);
-
-    Map map = jsonDecode(resultPath)["accountsMetadata"];
-
-    var account = AccountsMetadata.fromJson(map);
-
+    Map map = jsonDecode(resultPath);
+    var account = CreateTransferResponse.fromJson(map);
     return account;
   }
 
