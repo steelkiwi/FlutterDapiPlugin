@@ -1,4 +1,3 @@
-
 import 'accounts_metadata.dart';
 
 class StatusAccountMetaData {

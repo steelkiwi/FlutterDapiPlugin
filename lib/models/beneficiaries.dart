@@ -1,5 +1,5 @@
-
 import 'beneficiary.dart';
+
 class Beneficiaries {
     List<Beneficiary> beneficiaries;
     String jobID;

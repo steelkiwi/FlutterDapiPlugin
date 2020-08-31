@@ -1,4 +1,3 @@
-
 class Currency {
     String code;
     String name;

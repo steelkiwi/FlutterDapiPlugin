@@ -1,4 +1,3 @@
-
 class TransactionRange {
     String unit;
     int value;

@@ -1,4 +1,3 @@
-
 class CoolDownPeriod {
     String unit;
     int value;

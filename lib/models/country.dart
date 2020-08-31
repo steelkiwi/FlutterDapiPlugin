@@ -1,4 +1,3 @@
-
 class Country {
     String code;
     String name;
