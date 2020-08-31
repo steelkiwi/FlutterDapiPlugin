@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:dapi/models/create_transfer_response.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
 import 'models/account.dart';
 import 'models/accounts_metadata.dart';
 import 'models/beneficiaries.dart';
@@ -38,7 +41,8 @@ class Dapi {
     return connection;
   }
 
-  static Future<Beneficiaries> getBeneficiaries({String userId}) async {
+  static Future<Beneficiaries> getBeneficiaries(
+      {@required String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
     };
@@ -51,7 +55,8 @@ class Dapi {
     return beneficiaries;
   }
 
-  static Future<List<Account>> getUserAccounts({String userId}) async {
+  static Future<List<Account>> getUserAccounts(
+      {@required String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
     };
@@ -66,10 +71,10 @@ class Dapi {
   }
 
   static Future<CreateTransferResponse> createTransfer(
-      {String userId,
-      String beneficiaryId,
-      String accountId,
-      double amount}) async {
+      {@required String userId,
+      @required String beneficiaryId,
+      @required String accountId,
+      @required double amount}) async {
     final arguments = <String, dynamic>{
       PARAM_AMOUNT: amount,
       PARAM_BENEFICIARIES_ID: beneficiaryId,
