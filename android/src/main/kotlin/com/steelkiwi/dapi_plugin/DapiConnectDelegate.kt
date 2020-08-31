@@ -7,6 +7,7 @@ import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
 import com.dapi.connect.data.endpoint_models.AccountMetaData
+import com.dapi.connect.data.endpoint_models.CreateTransfer
 import com.dapi.connect.data.endpoint_models.GetAccounts
 import com.dapi.connect.data.endpoint_models.GetBeneficiaries
 import com.dapi.connect.data.models.DapiBeneficiaryInfo
@@ -115,12 +116,14 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val beneficiaryId = call.argument<String>(Consts.PARAMET_BENEFICIARY_ID);
         val accountId = call.argument<String>(Consts.PARAMET_ACCOUNT_ID);
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        val amount = call.argument<Double>(Consts.PARAMET_AMOUNT);
         pendingResult = result
         userId?.let { dapiClient.setUserID(it) };
         if (beneficiaryId == null || accountId == null) {
         } else {
-            dapiClient.payment.createTransfer(beneficiaryId!!, accountId!!, 1.0,
+            dapiClient.payment.createTransfer(beneficiaryId!!, accountId!!, amount!!,
                     { createTransfer ->
+                        finishCreateTransferWithSuccess(createTransfer);
                         print("sd");
                     }
             ) { error ->
@@ -132,6 +135,16 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     }
 
+
+    private fun finishCreateTransferWithSuccess(beneficiaries: CreateTransfer) {
+        val json = Gson().toJson(beneficiaries)
+        if (pendingResult != null) {
+            uiThreadHandler.post {
+                pendingResult!!.success(json)
+                clearMethodCallAndResult()
+            };
+        }
+    }
 
     private fun finishBeneficiariesWithSuccess(beneficiaries: GetBeneficiaries) {
         val json = Gson().toJson(beneficiaries)

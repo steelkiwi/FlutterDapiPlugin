@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/services.dart';
+
 import 'models/account.dart';
 import 'models/accounts_metadata.dart';
-import 'models/connections.dart';
 import 'models/beneficiaries.dart';
+import 'models/connections.dart';
 
 class Dapi {
   static const MethodChannel _channel =
@@ -17,6 +19,7 @@ class Dapi {
   static const KEY_DAPI_CREATED_TRANSFER = "dapi_create_transfer";
   static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
 
+  static const PARAM_AMOUNT = "param_amount";
   static const PARAM_USER_ID = "user_id";
   static const PARAM_BENEFICIARIES_ID = "beneficiary_id";
   static const PARAM_ACCOUNT_ID = "account_id";
@@ -65,8 +68,12 @@ class Dapi {
   }
 
   static Future<AccountsMetadata> createTransfer(
-      {String userId, String beneficiaryId, String accountId}) async {
+      {String userId,
+      String beneficiaryId,
+      String accountId,
+      Double amount}) async {
     final arguments = <String, dynamic>{
+      PARAM_AMOUNT: amount,
       PARAM_BENEFICIARIES_ID: beneficiaryId,
       PARAM_ACCOUNT_ID: accountId,
       PARAM_USER_ID: userId,
