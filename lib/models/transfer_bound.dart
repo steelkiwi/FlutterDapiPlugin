@@ -1,4 +1,3 @@
-
 import 'currency.dart';
 
 class TransferBound {

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:dapi/models/create_transfer_response.dart';
 import 'package:flutter/services.dart';
-
 import 'models/account.dart';
 import 'models/accounts_metadata.dart';
 import 'models/beneficiaries.dart';
