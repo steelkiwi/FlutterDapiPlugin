@@ -19,7 +19,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 
-
 class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiClient)
     : PluginRegistry.ActivityResultListener {
     private val uiThreadHandler: Handler = Handler(Looper.getMainLooper())
@@ -120,6 +119,8 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         pendingResult = result
         userId?.let { dapiClient.setUserID(it) };
         if (beneficiaryId == null || accountId == null) {
+            finishWithError("Param is null", "Param is null")
+
         } else {
             dapiClient.payment.createTransfer(beneficiaryId!!, accountId!!, amount!!,
                     { createTransfer ->
@@ -127,9 +128,8 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
                         print("sd");
                     }
             ) { error ->
-                print("sd");
-
-
+                val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
+                finishWithError(error.type.toString(), errorMessage)
             }
         }
 
