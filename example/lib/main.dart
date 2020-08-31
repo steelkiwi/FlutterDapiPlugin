@@ -219,8 +219,8 @@ class _MyAppState extends State<MyApp> {
                     child: Text("Get beneficiaries"),
                     onPressed: () async {
                       try {
-                        var result = await Dapi.getBeneficiaries(
-                            userId: _accessId);
+                        var result =
+                            await Dapi.getBeneficiaries(userId: _accessId);
                         _beneficiaries = result.toString();
                         _beneficiariarId = result.beneficiaries.first?.id;
 
@@ -241,10 +241,10 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       try {
                         var result = await Dapi.createTransfer(
-                          userId: _accessId,
-                          accountId: _accountId,
-                          beneficiaryId: _beneficiariarId,
-                        );
+                            userId: _accessId,
+                            accountId: _accountId,
+                            beneficiaryId: _beneficiariarId,
+                            amount: 1.0);
                         // _beneficiaries = result.toString();
                         // _beneficiariarId = result.beneficiaries.first?.id;
 

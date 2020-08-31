@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/services.dart';
 
@@ -71,7 +70,7 @@ class Dapi {
       {String userId,
       String beneficiaryId,
       String accountId,
-      Double amount}) async {
+      double amount}) async {
     final arguments = <String, dynamic>{
       PARAM_AMOUNT: amount,
       PARAM_BENEFICIARIES_ID: beneficiaryId,
