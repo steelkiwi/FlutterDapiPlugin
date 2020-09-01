@@ -30,6 +30,8 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
             override fun onConnectionSuccessful(userID: String, bankID: String) = finishWithSuccess(userID)
 
             override fun onConnectionFailure(error: DapiError, bankID: String) {
+                val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
+                finishWithError(error.type.toString(), errorMessage)
             }
 
             override fun onProceed(userID: String, bankID: String) {
@@ -65,9 +67,12 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     fun getActiveConnection(call: MethodCall, result: MethodChannel.Result?) {
         pendingResult = result
-        dapiClient.connect.getConnections(onSuccess = { finishActiveConnectionWithSuccess(it); },
+        dapiClient.connect.getConnections(onSuccess = {
+            finishActiveConnectionWithSuccess(it);
+        },
                 onFailure = {
-
+                    val errorMessage: String = if (it?.msg == null) "Get accounts error" else it?.msg!!;
+                    finishWithError(it?.type.toString(), errorMessage)
                 })
     }
 
@@ -92,7 +97,6 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
                 }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-
             finishWithError(error.type.toString(), errorMessage)
         }
     }

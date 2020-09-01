@@ -19,6 +19,7 @@ class Dapi {
   static const KEY_DAPI_ACCOUNT_META_DATE = "dapi_user_accounts_meta_deta";
   static const KEY_DAPI_CREATED_TRANSFER = "dapi_create_transfer";
   static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
+  static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_beneficiary";
 
   static const PARAM_AMOUNT = "param_amount";
   static const PARAM_USER_ID = "user_id";
@@ -99,6 +100,25 @@ class Dapi {
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_ACCOUNT_META_DATE, arguments);
+
+    Map map = jsonDecode(resultPath)["accountsMetadata"];
+
+    var account = AccountsMetadata.fromJson(map);
+
+    return account;
+  }
+
+  static Future<AccountsMetadata> createBeneficiary({
+    String userId,
+
+
+
+  }) async {
+    final arguments = <String, dynamic>{
+      PARAM_USER_ID: userId,
+    };
+    final String resultPath =
+        await _channel.invokeMethod(KEY_DAPI_CREATE_BENEFICIARY, arguments);
 
     Map map = jsonDecode(resultPath)["accountsMetadata"];
 

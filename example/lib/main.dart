@@ -20,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   String _beneficiariarId = 'null';
   String _accountId = 'null';
   String _transferStatus = 'null';
+  String _createBeneficiariesStatus = 'null';
 
   @override
   void initState() {
@@ -144,6 +145,19 @@ class _MyAppState extends State<MyApp> {
                     Text(_transferStatus),
                   ],
                 ),
+                SizedBox(
+                  height: 16,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "create beneficiary  status ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(_createBeneficiariesStatus),
+                  ],
+                ),
                 Divider(),
                 InkWell(
                   child: FlatButton(
@@ -164,6 +178,8 @@ class _MyAppState extends State<MyApp> {
                       if (connections.isNotEmpty) {
                         _activeConnection = connections.first.toString();
                         _accessId = connections.first.userID;
+                      }else{
+                        _activeConnection="No active connection";
                       }
                       setState(() {});
                     },
@@ -180,14 +196,14 @@ class _MyAppState extends State<MyApp> {
 
                         if (result.isNotEmpty) {
                           _account = result.first.toString();
-                          _accountId = result.first.id;
+                            _accountId = result.first.id;
                         } else {
                           _account = "No accounts";
                         }
                         setState(() {});
                       } on PlatformException catch (e) {
                         setState(() {
-                          _account = e.message;
+                          _accountId = e.message;
                         });
                       }
                     },
@@ -207,7 +223,7 @@ class _MyAppState extends State<MyApp> {
                         setState(() {});
                       } on PlatformException catch (e) {
                         setState(() {
-                          _account = e.message;
+                          _acountMetaData = e.message;
                         });
                       }
                     },
@@ -226,8 +242,10 @@ class _MyAppState extends State<MyApp> {
 
                         setState(() {});
                       } on PlatformException catch (e) {
+                        _beneficiaries = e.message;
+                        _beneficiariarId = e.message;
                         setState(() {
-                          _account = e.message;
+
                         });
                       }
                     },
@@ -256,6 +274,15 @@ class _MyAppState extends State<MyApp> {
                           _account = e.message;
                         });
                       }
+                    },
+                  ),
+                ),
+                InkWell(
+                  child: FlatButton(
+                    color: Colors.green.withOpacity(0.5),
+                    child: Text("Create beneficiary "),
+                    onPressed: () async {
+
                     },
                   ),
                 )
