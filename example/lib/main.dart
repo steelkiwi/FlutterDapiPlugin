@@ -244,10 +244,12 @@ class _MyAppState extends State<MyApp> {
                             userId: _accessId,
                             accountId: _accountId,
                             beneficiaryId: _beneficiariarId,
+                            remark:
+                                "{ \"name\":\"John\", \"age\":30, \"car\":null }",
                             amount: 1.0);
                         // _beneficiaries = result.toString();
                         // _beneficiariarId = result.beneficiaries.first?.id;
-                        _transferStatus=result.toString();
+                        _transferStatus = result.toString();
                         setState(() {});
                       } on PlatformException catch (e) {
                         setState(() {

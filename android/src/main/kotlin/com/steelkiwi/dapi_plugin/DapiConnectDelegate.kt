@@ -116,16 +116,16 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val accountId = call.argument<String>(Consts.PARAMET_ACCOUNT_ID);
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         val amount = call.argument<Double>(Consts.PARAMET_AMOUNT);
+        val remark = call.argument<String>(Consts.PARAMET_REMARK);
         pendingResult = result
         userId?.let { dapiClient.setUserID(it) };
         if (beneficiaryId == null || accountId == null) {
             finishWithError("Param is null", "Param is null")
 
         } else {
-            dapiClient.payment.createTransfer(beneficiaryId!!, accountId!!, amount!!,
+            dapiClient.payment.createTransfer(beneficiaryId!!, accountId!!, amount!!, remark,
                     { createTransfer ->
                         finishCreateTransferWithSuccess(createTransfer);
-                        print("sd");
                     }
             ) { error ->
                 val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
