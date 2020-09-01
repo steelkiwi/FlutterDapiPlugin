@@ -27,8 +27,9 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 28
     packagingOptions {
-        pickFirst'META-INF/library_release.kotlin_module'
+        exclude 'META-INF/main.kotlin_module'
     }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
