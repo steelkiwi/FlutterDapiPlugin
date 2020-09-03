@@ -6,10 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
-import com.dapi.connect.data.endpoint_models.AccountMetaData
-import com.dapi.connect.data.endpoint_models.CreateTransfer
-import com.dapi.connect.data.endpoint_models.GetAccounts
-import com.dapi.connect.data.endpoint_models.GetBeneficiaries
+import com.dapi.connect.data.endpoint_models.*
 import com.dapi.connect.data.models.DapiBeneficiaryInfo
 import com.dapi.connect.data.models.DapiConnection
 import com.dapi.connect.data.models.DapiError
@@ -137,6 +134,86 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
             }
         }
 
+    }
+
+    fun logout(call: MethodCall, result: MethodChannel.Result?) {
+        pendingResult = result
+        dapiClient.release();
+        print("ds");
+    }
+
+    fun delink(call: MethodCall, result: MethodChannel.Result?) {
+        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        sourcePath?.let { dapiClient.setUserID(it) };
+        pendingResult = result
+        dapiClient.auth.delink(
+                { delink ->
+                    finishDelinkWithSuccess(delink);
+                    print("sds");
+                }
+        ) { error ->
+            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
+            finishWithError(error.type.toString(), errorMessage)
+        }
+
+    }
+
+    fun createBeneficiary(call: MethodCall, result: MethodChannel.Result?) {
+        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        val addressLine1 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1);
+        val addressLine2 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2);
+        val addressLine3 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES3);
+        val accountNumber = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_ACCOUNT_NUMBER);
+        val accountName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_NAME);
+        val bankName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BANK_NAME);
+        val swiftCode = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_SWIFT_CODE);
+        val iban = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_IBAN);
+        val country = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_COUNTRY);
+        val branchAddress = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BRANCH_ADDRESS);
+        val branchName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BRANCH_NAME);
+        val phone = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER);
+
+        sourcePath?.let { dapiClient.setUserID(it) };
+
+        pendingResult = result
+        dapiClient.payment
+
+
+        val lineAddress = LinesAddress()
+        lineAddress.line1 = addressLine1
+        lineAddress.line2 = addressLine2
+        lineAddress.line3 = addressLine3
+        val info = DapiBeneficiaryInfo(
+                linesAddress = lineAddress,
+                accountNumber = accountNumber,
+                name = accountName,
+                bankName = bankName,
+                swiftCode = swiftCode,
+                iban = iban,
+                country = country,
+                branchAddress = branchAddress,
+                branchName = branchName,
+                phoneNumber = phone
+        )
+
+        dapiClient.payment.createBeneficiary(info, onSuccess = {
+            print("")
+        }, onFailure = {
+            val errorMessage: String = if (it.msg == null) "Get accounts error" else it.msg!!;
+            finishWithError(it.type.toString(), errorMessage)
+        })
+
+    }
+
+
+    private fun finishDelinkWithSuccess(beneficiaries: DelinkUser) {
+        val json = Gson().toJson(beneficiaries)
+        if (pendingResult != null) {
+            uiThreadHandler.post {
+                pendingResult!!.success(json)
+                clearMethodCallAndResult()
+            };
+        }
     }
 
 

@@ -1,4 +1,7 @@
 import 'package:dapi/dapi_plugin.dart';
+import 'package:dapi/models/accounts_metadata.dart';
+import 'package:dapi/models/beneficiaries.dart';
+import 'package:dapi/models/connections.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -21,6 +24,10 @@ class _MyAppState extends State<MyApp> {
   String _accountId = 'null';
   String _transferStatus = 'null';
   String _createBeneficiariesStatus = 'null';
+  Beneficiaries _beneficiariesList;
+  List<Connections> connections;
+
+  AccountsMetadata accountsMetadata;
 
   @override
   void initState() {
@@ -178,8 +185,30 @@ class _MyAppState extends State<MyApp> {
                       if (connections.isNotEmpty) {
                         _activeConnection = connections.first.toString();
                         _accessId = connections.first.userID;
-                      }else{
-                        _activeConnection="No active connection";
+                        this.connections = connections;
+                      } else {
+                        _activeConnection = "No active connection";
+                      }
+                      setState(() {});
+                    },
+                  ),
+                ),
+                InkWell(
+                  child: FlatButton(
+                    color: Colors.green.withOpacity(0.5),
+                    child: Text("Delink"),
+                    onPressed: () async {
+                      var result = await Dapi.delink(userId: _accessId);
+                      if (result.success) {
+                        _accessId = 'null';
+                        _account = 'null';
+                        _activeConnection = 'null';
+                        _acountMetaData = 'null';
+                        _beneficiaries = 'null';
+                        _beneficiariarId = 'null';
+                        _accountId = 'null';
+                        _transferStatus = 'null';
+                        _createBeneficiariesStatus = 'null';
                       }
                       setState(() {});
                     },
@@ -196,7 +225,7 @@ class _MyAppState extends State<MyApp> {
 
                         if (result.isNotEmpty) {
                           _account = result.first.toString();
-                            _accountId = result.first.id;
+                          _accountId = result.first.id;
                         } else {
                           _account = "No accounts";
                         }
@@ -217,7 +246,7 @@ class _MyAppState extends State<MyApp> {
                       try {
                         var result = await Dapi.getUserAccountsMetaData(
                             userId: _accessId);
-
+                        accountsMetadata = result;
                         _acountMetaData = result.toString();
 
                         setState(() {});
@@ -239,14 +268,12 @@ class _MyAppState extends State<MyApp> {
                             await Dapi.getBeneficiaries(userId: _accessId);
                         _beneficiaries = result.toString();
                         _beneficiariarId = result.beneficiaries.first?.id;
-
+                        _beneficiariesList = result;
                         setState(() {});
                       } on PlatformException catch (e) {
                         _beneficiaries = e.message;
                         _beneficiariarId = e.message;
-                        setState(() {
-
-                        });
+                        setState(() {});
                       }
                     },
                   ),
@@ -282,7 +309,37 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Create beneficiary "),
                     onPressed: () async {
-
+                      var conn = connections[1];//USER2 aTnjMu4
+                      try {
+                        var result = await Dapi.createBeneficiary(
+                            userId: _accessId,
+                            addres1: accountsMetadata.address.line1,
+                            addres2: accountsMetadata.address.line2,
+                            addres3: accountsMetadata.address.line3,
+                            accountNumber: "0201555553890",
+                            name: "Test user1",
+                            bankName: conn.fullBankName+"3",
+                            swiftCode: "DAPI21NK1",
+                           // iban: conn.subAccounts.first.iban,
+                            iban: "GB33BAEDB22201515555890",
+                            country: conn.country,
+                            branchAddress: accountsMetadata.branchAddress,
+                            branchName: accountsMetadata.branchName,
+                            phoneNumber: "+971204405313");
+                        print("");
+                      } on PlatformException catch (e) {
+                        _createBeneficiariesStatus = e.message;
+                      }
+                      setState(() {});
+                    },
+                  ),
+                ),
+                InkWell(
+                  child: FlatButton(
+                    color: Colors.green.withOpacity(0.5),
+                    child: Text("Dapi logout "),
+                    onPressed: () async {
+                      await Dapi.release();
                     },
                   ),
                 )

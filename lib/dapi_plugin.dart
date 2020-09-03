@@ -9,6 +9,7 @@ import 'models/account.dart';
 import 'models/accounts_metadata.dart';
 import 'models/beneficiaries.dart';
 import 'models/connections.dart';
+import 'models/delink_user.dart';
 
 class Dapi {
   static const MethodChannel _channel =
@@ -19,13 +20,38 @@ class Dapi {
   static const KEY_DAPI_ACCOUNT_META_DATE = "dapi_user_accounts_meta_deta";
   static const KEY_DAPI_CREATED_TRANSFER = "dapi_create_transfer";
   static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
-  static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_beneficiary";
+  static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary";
+  static const KEY_DAPI_RELEASE = "dapi_release";
+  static const KEY_DAPI_DELINK = "dapi_delink";
 
   static const PARAM_AMOUNT = "param_amount";
   static const PARAM_USER_ID = "user_id";
   static const PARAM_BENEFICIARIES_ID = "beneficiary_id";
   static const PARAM_ACCOUNT_ID = "account_id";
   static const PARAM_REMARK = "transfer_remark";
+
+  static const PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1 =
+      "create_beneficiary_line_addres1";
+  static const PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2 =
+      "create_beneficiary_line_addres2";
+  static const PARAMET_CREATE_BENEFICIARY_LINE_ADDRES3 =
+      "create_beneficiary_line_addres3";
+  static const PARAMET_CREATE_BENEFICIARY_ACCOUNT_NUMBER =
+      "create_beneficiary_account_number";
+  static const PARAMET_CREATE_BENEFICIARY_NAME = "create_beneficiary_name";
+  static const PARAMET_CREATE_BENEFICIARY_BANK_NAME =
+      "create_beneficiary_bank_name";
+  static const PARAMET_CREATE_BENEFICIARY_SWIFT_CODE =
+      "create_beneficiary_swift_code";
+  static const PARAMET_CREATE_BENEFICIARY_IBAN = "create_beneficiary_iban";
+  static const PARAMET_CREATE_BENEFICIARY_COUNTRY =
+      "create_beneficiary_country";
+  static const PARAMET_CREATE_BENEFICIARY_BRANCH_ADDRESS =
+      "create_beneficiary_branch_address";
+  static const PARAMET_CREATE_BENEFICIARY_BRANCH_NAME =
+      "create_beneficiary_branch_name";
+  static const PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER =
+      "create_beneficiary_phone_number";
 
   static Future<String> dapiConnect() async {
     final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);
@@ -108,22 +134,57 @@ class Dapi {
     return account;
   }
 
-  static Future<AccountsMetadata> createBeneficiary({
-    String userId,
+  static Future<AccountsMetadata> createBeneficiary(
+      {String userId,
+      @required String addres1,
+      @required String addres2,
+      @required String addres3,
+      @required String accountNumber,
+      @required String name,
+      @required String bankName,
+      @required String swiftCode,
+      @required String iban,
+      @required String country,
+      @required String branchAddress,
+      @required String branchName,
+      @required String phoneNumber}) async {
+    final arguments = <String, dynamic>{
+      PARAM_USER_ID: userId,
+      PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1: addres1,
+      PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2: addres2,
+      PARAMET_CREATE_BENEFICIARY_LINE_ADDRES3: addres3,
+      PARAMET_CREATE_BENEFICIARY_ACCOUNT_NUMBER: accountNumber,
+      PARAMET_CREATE_BENEFICIARY_NAME: name,
+      PARAMET_CREATE_BENEFICIARY_BANK_NAME: branchName,
+      PARAMET_CREATE_BENEFICIARY_SWIFT_CODE: swiftCode,
+      PARAMET_CREATE_BENEFICIARY_IBAN: iban,
+      PARAMET_CREATE_BENEFICIARY_COUNTRY: country,
+      PARAMET_CREATE_BENEFICIARY_BRANCH_ADDRESS: branchAddress,
+      PARAMET_CREATE_BENEFICIARY_BRANCH_NAME: branchName,
+      PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER: phoneNumber
+    };
+    final String resultPath =
+        await _channel.invokeMethod(KEY_DAPI_CREATE_BENEFICIARY, arguments);
+    Map map = jsonDecode(resultPath);
+    var account = AccountsMetadata.fromJson(map);
+    return account;
+  }
 
+  static Future<bool> release() async {
+    final String resultPath = await _channel.invokeMethod(KEY_DAPI_RELEASE);
+    Map map = jsonDecode(resultPath);
+    var account = AccountsMetadata.fromJson(map);
+    return true;
+  }
 
-
-  }) async {
+  static Future<DelinkUser> delink({@required String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_CREATE_BENEFICIARY, arguments);
-
-    Map map = jsonDecode(resultPath)["accountsMetadata"];
-
-    var account = AccountsMetadata.fromJson(map);
-
+        await _channel.invokeMethod(KEY_DAPI_DELINK, arguments);
+    Map map = jsonDecode(resultPath);
+    var account = DelinkUser.fromJson(map);
     return account;
   }
 }
