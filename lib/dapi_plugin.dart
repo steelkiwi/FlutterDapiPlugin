@@ -172,9 +172,7 @@ class Dapi {
   }
 
   static Future<bool> release() async {
-    final String resultPath = await _channel.invokeMethod(KEY_DAPI_RELEASE);
-    Map map = jsonDecode(resultPath);
-    var account = AccountsMetadata.fromJson(map);
+    await _channel.invokeMethod(KEY_DAPI_RELEASE);
     return true;
   }
 
