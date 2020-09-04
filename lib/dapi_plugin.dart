@@ -8,6 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'models/account.dart';
 import 'models/accounts_metadata.dart';
 import 'models/beneficiaries.dart';
+import 'models/beneficiary_request_success.dart';
 import 'models/connections.dart';
 import 'models/delink_user.dart';
 
@@ -134,7 +135,7 @@ class Dapi {
     return account;
   }
 
-  static Future<AccountsMetadata> createBeneficiary(
+  static Future<BeneficiaryRequestSuccess> createBeneficiary(
       {String userId,
       @required String addres1,
       @required String addres2,
@@ -166,7 +167,7 @@ class Dapi {
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_CREATE_BENEFICIARY, arguments);
     Map map = jsonDecode(resultPath);
-    var account = AccountsMetadata.fromJson(map);
+    var account = BeneficiaryRequestSuccess.fromJson(map);
     return account;
   }
 

@@ -309,23 +309,39 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Create beneficiary "),
                     onPressed: () async {
-                      var conn = connections[1];//USER2 aTnjMu4
+                      var conn = connections[1]; //USER2 aTnjMu4
                       try {
+                        // var result = await Dapi.createBeneficiary(
+                        //     userId: _accessId,
+                        //     addres1: accountsMetadata.address.line1,
+                        //     addres2: accountsMetadata.address.line2,
+                        //     addres3: accountsMetadata.address.line3,
+                        //     accountNumber: "0201555553890",
+                        //     name: "Test user1",
+                        //     bankName: conn.fullBankName+"3",
+                        //     swiftCode: "DAPI21NK1",
+                        //    // iban: conn.subAccounts.first.iban,
+                        //     iban: "GB33BAEDB22201515555890",
+                        //     country: conn.country,
+                        //     branchAddress: accountsMetadata.branchAddress,
+                        //     branchName: accountsMetadata.branchName,
+                        //     phoneNumber: "+971204405313");
+
                         var result = await Dapi.createBeneficiary(
                             userId: _accessId,
                             addres1: accountsMetadata.address.line1,
                             addres2: accountsMetadata.address.line2,
                             addres3: accountsMetadata.address.line3,
-                            accountNumber: "0201555553890",
-                            name: "Test user1",
-                            bankName: conn.fullBankName+"3",
-                            swiftCode: "DAPI21NK1",
-                           // iban: conn.subAccounts.first.iban,
-                            iban: "GB33BAEDB22201515555890",
-                            country: conn.country,
+                            accountNumber: "1xxxxxxxxx",
+                            name: "1xxxxx",
+                            bankName: "1xxxx",
+                            swiftCode: "1xxxx",
+                            // iban: conn.subAccounts.first.iban,
+                            iban: "xxxxxxxxxxxxxxxxxxxxxxxxx",
+                            country: "UNITED ARAB EMIRATES",
                             branchAddress: accountsMetadata.branchAddress,
                             branchName: accountsMetadata.branchName,
-                            phoneNumber: "+971204405313");
+                            phoneNumber: "xxxxxxxxxxx");
                         print("");
                       } on PlatformException catch (e) {
                         _createBeneficiariesStatus = e.message;

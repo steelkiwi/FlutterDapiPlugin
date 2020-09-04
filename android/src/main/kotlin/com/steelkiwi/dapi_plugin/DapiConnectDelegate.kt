@@ -197,6 +197,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         )
 
         dapiClient.payment.createBeneficiary(info, onSuccess = {
+            finishCreateBeneficiariesWithSuccess(it)
             print("")
         }, onFailure = {
             val errorMessage: String = if (it.msg == null) "Get accounts error" else it.msg!!;
@@ -218,6 +219,17 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
 
     private fun finishCreateTransferWithSuccess(beneficiaries: CreateTransfer) {
+        val json = Gson().toJson(beneficiaries)
+        if (pendingResult != null) {
+            uiThreadHandler.post {
+                pendingResult!!.success(json)
+                clearMethodCallAndResult()
+            };
+        }
+    }
+
+
+    private fun finishCreateBeneficiariesWithSuccess(beneficiaries: CreateBeneficiary) {
         val json = Gson().toJson(beneficiaries)
         if (pendingResult != null) {
             uiThreadHandler.post {
