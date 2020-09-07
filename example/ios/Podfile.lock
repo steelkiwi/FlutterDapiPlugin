@@ -1,0 +1,22 @@
+PODS:
+  - dapi (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - dapi (from `.symlinks/plugins/dapi/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  dapi:
+    :path: ".symlinks/plugins/dapi/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  dapi: 49b2a1bf53cb1915509acf13b33b23713a7f55ae
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+
+PODFILE CHECKSUM: c34e2287a9ccaa606aeceab922830efb9a6ff69a
+
+COCOAPODS: 1.9.3
