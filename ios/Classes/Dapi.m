@@ -1,4 +1,4 @@
-#import "DapiPlugin.h"
+#import "Dapi.h"
 #if __has_include(<dapi/dapi-Swift.h>)
 #import <dapi/dapi-Swift.h>
 #else
@@ -8,8 +8,8 @@
 #import "dapi-Swift.h"
 #endif
 
-@implementation DapiPlugin
+@implementation Dapi
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftDapiPlugin registerWithRegistrar:registrar];
+  [SwiftDapi registerWithRegistrar:registrar];
 }
 @end

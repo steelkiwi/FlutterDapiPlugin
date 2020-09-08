@@ -31,7 +31,7 @@ flutter:
         package: com.steelkiwi.dapi_plugin
         pluginClass: Dapi
       ios:
-        pluginClass: DapiPlugin
+        pluginClass: Dapi
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
