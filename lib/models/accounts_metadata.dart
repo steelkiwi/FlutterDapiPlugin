@@ -1,4 +1,5 @@
 import 'address.dart';
+import 'cool_down_period.dart';
 import 'country.dart';
 import 'transaction_range.dart';
 import 'transfer_bound.dart';
@@ -7,7 +8,7 @@ class AccountsMetadata {
   Address address;
   String bankName;
 
-//    BeneficiaryCoolDownPeriod beneficiaryCoolDownPeriod;
+  CoolDownPeriod beneficiaryCoolDownPeriod;
   String branchAddress;
   String branchName;
   Country country;
@@ -24,6 +25,7 @@ class AccountsMetadata {
   AccountsMetadata(
       {this.address,
       this.bankName,
+      this.beneficiaryCoolDownPeriod,
       this.branchAddress,
       this.branchName,
       this.country,
@@ -37,7 +39,10 @@ class AccountsMetadata {
       address:
           json['address'] != null ? Address.fromJson(json['address']) : null,
       bankName: json['bankName'],
-//            beneficiaryCoolDownPeriod: json['beneficiaryCoolDownPeriod'] != null ? BeneficiaryCoolDownPeriod.fromJson(json['beneficiaryCoolDownPeriod']) : null,
+      beneficiaryCoolDownPeriod: json['beneficiaryCoolDownPeriod'] != null
+          ? CoolDownPeriod.fromJson(
+              json['beneficiaryCoolDownPeriod'])
+          : null,
       branchAddress: json['branchAddress'],
       branchName: json['branchName'],
       country:
