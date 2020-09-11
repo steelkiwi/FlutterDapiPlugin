@@ -41,6 +41,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
         private val ACTION_CHANEL_CREATE_TRANSFER = "dapi_create_transfer"
         private val ACTION_CHANEL_RELEASE = "dapi_release"
         private val ACTION_CHANEL_DELINK = "dapi_delink"
+        private val ACTION_CHANEL_HISTORY_DELEGATE = "dapi_history_transaction"
 
         @JvmStatic
         fun registerWith(registrar: Registrar) {
@@ -65,6 +66,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
             ACTION_CHANEL_RELEASE -> delegate?.logout(call, result);
             ACTION_CHANEL_DELINK -> delegate?.delink(call, result);
             ACTION_CHANEL_DAPI_CREATE_BENEFICIARY -> delegate?.createBeneficiary(call, result);
+            ACTION_CHANEL_HISTORY_DELEGATE -> delegate?.getHistoryTransfers(call, result);
         }
 
 

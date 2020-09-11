@@ -24,6 +24,7 @@ class Dapi {
   static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary";
   static const KEY_DAPI_RELEASE = "dapi_release";
   static const KEY_DAPI_DELINK = "dapi_delink";
+  static const KEY_DAPI_HISTORY_TRANSACTION = "dapi_history_transaction";
 
   static const PARAM_AMOUNT = "param_amount";
   static const PARAM_USER_ID = "user_id";
@@ -182,6 +183,18 @@ class Dapi {
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_DELINK, arguments);
+    Map map = jsonDecode(resultPath);
+    var account = DelinkUser.fromJson(map);
+    return account;
+  }
+
+  static Future<DelinkUser> getHistoryTransaction(
+      {@required String userId}) async {
+    final arguments = <String, dynamic>{
+      PARAM_USER_ID: userId,
+    };
+    final String resultPath =
+        await _channel.invokeMethod(KEY_DAPI_HISTORY_TRANSACTION, arguments);
     Map map = jsonDecode(resultPath);
     var account = DelinkUser.fromJson(map);
     return account;

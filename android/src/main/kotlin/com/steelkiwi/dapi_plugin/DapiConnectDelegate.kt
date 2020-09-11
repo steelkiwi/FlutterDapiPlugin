@@ -15,6 +15,7 @@ import com.google.gson.Gson
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
+import java.util.*
 
 class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiClient)
     : PluginRegistry.ActivityResultListener {
@@ -76,7 +77,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     fun getCurrentAccount(call: MethodCall, result: MethodChannel.Result?) {
         val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
-        sourcePath?.let { dapiClient.setUserID(it) };
+        sourcePath?.let { dapiClient.userID = it };
         dapiClient.data.getAccounts({ finishCurrentAccountWithSuccess(it); }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
@@ -87,7 +88,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     fun getCurrentMetaDataAccount(call: MethodCall, result: MethodChannel.Result?) {
         val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
-        sourcePath?.let { dapiClient.setUserID(it) };
+        sourcePath?.let { dapiClient.userID=it };
         dapiClient.metadata.getAccountMetaData(
                 { accountMetaData ->
                     finishCurrentAccountMetaDataWithSuccess(accountMetaData)
@@ -101,7 +102,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     fun getBeneficiaries(call: MethodCall, result: MethodChannel.Result?) {
         val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
-        sourcePath?.let { dapiClient.setUserID(it) };
+        sourcePath?.let { dapiClient.userID=it };
         dapiClient.payment.getBeneficiaries(
                 { benefs ->
                     finishBeneficiariesWithSuccess(benefs);
@@ -119,7 +120,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val amount = call.argument<Double>(Consts.PARAMET_AMOUNT);
         val remark = call.argument<String>(Consts.PARAMET_REMARK);
         pendingResult = result
-        userId?.let { dapiClient.setUserID(it) };
+        userId?.let { dapiClient.userID=(it) };
         if (beneficiaryId == null || accountId == null) {
             finishWithError("Param is null", "Param is null")
 
@@ -144,7 +145,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     fun delink(call: MethodCall, result: MethodChannel.Result?) {
         val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
-        sourcePath?.let { dapiClient.setUserID(it) };
+        sourcePath?.let { dapiClient.userID=(it) };
         pendingResult = result
         dapiClient.auth.delink(
                 { delink ->
@@ -155,6 +156,23 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
             finishWithError(error.type.toString(), errorMessage)
         }
+
+    }
+
+    fun getHistoryTransfers(call: MethodCall, result: MethodChannel.Result?) {
+        val accountId = call.argument<String>(Consts.PARAMET_USER_ID);
+//        sourcePath?.let { dapiClient.userID=(it) };
+        pendingResult = result
+        val to = Calendar.getInstance()
+        val from = Calendar.getInstance()
+        from.set(1, 1, 1)
+
+        dapiClient.data.getTransactions(accountId!!, from.time, to.time, onFailure = {
+            print("sd");
+        }, onSuccess = {
+            print("sd");
+
+        });
 
     }
 
@@ -173,7 +191,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val branchName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BRANCH_NAME);
         val phone = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER);
 
-        sourcePath?.let { dapiClient.setUserID(it) };
+        sourcePath?.let { dapiClient.userID=(it) };
 
         pendingResult = result
         dapiClient.payment
