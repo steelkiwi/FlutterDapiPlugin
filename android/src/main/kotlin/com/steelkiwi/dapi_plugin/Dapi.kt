@@ -35,7 +35,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
         private val ACTION_CHANEL_DAPI_CONNECT = "dapi_connect"
         private val ACTION_CHANEL_DAPI_ACTIVE_CONNECTION = "dapi_active_connection"
         private val ACTION_CHANEL_DAPI_USER_ACCOUNT = "dapi_user_accounts"
-        private val ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT = "dapi_user_accounts_meta_deta"
+        private val ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT = "dapi_user_accounts_meta_data"
         private val ACTION_CHANEL_DAPI_BENEFICIARIES = "dapi_beneficiaries"
         private val ACTION_CHANEL_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary"
         private val ACTION_CHANEL_CREATE_TRANSFER = "dapi_create_transfer"

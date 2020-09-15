@@ -18,7 +18,7 @@ class Dapi {
   static const KEY_DAPI_CONNECT = "dapi_connect";
   static const KEY_DAPI_ACTIVE_CONNECTION = "dapi_active_connection";
   static const KEY_DAPI_CURRENT_ACCOUNT = "dapi_user_accounts";
-  static const KEY_DAPI_ACCOUNT_META_DATE = "dapi_user_accounts_meta_deta";
+  static const KEY_DAPI_ACCOUNT_META_DATA = "dapi_user_accounts_meta_data";
   static const KEY_DAPI_CREATED_TRANSFER = "dapi_create_transfer";
   static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
   static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary";
@@ -127,7 +127,7 @@ class Dapi {
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_ACCOUNT_META_DATE, arguments);
+        await _channel.invokeMethod(KEY_DAPI_ACCOUNT_META_DATA, arguments);
 
     Map map = jsonDecode(resultPath)["accountsMetadata"];
 
