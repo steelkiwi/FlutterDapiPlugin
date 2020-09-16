@@ -12,7 +12,6 @@ import com.google.gson.Gson
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
-import java.util.*
 
 class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiClient)
     : PluginRegistry.ActivityResultListener {
@@ -170,19 +169,18 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
     fun getHistoryTransfers(call: MethodCall, result: MethodChannel.Result?) {
-        val accountId = call.argument<String>(Consts.PARAMET_USER_ID);
-        pendingResult = result
-        val to = Calendar.getInstance()
-        val from = Calendar.getInstance()
-        from.set(1, 1, 1)
-
-        dapiClient.data.getTransactions(accountId!!, from.time, to.time, onFailure = {
-            print("sd");
-        }, onSuccess = {
-            print("sd");
-
-        });
-
+//        val accountId = call.argument<String>(Consts.PARAMET_USER_ID);
+//        pendingResult = result
+//        val to = Calendar.getInstance()
+//        val from = Calendar.getInstance()
+//        from.set(1, 1, 1)
+////
+////        dapiClient.data.getTransactions(accountId!!, from.time, to.time, onFailure = {
+////            print("sd");
+////        }, onSuccess = {
+////            print("sd");
+////
+////        });
     }
 
     fun createBeneficiary(call: MethodCall, result: MethodChannel.Result?) {

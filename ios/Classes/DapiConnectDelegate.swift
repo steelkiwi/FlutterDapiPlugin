@@ -12,7 +12,6 @@ class DapiConnectDelegate: NSObject {
         urlComponents.scheme = "https"
         urlComponents.host = "api-lune.dev.steel.kiwi"
         urlComponents.port = 4041
-
         let configs = DapiConfigurations(appKey: appKey, baseUrl: urlComponents, countries: ["AE"], clientUserID: "MohammedEnnabah")
         configs.environment = .sandbox
         configs.isExperimental = false
@@ -28,7 +27,7 @@ class DapiConnectDelegate: NSObject {
     func execute(_ method: ActionChanel, result: @escaping FlutterResult) {
         switch method {
         case .connect: connect(result)
-        case .activeConnection: activeConenction()
+        case .activeConnection: activeConenction(result)
             // TODO: implement other methods
         default: return
         }
@@ -39,12 +38,14 @@ class DapiConnectDelegate: NSObject {
         client.connect.present()
     }
     
-    private func activeConenction() {}
+    private func activeConenction(_ result: @escaping FlutterResult) {
+        pendingResult = result
+    }
 }
 
 extension DapiConnectDelegate: DPCConnectDelegate {
     func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
-        print("connectDidSuccessfullyConnect")
+        pendingResult?.self(userID);
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
