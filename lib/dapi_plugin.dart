@@ -55,6 +55,8 @@ class Dapi {
   static const PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER =
       "create_beneficiary_phone_number";
 
+  static const HEADER_PAYMENT_ID = "header_payment_id";
+
   static Future<String> dapiConnect() async {
     final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);
     return resultPath;
@@ -100,19 +102,20 @@ class Dapi {
     return accounts;
   }
 
-  static Future<CreateTransferResponse> createTransfer({
-    @required String userId,
-    @required String beneficiaryId,
-    @required String accountId,
-    @required double amount,
-    @required String remark,
-  }) async {
+  static Future<CreateTransferResponse> createTransfer(
+      {@required String userId,
+      @required String beneficiaryId,
+      @required String accountId,
+      @required double amount,
+      @required String remark,
+      String paymentId}) async {
     final arguments = <String, dynamic>{
       PARAM_AMOUNT: amount,
       PARAM_BENEFICIARIES_ID: beneficiaryId,
       PARAM_ACCOUNT_ID: accountId,
       PARAM_USER_ID: userId,
       PARAM_REMARK: remark,
+      HEADER_PAYMENT_ID: paymentId,
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_CREATED_TRANSFER, arguments);

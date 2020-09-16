@@ -291,7 +291,8 @@ class _MyAppState extends State<MyApp> {
                             beneficiaryId: _beneficiariarId,
                             remark:
                                 "{ \"name\":\"John\", \"age\":30, \"car\":null }",
-                            amount: 1.0);
+                            amount: 1.0,
+                            paymentId: "83515136-9146-523a-9936-3229d51fd49d");
                         // _beneficiaries = result.toString();
                         // _beneficiariarId = result.beneficiaries.first?.id;
                         _transferStatus = result.toString();

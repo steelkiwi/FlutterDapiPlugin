@@ -93,7 +93,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
                 DapiEnvironment.SANDBOX,
                 listOf("AE"),
                 "",
-                ""
+                "",
         );
         val client = DapiClient(activity.application, dapiConfigurations)
 
