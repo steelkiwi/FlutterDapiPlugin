@@ -19,7 +19,6 @@ class DapiConnectDelegate: NSObject {
         let client = DapiClient(configurations: configs)
         client.connect.delegate = self
         client.autoFlow.connectDelegate = self
-        client.autoFlow.autoflowDelegate = self
         return client
     }()
     
@@ -40,43 +39,73 @@ class DapiConnectDelegate: NSObject {
     
     private func activeConenction(_ result: @escaping FlutterResult) {
         pendingResult = result
+       var result = client.connect.getConnections()
+        if(!result.isEmpty){
+            let jsonString = convertIntoJSONString(arrayObject: result)
+
+            print();
+            
+        }
+        
+        
+        print("autoFlow:didSuccessfullyTransferAmount")
+
+        
     }
+}
+func convertIntoJSONString(arrayObject: [Any]) -> String? {
+
+    do {
+        let jsonData: Data = try JSONSerialization.data(withJSONObject: arrayObject, options: [])
+        if  let jsonString = NSString(data: jsonData, encoding: String.Encoding.utf8.rawValue) {
+            return jsonString as String
+        }
+        
+    } catch let error as NSError {
+        print("Array convertIntoJSON - \(error.description)")
+    }
+    return nil
 }
 
 extension DapiConnectDelegate: DPCConnectDelegate {
     func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
-        pendingResult?.self(userID);
+        pendingResult?.self(userID)
+
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
         print("connectDidFailConnecting")
     }
     
-    func connectBeneficiaryInfoForBank(withID bankID: String) -> DapiBeneficiaryInfo? {
+    func connectBeneficiaryInfoForBank(withID bankID: String, beneficiaryInfo info: @escaping (DapiBeneficiaryInfo?) -> Void) {
         print("connectBeneficiaryInfoForBank")
-        return nil
+        let linesAddress=DapiLinesAddress();
+        linesAddress.line1="xxx";
+        linesAddress.line2="xxx";
+        linesAddress.line3="xxx";
+        let beneficiaryInfo=DapiBeneficiaryInfo();
+        beneficiaryInfo.linesAddress=linesAddress;
+        beneficiaryInfo.accountNumber = "xxxxxxxxx";
+        beneficiaryInfo.name = "xxxxx";
+        beneficiaryInfo.bankName = "xxxx";
+        beneficiaryInfo.swiftCode = "xxxxx";
+        beneficiaryInfo.iban = "xxxxxxxxxxxxxxxxxxxxxxxxx";
+        beneficiaryInfo.country = "UNITED ARAB EMIRATES";
+        beneficiaryInfo.branchAddress = "branchAddress";
+        beneficiaryInfo.branchName = "branchName";
+        beneficiaryInfo.phoneNumber = "xxxxxxxxxxx";
+        
+
+        info(beneficiaryInfo)
+
     }
     
     func connectDidProceed(withBankID bankID: String, userID: String) {
         print("connectDidProceed")
+
     }
     
+   
     
 }
 
-extension DapiConnectDelegate: DPCAutoFlowDelegate {
-    func autoFlow(_ autoFlow: DapiAutoFlow, beneficiaryInfoForBankID bankID: String, supportsCreateBeneficiary: Bool) -> DapiBeneficiaryInfo {
-        print("autoFlow:beneficiaryInfoForBankID")
-        let beneficiaryInfo = DapiBeneficiaryInfo()
-        return beneficiaryInfo
-    }
-    
-    func autoFlow(_ autoFlow: DapiAutoFlow, didSuccessfullyTransferAmount amount: Double, fromAccount senderAccountID: String, toAccuntID recipientAccountID: String) {
-        print("autoFlow:didSuccessfullyTransferAmount")
-    }
-    
-    func autoFlow(_ autoFlow: DapiAutoFlow, didFailToTransferFromAccount senderAccountID: String, toAccuntID recipientAccountID: String?, withError error: Error) {
-        print("autoFlow:didFailToTransferFromAccount")
-    }
-    
-}
