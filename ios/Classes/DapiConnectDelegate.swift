@@ -115,20 +115,20 @@ class DapiConnectDelegate: NSObject {
         }
         client.userID = userId
         client.metadata.getAccountMetadata { [weak self] bankMetadata, error, string in
-            guard let metaData = bankMetadata, error == nil else {
+            guard let bankMetadata = bankMetadata, error == nil else {
                 self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                 return
             }
-            let address=AddressModel(line1: metaData.linesAddress.line1, line2:metaData.linesAddress.line1, line3: metaData.linesAddress.line1);
+            let address=AddressModel(line1: bankMetadata.linesAddress.line1, line2:bankMetadata.linesAddress.line1, line3: bankMetadata.linesAddress.line1);
                
             let coolDownPeriod=CoolDownPeriodModel(unit: "", value: 24)
                
             let dapiBankMetaData = DapiBankMetadataModel(
-                   bankName: metaData.bankName,
+                   bankName: bankMetadata.bankName,
                    coolDownPeriod: coolDownPeriod,
-                   country: PairModel(unit: metaData.country.name, value: metaData.country.code),
-                   isCreateBeneficiaryRequired: metaData.isCreateBeneficairyEndpointRequired,
-                   swiftCode:metaData.swiftCode,
+                   country: PairModel(unit: bankMetadata.country.name, value: bankMetadata.country.code),
+                   isCreateBeneficiaryRequired: bankMetadata.isCreateBeneficairyEndpointRequired,
+                   swiftCode:bankMetadata.swiftCode,
                    address: address
                    );
                
