@@ -327,7 +327,6 @@ class _MyAppState extends State<MyApp> {
                             branchAddress: accountsMetadata.branchAddress,
                             branchName: accountsMetadata.branchName,
                             phoneNumber: "xxxxxxxxxxx");
-                        print("");
                       } on PlatformException catch (e) {
                         _createBeneficiariesStatus = e.message;
                       }

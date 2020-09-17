@@ -48,8 +48,8 @@ class DapiConnectDelegate: NSObject {
     
     func activeConenction(_ call: FlutterMethodCall) {
         let result = client.connect.getConnections();
+        var connectionsModel=[ConnectionModel]();
         if(!result.isEmpty){
-            var connectionsModel=[ConnectionModel]();
             for i in 0...result.count-1 {
                 let it=result[i];
                 var accounts=[SubAccountModel]();
@@ -74,7 +74,10 @@ class DapiConnectDelegate: NSObject {
                 connectionsModel.append(connectionModel)
                             
             }
-                pendingResult?.self(getJsonFromModel(from:connectionsModel))
+            pendingResult?.self(getJsonFromModel(from:connectionsModel))
+        }else{
+            pendingResult?.self(getJsonFromModel(from:connectionsModel))
+
         }
 
     }
