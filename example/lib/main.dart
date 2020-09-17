@@ -291,7 +291,8 @@ class _MyAppState extends State<MyApp> {
                             beneficiaryId: _beneficiariarId,
                             remark:
                                 "{ \"name\":\"John\", \"age\":30, \"car\":null }",
-                            amount: 1.0);
+                            amount: 1.0,
+                            paymentId: "83515136-9146-523a-9936-3229d51fd49d");
                         // _beneficiaries = result.toString();
                         // _beneficiariarId = result.beneficiaries.first?.id;
                         _transferStatus = result.toString();
@@ -311,22 +312,6 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       var conn = connections[1]; //USER2 aTnjMu4
                       try {
-                        // var result = await Dapi.createBeneficiary(
-                        //     userId: _accessId,
-                        //     addres1: accountsMetadata.address.line1,
-                        //     addres2: accountsMetadata.address.line2,
-                        //     addres3: accountsMetadata.address.line3,
-                        //     accountNumber: "0201555553890",
-                        //     name: "Test user1",
-                        //     bankName: conn.fullBankName+"3",
-                        //     swiftCode: "DAPI21NK1",
-                        //    // iban: conn.subAccounts.first.iban,
-                        //     iban: "GB33BAEDB22201515555890",
-                        //     country: conn.country,
-                        //     branchAddress: accountsMetadata.branchAddress,
-                        //     branchName: accountsMetadata.branchName,
-                        //     phoneNumber: "+971204405313");
-
                         var result = await Dapi.createBeneficiary(
                             userId: _accessId,
                             addres1: accountsMetadata.address.line1,
@@ -356,6 +341,15 @@ class _MyAppState extends State<MyApp> {
                     child: Text("Dapi logout "),
                     onPressed: () async {
                       await Dapi.release();
+                    },
+                  ),
+                ),
+                InkWell(
+                  child: FlatButton(
+                    color: Colors.green.withOpacity(0.5),
+                    child: Text("Get history "),
+                    onPressed: () async {
+                      await Dapi.getHistoryTransaction(userId: _accountId);
                     },
                   ),
                 )

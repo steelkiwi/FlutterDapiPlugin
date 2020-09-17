@@ -12,7 +12,6 @@ class DapiConnectDelegate: NSObject {
         urlComponents.scheme = "https"
         urlComponents.host = "api-lune.dev.steel.kiwi"
         urlComponents.port = 4041
-
         let configs = DapiConfigurations(appKey: appKey,
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
@@ -23,7 +22,6 @@ class DapiConnectDelegate: NSObject {
         let client = DapiClient(configurations: configs)
         client.connect.delegate = self
         client.autoFlow.connectDelegate = self
-//        client.autoFlow.autoflowDelegate = self
         return client
     }()
     
@@ -42,22 +40,27 @@ class DapiConnectDelegate: NSObject {
         default: finishWithError(errorMessage: "Wrong method: \(call.method)")
         }
     }
-    
+
     func connect(_ call: FlutterMethodCall) {
         client.connect.present()
     }
     
     func activeConenction(_ call: FlutterMethodCall) {
-//        client.connect.
-//        dapiClient.connect.	(onSuccess = {
-//            finishActiveConnectionWithSuccess(it);
-//        },
-//                onFailure = {
-//                    val errorMessage: String = if (it?.msg == null) "Get accounts error" else it?.msg!!;
-//                    finishWithError(it?.type.toString(), errorMessage)
-//                })
+        pendingResult = result
+       var result = client.connect.getConnections()
+        if(!result.isEmpty){
+            let jsonString = convertIntoJSONString(arrayObject: result)
+
+            print();
+
+        }
+
+
+        print("autoFlow:didSuccessfullyTransferAmount")
+
+
     }
-    
+
     func userAccounts(_ call: FlutterMethodCall) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
@@ -72,7 +75,7 @@ class DapiConnectDelegate: NSObject {
 //            finishWithError(error.type.toString(), errorMessage)
 //        }
     }
-    
+
     func userAccountsMetaData(_ call: FlutterMethodCall) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
@@ -87,7 +90,7 @@ class DapiConnectDelegate: NSObject {
             self?.finishCurrentAccountMetaDataWithSuccess(metaData: metaData)
         }
     }
-    
+
     func beneficiaries(_ call: FlutterMethodCall) {
 //        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
 //        pendingResult = result
@@ -101,7 +104,7 @@ class DapiConnectDelegate: NSObject {
 //            finishWithError(error.type.toString(), errorMessage)
 //        }
     }
-    
+
     func createBeneficiary(_ call: FlutterMethodCall) {
 //        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
 //        val addressLine1 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1);
@@ -148,7 +151,7 @@ class DapiConnectDelegate: NSObject {
 //            finishWithError(it.type.toString(), errorMessage)
 //        })
     }
-    
+
     func createTransfer(_ call: FlutterMethodCall) {
         guard let beneficiaryId: String = call.argument(key: Param.beneficiaryId.rawValue),
             let accountId: String = call.argument(key: Param.accountId.rawValue),
@@ -171,11 +174,11 @@ class DapiConnectDelegate: NSObject {
                                         self?.finishCreateTransferWithSuccess(beneficiaries: result)
             })
     }
-    
+
     func release(_ call: FlutterMethodCall) {
 //        client.connect.release() // ???
     }
-    
+
     func delink(_ call: FlutterMethodCall) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
@@ -191,7 +194,7 @@ class DapiConnectDelegate: NSObject {
             self?.finishWithSuccess(userID: userId)
         }
     }
-    
+
     private enum Action: String {
       case connect = "dapi_connect"
       case activeConnection = "dapi_active_connection"
@@ -203,7 +206,7 @@ class DapiConnectDelegate: NSObject {
       case release = "dapi_release"
       case delink = "dapi_delink"
     }
-    
+
     private enum Param: String {
       case amount = "param_amount"
       case userId = "user_id"
@@ -227,24 +230,8 @@ extension DapiConnectDelegate: DPCConnectDelegate {
     }
     
     func connectDidProceed(withBankID bankID: String, userID: String) {}
-    
-}
 
-//extension DapiConnectDelegate: DPCAutoFlowDelegate {
-//    func autoFlow(_ autoFlow: DapiAutoFlow, beneficiaryInfoForBankID bankID: String, supportsCreateBeneficiary: Bool) -> DapiBeneficiaryInfo {
-//        print("autoFlow:beneficiaryInfoForBankID")
-//        return defaulrBeneficiaryInfo()
-//    }
-//
-//    func autoFlow(_ autoFlow: DapiAutoFlow, didSuccessfullyTransferAmount amount: Double, fromAccount senderAccountID: String, toAccuntID recipientAccountID: String) {
-//        print("autoFlow:didSuccessfullyTransferAmount")
-//    }
-//
-//    func autoFlow(_ autoFlow: DapiAutoFlow, didFailToTransferFromAccount senderAccountID: String, toAccuntID recipientAccountID: String?, withError error: Error) {
-//        print("autoFlow:didFailToTransferFromAccount")
-//    }
-//
-//}
+}
 
 private extension DapiConnectDelegate {
     func defaulrBeneficiaryInfo() -> DapiBeneficiaryInfo {
@@ -252,7 +239,7 @@ private extension DapiConnectDelegate {
         lineAddress.line1 = "line1"
         lineAddress.line2 = "line2"
         lineAddress.line3 = "line3"
-        
+
         let info = DapiBeneficiaryInfo()
         info.linesAddress = lineAddress
         info.accountNumber = "xxxxxxxxx"
@@ -264,10 +251,11 @@ private extension DapiConnectDelegate {
         info.branchAddress = "branchAddress"
         info.branchName = "branchName"
         info.phoneNumber = "xxxxxxxxxxx"
-        
+
+        info(beneficiaryInfo)
         return info
     }
-    
+
     private func finishCurrentAccountMetaDataWithSuccess(metaData: DapiBankMetadata) {
         guard let result = pendingResult else { return }
         let json = getJson(from: [
@@ -277,12 +265,12 @@ private extension DapiConnectDelegate {
             "swiftCode": metaData.swiftCode,
             "isCreateBeneficairyEndpointRequired": metaData.isCreateBeneficairyEndpointRequired
             // ...
-            
+
         ])
         result(json)
         clearMethodCallAndResult()
     }
-    
+
     private func finishCreateTransferWithSuccess(beneficiaries: DapiResult) {
         guard let result = pendingResult, let json = beneficiaries.toJson() else { return }
         result(json)
@@ -294,13 +282,13 @@ private extension DapiConnectDelegate {
         result(json)
         clearMethodCallAndResult()
     }
-    
+
     private func finishWithSuccess(userID: String) { // TODO: async
         guard let result = pendingResult else { return }
         result(userID)
         clearMethodCallAndResult()
     }
-    
+
     private func finishWithError(errorCode: String? = nil, errorMessage: String, details: Any? = nil) {
         guard let result = pendingResult else { return }
         result(FlutterError(code: errorCode ?? "-1",
@@ -308,7 +296,7 @@ private extension DapiConnectDelegate {
                             details: nil))
         clearMethodCallAndResult()
     }
-    
+
     private func clearMethodCallAndResult() {
         pendingResult = nil
     }
@@ -334,5 +322,5 @@ extension DapiResult {
 
 fileprivate func getJson(from dictionary: [String: Any]) -> String? {
     guard let jsonData = try? JSONSerialization.data(withJSONObject: dictionary, options: []) else { return nil }
-    return String(data: jsonData, encoding: String.Encoding.ascii)
+    return String(data: jsonData, encoding: String.Encoding.utf8.rawValue)
 }

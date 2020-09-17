@@ -24,6 +24,7 @@ class Dapi {
   static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary";
   static const KEY_DAPI_RELEASE = "dapi_release";
   static const KEY_DAPI_DELINK = "dapi_delink";
+  static const KEY_DAPI_HISTORY_TRANSACTION = "dapi_history_transaction";
 
   static const PARAM_AMOUNT = "param_amount";
   static const PARAM_USER_ID = "user_id";
@@ -53,6 +54,8 @@ class Dapi {
       "create_beneficiary_branch_name";
   static const PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER =
       "create_beneficiary_phone_number";
+
+  static const HEADER_PAYMENT_ID = "header_payment_id";
 
   static Future<String> dapiConnect() async {
     final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);
@@ -99,19 +102,20 @@ class Dapi {
     return accounts;
   }
 
-  static Future<CreateTransferResponse> createTransfer({
-    @required String userId,
-    @required String beneficiaryId,
-    @required String accountId,
-    @required double amount,
-    @required String remark,
-  }) async {
+  static Future<CreateTransferResponse> createTransfer(
+      {@required String userId,
+      @required String beneficiaryId,
+      @required String accountId,
+      @required double amount,
+      @required String remark,
+      String paymentId}) async {
     final arguments = <String, dynamic>{
       PARAM_AMOUNT: amount,
       PARAM_BENEFICIARIES_ID: beneficiaryId,
       PARAM_ACCOUNT_ID: accountId,
       PARAM_USER_ID: userId,
       PARAM_REMARK: remark,
+      HEADER_PAYMENT_ID: paymentId,
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_CREATED_TRANSFER, arguments);
@@ -182,6 +186,18 @@ class Dapi {
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_DELINK, arguments);
+    Map map = jsonDecode(resultPath);
+    var account = DelinkUser.fromJson(map);
+    return account;
+  }
+
+  static Future<DelinkUser> getHistoryTransaction(
+      {@required String userId}) async {
+    final arguments = <String, dynamic>{
+      PARAM_USER_ID: userId,
+    };
+    final String resultPath =
+        await _channel.invokeMethod(KEY_DAPI_HISTORY_TRANSACTION, arguments);
     Map map = jsonDecode(resultPath);
     var account = DelinkUser.fromJson(map);
     return account;
