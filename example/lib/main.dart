@@ -217,12 +217,11 @@ class _MyAppState extends State<MyApp> {
                 InkWell(
                   child: FlatButton(
                     color: Colors.green.withOpacity(0.5),
-                    child: Text("Get account"),
+                    child: Text("Get connection accounts"),
                     onPressed: () async {
                       try {
                         var result =
-                            await Dapi.getUserAccounts(userId: _accessId);
-
+                            await Dapi.getConnectionAccounts(userId: _accessId);
                         if (result.isNotEmpty) {
                           _account = result.first.toString();
                           _accountId = result.first.id;
@@ -244,8 +243,8 @@ class _MyAppState extends State<MyApp> {
                     child: Text("Get account META DATA"),
                     onPressed: () async {
                       try {
-                        var result = await Dapi.getUserAccountsMetaData(
-                            userId: _accessId);
+                        var result =
+                            await Dapi.getBankMetadata(userId: _accessId);
                         accountsMetadata = result;
                         _acountMetaData = result.toString();
 

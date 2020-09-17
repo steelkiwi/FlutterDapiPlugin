@@ -70,7 +70,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
                 })
     }
 
-    fun getCurrentAccount(call: MethodCall, result: MethodChannel.Result?) {
+    fun getConnectionAccounts(call: MethodCall, result: MethodChannel.Result?) {
         val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
         sourcePath?.let { dapiClient.userID = it };
@@ -81,7 +81,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         }
     }
 
-    fun getCurrentMetaDataAccount(call: MethodCall, result: MethodChannel.Result?) {
+    fun getDapiBankMetadata(call: MethodCall, result: MethodChannel.Result?) {
         val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
         sourcePath?.let { dapiClient.userID = it };
@@ -276,7 +276,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
 
     private fun finishCurrentAccountMetaDataWithSuccess(metaData: AccountMetaData) {
-        val json = Gson().toJson(metaData)
+        val json = Gson().toJson(metaData.accountsMetadata)
         if (pendingResult != null) {
             uiThreadHandler.post {
                 pendingResult!!.success(json)
@@ -292,7 +292,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
     private fun finishCurrentAccountWithSuccess(connections: GetAccounts) {
-        val json = Gson().toJson(connections)
+        val json = Gson().toJson(connections.accounts)
         if (pendingResult != null) {
             uiThreadHandler.post {
                 pendingResult!!.success(json)

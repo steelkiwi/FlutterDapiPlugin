@@ -34,7 +34,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
         private val CHANNEL = "plugins.steelkiwi.com/dapi"
         private val ACTION_CHANEL_DAPI_CONNECT = "dapi_connect"
         private val ACTION_CHANEL_DAPI_ACTIVE_CONNECTION = "dapi_active_connection"
-        private val ACTION_CHANEL_DAPI_USER_ACCOUNT = "dapi_user_accounts"
+        private val ACTION_CHANEL_DAPI_USER_ACCOUNT = "dapi_connection_accounts"
         private val ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT = "dapi_user_accounts_meta_data"
         private val ACTION_CHANEL_DAPI_BENEFICIARIES = "dapi_beneficiaries"
         private val ACTION_CHANEL_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary"
@@ -59,8 +59,8 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
         when (call.method) {
             ACTION_CHANEL_DAPI_CONNECT -> delegate?.openDapiConnect(call, result);
             ACTION_CHANEL_DAPI_ACTIVE_CONNECTION -> delegate?.getActiveConnection(call, result);
-            ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.getCurrentAccount(call, result);
-            ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT -> delegate?.getCurrentMetaDataAccount(call, result);
+            ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.getConnectionAccounts(call, result);
+            ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT -> delegate?.getDapiBankMetadata(call, result);
             ACTION_CHANEL_DAPI_BENEFICIARIES -> delegate?.getBeneficiaries(call, result);
             ACTION_CHANEL_CREATE_TRANSFER -> delegate?.createTransfer(call, result);
             ACTION_CHANEL_RELEASE -> delegate?.logout(call, result);

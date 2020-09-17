@@ -31,7 +31,7 @@ class DapiConnectDelegate: NSObject {
         switch Action(rawValue: call.method) {
         case .connect: connect(call)
         case .activeConnection: activeConenction(call)
-        case .userAccounts: userAccounts(call)
+        case .connectionAccounts: connectionAccounts(call)
         case .userAccountsMetaData: userAccountsMetaData(call)
         case .beneficiaries: beneficiaries(call)
         case .createBeneficiary: createBeneficiary(call)
@@ -49,34 +49,62 @@ class DapiConnectDelegate: NSObject {
     
     func activeConenction(_ call: FlutterMethodCall) {
         let result = client.connect.getConnections();
-        
-        
         if(!result.isEmpty){
-            finishActiveConnectionWithSuccess(connections: result)
+            var connectionsModel=[ConnectionModel]();
+            for i in 0...result.count-1 {
+                let it=result[i];
+                var accounts=[SubAccountModel]();
+                
+                if(!it.accounts.isEmpty){
+                for j in 0...it.accounts.count-1 {
+                    let accountItem=it.accounts[j];
+                    let subAccountModel=SubAccountModel(currency:PairModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
+                    accounts.append(subAccountModel)
+                    }}
+
+                let connectionModel=ConnectionModel(
+                    bankID:it.bankID,
+                    clientUserID: it.clientUserID,
+                    coolDownPeriod:CoolDownPeriodModel(unit: "", value:it.beneficiaryCoolDownPeriod),
+                    country: it.countryName,
+                    fullBankName: it.bankName,
+                    isCreateBeneficiaryRequired: it.isCreateBeneficiaryEndpointRequired,
+                    userID: it.userID,
+                    subAccounts:accounts)
+                
+                connectionsModel.append(connectionModel)
+                            
+            }
+                pendingResult?.self(getJsonFromModel(from:connectionsModel))
         }
-            
-//            !result.isEmpty else { // Where the fucking docs?
-//            finishWithError(errorMessage: "Get connection error")
-//            return
-//        }
-//        finishActiveConnectionWithSuccess(connections: result)
+
     }
 
-    func userAccounts(_ call: FlutterMethodCall) {
+    func connectionAccounts(_ call: FlutterMethodCall) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
             return
         }
         client.userID = userId
         client.data.getAccounts { [weak self] result, error, string in
-            print("");
+            let dapiAccounts:[DapiAccount]?=result;
+            var accounts=[SubAccountModel]();
+            
+            if let dapiAccounts = dapiAccounts {
+            for j in 0...dapiAccounts.count-1 {
+                   let accountItem=dapiAccounts[j];
+                   let subAccountModel=SubAccountModel(currency:PairModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
+                   accounts.append(subAccountModel)
+                   }
+                let jsonConnections =  getJsonFromModel(from:accounts)
+                self?.pendingResult?.self(jsonConnections)
+            }
+           
         }
-
-//        dapiClient.data.	({ finishCurrentAccountWithSuccess(it); }
-//        ) { error ->
-//            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-//            finishWithError(error.type.toString(), errorMessage)
-//        }
+        
+       
+       
+    
     }
 
     func userAccountsMetaData(_ call: FlutterMethodCall) {
@@ -90,8 +118,21 @@ class DapiConnectDelegate: NSObject {
                 self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                 return
             }
-            self?.finishCurrentAccountMetaDataWithSuccess(metaData: metaData)
-        }
+            let address=AddressModel(line1: metaData.linesAddress.line1, line2:metaData.linesAddress.line1, line3: metaData.linesAddress.line1);
+               
+            let coolDownPeriod=CoolDownPeriodModel(unit: "", value: 24)
+               
+            let dapiBankMetaData = DapiBankMetadataModel(
+                   bankName: metaData.bankName,
+                   coolDownPeriod: coolDownPeriod,
+                   country: PairModel(unit: metaData.country.name, value: metaData.country.code),
+                   isCreateBeneficiaryRequired: metaData.isCreateBeneficairyEndpointRequired,
+                   swiftCode:metaData.swiftCode,
+                   address: address
+                   );
+               
+            let jsonConnections =  getJsonFromModel(from:dapiBankMetaData)
+            self?.pendingResult?.self(jsonConnections)        }
     }
 
     func beneficiaries(_ call: FlutterMethodCall) {
@@ -120,7 +161,6 @@ class DapiConnectDelegate: NSObject {
                 finishWithError(errorMessage: "Invalid arguments")
                 return
         }
-//        let remark: String? = call.argument(key: Param.transferRemark.rawValue)
         client.userID = userId
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
@@ -157,7 +197,7 @@ class DapiConnectDelegate: NSObject {
     private enum Action: String {
       case connect = "dapi_connect"
       case activeConnection = "dapi_active_connection"
-      case userAccounts = "dapi_user_accounts"
+      case connectionAccounts = "dapi_connection_accounts"
       case userAccountsMetaData = "dapi_user_accounts_meta_data"
       case beneficiaries = "dapi_beneficiaries"
       case createBeneficiary = "dapi_create_beneficiary"
@@ -240,70 +280,8 @@ private extension DapiConnectDelegate {
         return info
     }
     
-    private func finishActiveConnectionWithSuccess(connections: [DapiConnectionDetails]) {
-        print(finishActiveConnectionWithSuccess);
-        var connectionsModel=[ConnectionModel]();
-        var connectionsJson: [String] = []
-        for i in 0...connections.count-1 {
-            var it=connections[i];
-            var accounts=[SubAccountModel]();
-            
-            if(!it.accounts.isEmpty){
-            for j in 0...it.accounts.count-1 {
-                var accountItem=it.accounts[j];
-                var subAccountModel=SubAccountModel(currency:PairModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
-                accounts.append(subAccountModel)
-                }}
-
-            var connectionModel=ConnectionModel(
-                bankID:it.bankID,
-                clientUserID: it.clientUserID,
-                coolDownPeriod:CoolDownPeriodModel(unit: "", value:it.beneficiaryCoolDownPeriod),
-                country: it.countryName,
-                fullBankName: it.bankName,
-                isCreateBeneficiaryRequired: it.isCreateBeneficiaryEndpointRequired,
-                userID: it.userID,
-                subAccounts:accounts)
-            
-            connectionsModel.append(connectionModel)
-                        
-        }
-        
-        var jsonConnections =  getJsonFromModel(from:connectionsModel)
-        pendingResult?.self(jsonConnections)
  
-        
-        
-//        val json = Gson().toJson(connections)
-//        if (pendingResult != null) {
-//            uiThreadHandler.post {
-//                pendingResult!!.success(json)
-//                clearMethodCallAndResult()
-//            };
-//        }
-    }
 
-    private func finishCurrentAccountMetaDataWithSuccess(metaData: DapiBankMetadata) {
-        guard let result = pendingResult else { return }
-        
-        var address=AddressModel(line1: metaData.linesAddress.line1, line2:metaData.linesAddress.line1, line3: metaData.linesAddress.line1);
-        
-        var coolDownPeriod=CoolDownPeriodModel(unit: "", value: 24)
-        
-        var dapiBankMetaData = DapiBankMetadataModel(
-            bankName: metaData.bankName,
-            coolDownPeriod: coolDownPeriod,
-            country: PairModel(unit: metaData.country.name, value: metaData.country.code),
-            isCreateBeneficiaryRequired: metaData.isCreateBeneficairyEndpointRequired,
-            swiftCode:metaData.swiftCode,
-            address: address
-            );
-        
-     var jsonConnections =  getJsonFromModel(from:dapiBankMetaData)
-     pendingResult?.self(jsonConnections)
-//        resultFr(json)
-        clearMethodCallAndResult()
-    }
 
     private func finishCreateTransferWithSuccess(beneficiaries: DapiResult) {
         guard let result = pendingResult, let json = beneficiaries.toJson() else { return }

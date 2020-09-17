@@ -17,8 +17,8 @@ class Dapi {
       const MethodChannel('plugins.steelkiwi.com/dapi');
   static const KEY_DAPI_CONNECT = "dapi_connect";
   static const KEY_DAPI_ACTIVE_CONNECTION = "dapi_active_connection";
-  static const KEY_DAPI_CURRENT_ACCOUNT = "dapi_user_accounts";
-  static const KEY_DAPI_ACCOUNT_META_DATA = "dapi_user_accounts_meta_data";
+  static const KEY_CONNECTION_ACCOUNTS = "dapi_connection_accounts";
+  static const KEY_BANK_METADATA = "dapi_user_accounts_meta_data";
   static const KEY_DAPI_CREATED_TRANSFER = "dapi_create_transfer";
   static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
   static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary";
@@ -87,15 +87,15 @@ class Dapi {
     return beneficiaries;
   }
 
-  static Future<List<Account>> getUserAccounts(
+  static Future<List<Account>> getConnectionAccounts(
       {@required String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_CURRENT_ACCOUNT, arguments);
+        await _channel.invokeMethod(KEY_CONNECTION_ACCOUNTS, arguments);
 
-    List list = jsonDecode(resultPath)["accounts"];
+    List list = jsonDecode(resultPath);
 
     var accounts = list.map((i) => Account.fromJson(i)).toList();
 
@@ -124,15 +124,15 @@ class Dapi {
     return account;
   }
 
-  static Future<DapiBankMetadata> getUserAccountsMetaData(
+  static Future<DapiBankMetadata> getBankMetadata(
       {String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_ACCOUNT_META_DATA, arguments);
+        await _channel.invokeMethod(KEY_BANK_METADATA, arguments);
 
-    Map map = jsonDecode(resultPath)["accountsMetadata"];
+    Map map = jsonDecode(resultPath);
 
     var account = DapiBankMetadata.fromJson(map);
 
