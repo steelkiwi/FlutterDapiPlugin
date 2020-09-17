@@ -251,7 +251,7 @@ private extension DapiConnectDelegate {
             if(!it.accounts.isEmpty){
             for j in 0...it.accounts.count-1 {
                 var accountItem=it.accounts[j];
-                var subAccountModel=SubAccountModel(currency:CurrencyModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
+                var subAccountModel=SubAccountModel(currency:PairModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
                 accounts.append(subAccountModel)
                 }}
 
@@ -285,16 +285,23 @@ private extension DapiConnectDelegate {
 
     private func finishCurrentAccountMetaDataWithSuccess(metaData: DapiBankMetadata) {
         guard let result = pendingResult else { return }
-        let json = getJson(from: [
-            "bankName": metaData.bankName,
-            "branchAddress": metaData.branchAddress,
-            "branchName": metaData.branchName,
-            "swiftCode": metaData.swiftCode,
-            "isCreateBeneficairyEndpointRequired": metaData.isCreateBeneficairyEndpointRequired
-            // ...
-
-        ])
-        result(json)
+        
+        var address=AddressModel(line1: metaData.linesAddress.line1, line2:metaData.linesAddress.line1, line3: metaData.linesAddress.line1);
+        
+        var coolDownPeriod=CoolDownPeriodModel(unit: "", value: 24)
+        
+        var dapiBankMetaData = DapiBankMetadataModel(
+            bankName: metaData.bankName,
+            coolDownPeriod: coolDownPeriod,
+            country: PairModel(unit: metaData.country.name, value: metaData.country.code),
+            isCreateBeneficiaryRequired: metaData.isCreateBeneficairyEndpointRequired,
+            swiftCode:metaData.swiftCode,
+            address: address
+            );
+        
+     var jsonConnections =  getJsonFromModel(from:dapiBankMetaData)
+     pendingResult?.self(jsonConnections)
+//        resultFr(json)
         clearMethodCallAndResult()
     }
 
@@ -365,15 +372,12 @@ fileprivate func getJson(from dictionary: [String: Any]) -> String? {
 //// Decode
 //let jsonDecoder = JSONDecoder()
 //let secondDog = try jsonDecoder.decode(Dog.self, from: jsonData)
-fileprivate func getJsonFromModel(from model: [ConnectionModel]) -> String? {
+fileprivate func getJsonFromModel<T: Encodable>(from model: T) -> String? {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
     let data = try! encoder.encode(model)
-    
-
     return String(data: data, encoding: .utf8)!
 
-        
     }
 
 

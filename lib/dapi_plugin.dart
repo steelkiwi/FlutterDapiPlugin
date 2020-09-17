@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'models/account.dart';
-import 'models/accounts_metadata.dart';
+import 'models/dapi_bank_metadata.dart';
 import 'models/beneficiaries.dart';
 import 'models/beneficiary_request_success.dart';
 import 'models/connections.dart';
@@ -124,7 +124,7 @@ class Dapi {
     return account;
   }
 
-  static Future<AccountsMetadata> getUserAccountsMetaData(
+  static Future<DapiBankMetadata> getUserAccountsMetaData(
       {String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
@@ -134,7 +134,7 @@ class Dapi {
 
     Map map = jsonDecode(resultPath)["accountsMetadata"];
 
-    var account = AccountsMetadata.fromJson(map);
+    var account = DapiBankMetadata.fromJson(map);
 
     return account;
   }

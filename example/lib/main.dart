@@ -1,7 +1,7 @@
 import 'package:dapi/dapi_plugin.dart';
-import 'package:dapi/models/accounts_metadata.dart';
 import 'package:dapi/models/beneficiaries.dart';
 import 'package:dapi/models/connections.dart';
+import 'package:dapi/models/dapi_bank_metadata.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   Beneficiaries _beneficiariesList;
   List<Connections> connections;
 
-  AccountsMetadata accountsMetadata;
+  DapiBankMetadata accountsMetadata;
 
   @override
   void initState() {

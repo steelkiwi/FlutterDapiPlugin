@@ -4,7 +4,7 @@ import 'country.dart';
 import 'transaction_range.dart';
 import 'transfer_bound.dart';
 
-class AccountsMetadata {
+class DapiBankMetadata {
   Address address;
   String bankName;
 
@@ -22,7 +22,7 @@ class AccountsMetadata {
     return 'AccountsMetadata{address: $address, bankName: $bankName, branchAddress: $branchAddress, branchName: $branchName, country: $country, isCreateBeneficiaryEndpointRequired: $isCreateBeneficiaryEndpointRequired, swiftCode: $swiftCode, transactionRange: $transactionRange, transferBounds: $transferBounds}';
   }
 
-  AccountsMetadata(
+  DapiBankMetadata(
       {this.address,
       this.bankName,
       this.beneficiaryCoolDownPeriod,
@@ -34,8 +34,8 @@ class AccountsMetadata {
       this.transactionRange,
       this.transferBounds});
 
-  factory AccountsMetadata.fromJson(Map<String, dynamic> json) {
-    return AccountsMetadata(
+  factory DapiBankMetadata.fromJson(Map<String, dynamic> json) {
+    return DapiBankMetadata(
       address:
           json['address'] != null ? Address.fromJson(json['address']) : null,
       bankName: json['bankName'],

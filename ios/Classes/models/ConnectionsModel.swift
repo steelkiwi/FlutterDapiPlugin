@@ -28,7 +28,7 @@ extension ConnectionModel : Equatable{
 
 
 struct SubAccountModel:Codable{
-    var currency:CurrencyModel?
+    var currency:PairModel?
     var iban:String
     var id:String
     var isFavourite:Bool
@@ -36,7 +36,7 @@ struct SubAccountModel:Codable{
     var number:String
     var type:String
     
-    init( currency:CurrencyModel?,
+    init( currency:PairModel?,
         iban:String,
         id:String,
         isFavourite:Bool,
@@ -54,7 +54,7 @@ struct SubAccountModel:Codable{
 }
 
 
-struct CurrencyModel:Codable{
+struct PairModel:Codable{
     var unit:String
     var value:String
     init(unit:String,value:String) {
@@ -64,14 +64,6 @@ struct CurrencyModel:Codable{
 }
 
 
-struct CoolDownPeriodModel:Codable{
-    var unit:String
-    var value:Double
-    init(unit:String,value:Double) {
-        self.unit=unit;
-        self.value=value;
-    }
-}
 
 
 

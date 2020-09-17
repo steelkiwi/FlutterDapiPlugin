@@ -1,7 +1,7 @@
-import 'accounts_metadata.dart';
+import 'dapi_bank_metadata.dart';
 
 class StatusAccountMetaData {
-    AccountsMetadata accountsMetadata;
+    DapiBankMetadata accountsMetadata;
     String jobID;
     String status;
     bool success;
@@ -10,7 +10,7 @@ class StatusAccountMetaData {
 
     factory StatusAccountMetaData.fromJson(Map<String, dynamic> json) {
         return StatusAccountMetaData(
-            accountsMetadata: json['accountsMetadata'] != null ? AccountsMetadata.fromJson(json['accountsMetadata']) : null, 
+            accountsMetadata: json['accountsMetadata'] != null ? DapiBankMetadata.fromJson(json['accountsMetadata']) : null, 
             jobID: json['jobID'], 
             status: json['status'], 
             success: json['success'], 
