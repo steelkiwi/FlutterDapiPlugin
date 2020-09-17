@@ -1,25 +1,4 @@
-enum ActionChanel: String {
-  case connect = "dapi_connect"
-  case activeConnection = "dapi_active_connection"
-  case userAccounts = "dapi_user_accounts"
-  case userAccountsMetaData = "dapi_user_accounts_meta_data"
-  case beneficiaries = "dapi_beneficiaries"
-  case createBeneficiary = "dapi_create_beneficiary"
-  case createTransfer = "dapi_create_transfer"
-  case release = "dapi_release"
-  case delink = "dapi_delink"
-
-  var channel: String { "plugins.steelkiwi.com/dapi" }
-}
-
-
-enum Param: String {
-  case amount = "param_amount"
-  case userId = "user_id"
-  case beneficiaryId = "beneficiary_id"
-  case accountId = "account_id"
-  case transferRemark = "transfer_remark"
-}
+import Flutter
 
 enum CreateBeneficiary: String {
   case line_addres1 = "create_beneficiary_line_addres1"
