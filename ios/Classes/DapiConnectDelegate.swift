@@ -155,7 +155,56 @@ class DapiConnectDelegate: NSObject {
         
     }
 
+    
+//    val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+
+
     func createBeneficiary(_ call: FlutterMethodCall) {
+        guard let result = pendingResult else { return }
+
+        guard let userId: String = call.argument(key: Param.userId.rawValue),
+        let addressLine1: String = call.argument(key: ParamBeneficiary.addressLine1.rawValue),
+        let addressLine2: String = call.argument(key: ParamBeneficiary.addressLine2.rawValue),
+        let addressLine3: String = call.argument(key: ParamBeneficiary.addressLine3.rawValue),
+        let accountNumber: String = call.argument(key: ParamBeneficiary.accountNumber.rawValue),
+        let accountName: String = call.argument(key: ParamBeneficiary.accountName.rawValue),
+        let bankName: String = call.argument(key: ParamBeneficiary.bankName.rawValue),
+        let swiftCode: String = call.argument(key: ParamBeneficiary.swiftCode.rawValue),
+        let iban: String = call.argument(key: ParamBeneficiary.iban.rawValue),
+        let country: String = call.argument(key: ParamBeneficiary.country.rawValue),
+        let branchAddress: String = call.argument(key: ParamBeneficiary.branchAddress.rawValue),
+        let branchName: String = call.argument(key: ParamBeneficiary.branchName.rawValue),
+        let phone: String = call.argument(key: ParamBeneficiary.phone.rawValue)
+        else {
+                      finishWithError(errorMessage: "Invalid arguments")
+            return
+            
+        }
+        
+        let linesAddress=DapiLinesAddress();
+              linesAddress.line1=addressLine1;
+              linesAddress.line2=addressLine2;
+              linesAddress.line3=addressLine3;
+              let beneficiaryInfo=DapiBeneficiaryInfo();
+              beneficiaryInfo.linesAddress=linesAddress;
+              beneficiaryInfo.accountNumber = accountNumber;
+              beneficiaryInfo.name = accountName;
+              beneficiaryInfo.bankName = bankName;
+              beneficiaryInfo.swiftCode = swiftCode;
+              beneficiaryInfo.iban = iban;
+              beneficiaryInfo.country = country;
+              beneficiaryInfo.branchAddress = branchAddress;
+              beneficiaryInfo.branchName = branchName;
+              beneficiaryInfo.phoneNumber = phone;
+        
+        
+        client.payment.createBeneficiary(with: beneficiaryInfo) { (response : DapiResult?, Error, String) in
+        
+            if let response = response {
+            let response:DapiResultModel=DapiResultModel(jobID:response.jobID,status:response.status,success:response.success)
+            result.self(getJsonFromModel(from:response))
+            } }
+
     }
 
     func createTransfer(_ call: FlutterMethodCall) {
