@@ -77,7 +77,6 @@ class DapiConnectDelegate: NSObject {
             pendingResult?.self(getJsonFromModel(from:connectionsModel))
         }else{
             pendingResult?.self(getJsonFromModel(from:connectionsModel))
-
         }
 
     }
