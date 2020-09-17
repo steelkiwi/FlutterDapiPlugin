@@ -19,14 +19,24 @@ class DapiConnectDelegate: NSObject {
         let client = DapiClient(configurations: configs)
         client.connect.delegate = self
         client.autoFlow.connectDelegate = self
+        
         return client
     }()
     
     
     func execute(_ method: ActionChanel, result: @escaping FlutterResult) {
+        
         switch method {
         case .connect: connect(result)
         case .activeConnection: activeConenction(result)
+        case .userAccounts: userAccounts(result)
+        case .userAccountsMetaData: activeConenction(result)
+        case .beneficiaries: activeConenction(result)
+        case .createBeneficiary: activeConenction(result)
+        case .createTransfer: activeConenction(result)
+        case .release: activeConenction(result)
+        case .delink: activeConenction(result)
+
             // TODO: implement other methods
         default: return
         }
@@ -35,37 +45,29 @@ class DapiConnectDelegate: NSObject {
     private func connect(_ result: @escaping FlutterResult) {
         pendingResult = result
         client.connect.present()
+        
     }
     
     private func activeConenction(_ result: @escaping FlutterResult) {
         pendingResult = result
        var result = client.connect.getConnections()
         if(!result.isEmpty){
-            let jsonString = convertIntoJSONString(arrayObject: result)
-
-            print();
-            
+           pendingResult?.self(result)
         }
-        
-        
         print("autoFlow:didSuccessfullyTransferAmount")
-
-        
     }
-}
-func convertIntoJSONString(arrayObject: [Any]) -> String? {
+    
+    private func userAccounts(_ result: @escaping FlutterResult) {
+           pendingResult = result
+        var result = client.data.getAccounts { ([DapiAccount]?, Error, String) in
+            print("userAccounts")
 
-    do {
-        let jsonData: Data = try JSONSerialization.data(withJSONObject: arrayObject, options: [])
-        if  let jsonString = NSString(data: jsonData, encoding: String.Encoding.utf8.rawValue) {
-            return jsonString as String
         }
-        
-    } catch let error as NSError {
-        print("Array convertIntoJSON - \(error.description)")
-    }
-    return nil
-}
+          
+    }}
+
+
+
 
 extension DapiConnectDelegate: DPCConnectDelegate {
     func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
@@ -105,7 +107,6 @@ extension DapiConnectDelegate: DPCConnectDelegate {
 
     }
     
-   
     
 }
 
