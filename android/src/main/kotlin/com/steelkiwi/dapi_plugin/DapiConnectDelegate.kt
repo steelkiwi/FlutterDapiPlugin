@@ -24,7 +24,6 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     init {
         dapiClient.connect.setOnConnectListener(object : OnDapiConnectListener {
             override fun onConnectionSuccessful(userID: String, bankID: String) = successFinish(userID)
-
             override fun onConnectionFailure(error: DapiError, bankID: String) {
                 val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
                 finishWithError(error.type.toString(), errorMessage)
@@ -73,9 +72,9 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
     fun getConnectionAccounts(call: MethodCall, result: MethodChannel.Result?) {
-        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
-        sourcePath?.let { dapiClient.userID = it };
+        userId?.let { dapiClient.userID = it };
         dapiClient.data.getAccounts({ successFinish(it.accounts); }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
@@ -84,9 +83,9 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
     fun getDapiBankMetadata(call: MethodCall, result: MethodChannel.Result?) {
-        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
-        sourcePath?.let { dapiClient.userID = it };
+        userId?.let { dapiClient.userID = it };
         dapiClient.metadata.getAccountMetaData(
                 { accountMetaData ->
                     successFinish(accountMetaData.accountsMetadata);
@@ -98,9 +97,9 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
     fun getBeneficiaries(call: MethodCall, result: MethodChannel.Result?) {
-        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
-        sourcePath?.let { dapiClient.userID = it };
+        userId?.let { dapiClient.userID = it };
         dapiClient.payment.getBeneficiaries(
                 { beneficiaries ->
                     successFinish(beneficiaries.beneficiaries);
@@ -148,15 +147,10 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     }
 
-    fun logout(call: MethodCall, result: MethodChannel.Result?) {
-        pendingResult = result
-        dapiClient.release();
-        print("ds");
-    }
 
     fun delink(call: MethodCall, result: MethodChannel.Result?) {
-        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
-        sourcePath?.let { dapiClient.userID = (it) };
+        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        userId?.let { dapiClient.userID = (it) };
         pendingResult = result
         dapiClient.auth.delink(
                 { delink ->
@@ -174,7 +168,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
     fun createBeneficiary(call: MethodCall, result: MethodChannel.Result?) {
-        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         val addressLine1 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1);
         val addressLine2 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2);
         val addressLine3 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES3);
@@ -188,7 +182,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val branchName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BRANCH_NAME);
         val phone = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER);
 
-        sourcePath?.let { dapiClient.userID = (it) };
+        userId?.let { dapiClient.userID = (it) };
 
         pendingResult = result
         dapiClient.payment

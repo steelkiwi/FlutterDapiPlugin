@@ -29,14 +29,13 @@ class DapiConnectDelegate: NSObject {
     func executeAction(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         pendingResult = result
         switch Action(rawValue: call.method) {
-        case .connect: connect(call)
-        case .activeConnection: activeConenction(call)
-        case .connectionAccounts: connectionAccounts(call)
-        case .userAccountsMetaData: userAccountsMetaData(call)
-        case .beneficiaries: beneficiaries(call)
+        case .connect: connect(call)//implemented
+        case .activeConnection: activeConenction(call)//implemented
+        case .connectionAccounts: connectionAccounts(call)//implemented
+        case .userAccountsMetaData: userAccountsMetaData(call)//implemented
+        case .beneficiaries: beneficiaries(call)//implemented
         case .createBeneficiary: createBeneficiary(call)
-        case .createTransfer: createTransfer(call)
-        case .release: release(call)
+        case .createTransfer: createTransfer(call)//implemented
         case .delink: delink(call)
         default: finishWithError(errorMessage: "Wrong method: \(call.method)")
         }
@@ -152,16 +151,8 @@ class DapiConnectDelegate: NSObject {
                         let jsonConnections =  getJsonFromModel(from:beneficiaries)
                 self.pendingResult?.self(jsonConnections)
                     
-                   
-            
+                   }}
         
-        
-            }}
-        
-        
-        
-        
-
     }
 
     func createBeneficiary(_ call: FlutterMethodCall) {
@@ -185,13 +176,20 @@ class DapiConnectDelegate: NSObject {
                                             self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                                             return
                                         }
-                                        self?.finishCreateTransferWithSuccess(beneficiaries: result)
+                                        
+                                        let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
+                                        self?.pendingResult?.self(getJsonFromModel(from:response))
+
+                                        
+                                       
+                                        
+                                        
+                                        
+                                        
+                                        
             })
     }
 
-    func release(_ call: FlutterMethodCall) {
-//        client.connect.release() // ???
-    }
 
     func delink(_ call: FlutterMethodCall) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
@@ -204,38 +202,14 @@ class DapiConnectDelegate: NSObject {
                 self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                 return
             }
-            self?.finishDelinkWithSuccess(beneficiaries: result)
-            self?.finishWithSuccess(userID: userId)
         }
     }
 
-    private enum Action: String {
-      case connect = "dapi_connect"
-      case activeConnection = "dapi_active_connection"
-      case connectionAccounts = "dapi_connection_accounts"
-      case userAccountsMetaData = "dapi_user_accounts_meta_data"
-      case beneficiaries = "dapi_beneficiaries"
-      case createBeneficiary = "dapi_create_beneficiary"
-      case createTransfer = "dapi_create_transfer"
-      case release = "dapi_release"
-      case delink = "dapi_delink"
-    }
-
-    private enum Param: String {
-      case amount = "param_amount"
-      case userId = "user_id"
-      case beneficiaryId = "beneficiary_id"
-      case accountId = "account_id"
-      case transferRemark = "transfer_remark"
-    }
 }
 
 extension DapiConnectDelegate: DPCConnectDelegate {
        func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
         pendingResult?.self(userID)
-     
-        
-
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
@@ -259,8 +233,7 @@ extension DapiConnectDelegate: DPCConnectDelegate {
         beneficiaryInfo.branchAddress = "branchAddress";
         beneficiaryInfo.branchName = "branchName";
         beneficiaryInfo.phoneNumber = "xxxxxxxxxxx";
-        
-
+    
         info(beneficiaryInfo)
 
     }
@@ -271,50 +244,8 @@ extension DapiConnectDelegate: DPCConnectDelegate {
     }
     
 
-}
-
-private extension DapiConnectDelegate {
-    func defaulrBeneficiaryInfo() -> DapiBeneficiaryInfo {
-        let lineAddress = DapiLinesAddress()
-        lineAddress.line1 = "line1"
-        lineAddress.line2 = "line2"
-        lineAddress.line3 = "line3"
-
-        let info = DapiBeneficiaryInfo()
-        info.linesAddress = lineAddress
-        info.accountNumber = "xxxxxxxxx"
-        info.name = "xxxxx"
-        info.bankName = "xxxx"
-        info.swiftCode = "xxxxx"
-        info.iban = "xxxxxxxxxxxxxxxxxxxxxxxxx"
-        info.country = "UNITED ARAB EMIRATES"
-        info.branchAddress = "branchAddress"
-        info.branchName = "branchName"
-        info.phoneNumber = "xxxxxxxxxxx"
-
-        return info
-    }
-    
- 
 
 
-    private func finishCreateTransferWithSuccess(beneficiaries: DapiResult) {
-        guard let result = pendingResult, let json = beneficiaries.toJson() else { return }
-        result(json)
-        clearMethodCallAndResult()
-    }
-    
-    private func finishDelinkWithSuccess(beneficiaries: DapiResult) {
-        guard let result = pendingResult, let json = beneficiaries.toJson() else { return }
-        result(json)
-        clearMethodCallAndResult()
-    }
-
-    private func finishWithSuccess(userID: String) { // TODO: async
-        guard let result = pendingResult else { return }
-        result(userID)
-        clearMethodCallAndResult()
-    }
 
     private func finishWithError(errorCode: String? = nil, errorMessage: String, details: Any? = nil) {
         guard let result = pendingResult else { return }
@@ -329,42 +260,8 @@ private extension DapiConnectDelegate {
     }
 }
 
-extension FlutterMethodCall {
-    func argument<Type>(key: String) -> Type? {
-        guard let args = arguments as? [String: Any] else { return nil }
-        return args[key] as? Type
-    }
-}
 
-extension DapiResult {
-    func toJson() -> String? {
-        return getJson(from: [
-            "jobId": jobID,
-            "status": status,
-            "success": success,
-            "message": message
-        ])
-    }
-}
 
-fileprivate func getJson(from dictionary: [String: Any]) -> String? {
-//    guard let jsonData = try? JSONSerialization.data(withJSONObject: dictionary, options: []) else { return nil }
-//    return String(data: jsonData, encoding: String.Encoding.utf8)
-//    let jsonEncoder = JSONEncoder()
-//    let jsonData = try jsonEncoder.encode(dictionary)
-//    let json = String(data: jsonData, encoding: String.Encoding.utf16)
-//    // Decode
-//    let jsonDecoder = JSONDecoder()
-//    let json = try jsonDecoder.decode([dictionary: value].self, from: jsonData)
-    return ""
-}
-
-//let jsonEncoder = JSONEncoder()
-//let jsonData = try jsonEncoder.encode(dog)
-//let json = String(data: jsonData, encoding: String.Encoding.utf16)
-//// Decode
-//let jsonDecoder = JSONDecoder()
-//let secondDog = try jsonDecoder.decode(Dog.self, from: jsonData)
 fileprivate func getJsonFromModel<T: Encodable>(from model: T) -> String? {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
@@ -374,3 +271,10 @@ fileprivate func getJsonFromModel<T: Encodable>(from model: T) -> String? {
     }
 
 
+
+extension FlutterMethodCall {
+    func argument<Type>(key: String) -> Type? {
+        guard let args = arguments as? [String: Any] else { return nil }
+        return args[key] as? Type
+    }
+}

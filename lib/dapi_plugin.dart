@@ -23,7 +23,6 @@ class Dapi {
   static const KEY_DAPI_CREATED_TRANSFER = "dapi_create_transfer";
   static const KEY_DAPI_BENEFICIARIES = "dapi_beneficiaries";
   static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary";
-  static const KEY_DAPI_RELEASE = "dapi_release";
   static const KEY_DAPI_DELINK = "dapi_delink";
   static const KEY_DAPI_HISTORY_TRANSACTION = "dapi_history_transaction";
 
@@ -179,11 +178,6 @@ class Dapi {
     Map map = jsonDecode(resultPath);
     var account = BeneficiaryRequestSuccess.fromJson(map);
     return account;
-  }
-
-  static Future<bool> release() async {
-    await _channel.invokeMethod(KEY_DAPI_RELEASE);
-    return true;
   }
 
   static Future<DelinkUser> delink({@required String userId}) async {

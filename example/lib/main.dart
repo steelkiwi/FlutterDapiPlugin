@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   String _transferStatus = 'null';
   String _createBeneficiariesStatus = 'null';
 
-   List<Beneficiary> _beneficiariesList;
+  List<Beneficiary> _beneficiariesList;
   List<Connections> connections;
 
   DapiBankMetadata accountsMetadata;
@@ -332,15 +332,6 @@ class _MyAppState extends State<MyApp> {
                         _createBeneficiariesStatus = e.message;
                       }
                       setState(() {});
-                    },
-                  ),
-                ),
-                InkWell(
-                  child: FlatButton(
-                    color: Colors.green.withOpacity(0.5),
-                    child: Text("Dapi logout "),
-                    onPressed: () async {
-                      await Dapi.release();
                     },
                   ),
                 ),
