@@ -109,50 +109,6 @@ class DapiConnectDelegate: NSObject {
     }
 
     func createBeneficiary(_ call: FlutterMethodCall) {
-//        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
-//        val addressLine1 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1);
-//        val addressLine2 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2);
-//        val addressLine3 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES3);
-//        val accountNumber = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_ACCOUNT_NUMBER);
-//        val accountName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_NAME);
-//        val bankName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BANK_NAME);
-//        val swiftCode = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_SWIFT_CODE);
-//        val iban = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_IBAN);
-//        val country = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_COUNTRY);
-//        val branchAddress = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BRANCH_ADDRESS);
-//        val branchName = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_BRANCH_NAME);
-//        val phone = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER);
-//
-//        sourcePath?.let { dapiClient.setUserID(it) };
-//
-//        pendingResult = result
-//        dapiClient.payment
-//
-//
-//        val lineAddress = LinesAddress()
-//        lineAddress.line1 = addressLine1
-//        lineAddress.line2 = addressLine2
-//        lineAddress.line3 = addressLine3
-//        val info = DapiBeneficiaryInfo(
-//                linesAddress = lineAddress,
-//                accountNumber = accountNumber,
-//                name = accountName,
-//                bankName = bankName,
-//                swiftCode = swiftCode,
-//                iban = iban,
-//                country = country,
-//                branchAddress = branchAddress,
-//                branchName = branchName,
-//                phoneNumber = phone
-//        )
-//
-//        dapiClient.payment.createBeneficiary(info, onSuccess = {
-//            finishCreateBeneficiariesWithSuccess(it)
-//            print("")
-//        }, onFailure = {
-//            val errorMessage: String = if (it.msg == null) "Get accounts error" else it.msg!!;
-//            finishWithError(it.type.toString(), errorMessage)
-//        })
     }
 
     func createTransfer(_ call: FlutterMethodCall) {
