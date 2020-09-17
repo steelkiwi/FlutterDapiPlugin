@@ -209,19 +209,43 @@ class DapiConnectDelegate: NSObject {
 }
 
 extension DapiConnectDelegate: DPCConnectDelegate {
-    func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
-        finishWithSuccess(userID: userID)
+       func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
+        pendingResult?.self(userID)
+
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
-        finishWithError(errorMessage: error, details: bankID)
+        print("connectDidFailConnecting")
     }
     
-    func connectBeneficiaryInfoForBank(withID bankID: String) -> DapiBeneficiaryInfo? {
-        return defaulrBeneficiaryInfo()
+    func connectBeneficiaryInfoForBank(withID bankID: String, beneficiaryInfo info: @escaping (DapiBeneficiaryInfo?) -> Void) {
+        print("connectBeneficiaryInfoForBank")
+        let linesAddress=DapiLinesAddress();
+        linesAddress.line1="xxx";
+        linesAddress.line2="xxx";
+        linesAddress.line3="xxx";
+        let beneficiaryInfo=DapiBeneficiaryInfo();
+        beneficiaryInfo.linesAddress=linesAddress;
+        beneficiaryInfo.accountNumber = "xxxxxxxxx";
+        beneficiaryInfo.name = "xxxxx";
+        beneficiaryInfo.bankName = "xxxx";
+        beneficiaryInfo.swiftCode = "xxxxx";
+        beneficiaryInfo.iban = "xxxxxxxxxxxxxxxxxxxxxxxxx";
+        beneficiaryInfo.country = "UNITED ARAB EMIRATES";
+        beneficiaryInfo.branchAddress = "branchAddress";
+        beneficiaryInfo.branchName = "branchName";
+        beneficiaryInfo.phoneNumber = "xxxxxxxxxxx";
+        
+
+        info(beneficiaryInfo)
+
     }
     
-    func connectDidProceed(withBankID bankID: String, userID: String) {}
+    func connectDidProceed(withBankID bankID: String, userID: String) {
+        print("connectDidProceed")
+
+    }
+    
 
 }
 
