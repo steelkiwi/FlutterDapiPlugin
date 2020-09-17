@@ -248,11 +248,16 @@ class DapiConnectDelegate: NSObject {
             return
         }
         client.userID = userId
-        client.auth.delinkUser { [weak self] result, error in
-            guard let result = result, error == nil else {
+        client.auth.delinkUser { [weak self] response, error in
+            guard let response = response, error == nil else {
                 self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                 return
             }
+            
+            let successDelinkModel:DapiResultModel=DapiResultModel(jobID:response.jobID,status:response.status,success:response.success)
+            self?.pendingResult?.self(getJsonFromModel(from:successDelinkModel))
+
+
         }
     }
 
