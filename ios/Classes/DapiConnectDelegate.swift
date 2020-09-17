@@ -253,7 +253,6 @@ class DapiConnectDelegate: NSObject {
                 self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                 return
             }
-            
             let successDelinkModel:DapiResultModel=DapiResultModel(jobID:response.jobID,status:response.status,success:response.success)
             self?.pendingResult?.self(getJsonFromModel(from:successDelinkModel))
 
