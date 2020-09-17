@@ -5,9 +5,10 @@ class CoolDownPeriod {
     CoolDownPeriod({this.unit, this.value});
 
     factory CoolDownPeriod.fromJson(Map<String, dynamic> json) {
+        var value=json["value"].toString();
         return CoolDownPeriod(
             unit: json['unit'], 
-            value: json['value'], 
+            value: value.isEmpty?24:value,
         );
     }
 
