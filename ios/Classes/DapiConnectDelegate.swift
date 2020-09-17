@@ -46,19 +46,11 @@ class DapiConnectDelegate: NSObject {
     }
     
     func activeConenction(_ call: FlutterMethodCall) {
-        pendingResult = result
-       var result = client.connect.getConnections()
-        if(!result.isEmpty){
-            let jsonString = convertIntoJSONString(arrayObject: result)
-
-            print();
-
-        }
-
-
-        print("autoFlow:didSuccessfullyTransferAmount")
-
-
+//        guard let result = client.connect.getConnections(), !result.isEmpty else { // Where the fucking docs?
+//            finishWithError(errorMessage: "Get connection error")
+//            return
+//        }
+//        finishActiveConnectionWithSuccess(connections: result)
     }
 
     func userAccounts(_ call: FlutterMethodCall) {
@@ -252,8 +244,17 @@ private extension DapiConnectDelegate {
         info.branchName = "branchName"
         info.phoneNumber = "xxxxxxxxxxx"
 
-        info(beneficiaryInfo)
         return info
+    }
+    
+    private func finishActiveConnectionWithSuccess(connections: [DapiConnectionDetails]) {
+//        val json = Gson().toJson(connections)
+//        if (pendingResult != null) {
+//            uiThreadHandler.post {
+//                pendingResult!!.success(json)
+//                clearMethodCallAndResult()
+//            };
+//        }
     }
 
     private func finishCurrentAccountMetaDataWithSuccess(metaData: DapiBankMetadata) {
@@ -322,5 +323,5 @@ extension DapiResult {
 
 fileprivate func getJson(from dictionary: [String: Any]) -> String? {
     guard let jsonData = try? JSONSerialization.data(withJSONObject: dictionary, options: []) else { return nil }
-    return String(data: jsonData, encoding: String.Encoding.utf8.rawValue)
+    return String(data: jsonData, encoding: String.Encoding.utf8)
 }
