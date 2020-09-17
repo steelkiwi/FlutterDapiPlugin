@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dapi/models/beneficiary.dart';
 import 'package:dapi/models/create_transfer_response.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -73,7 +74,7 @@ class Dapi {
     return connection;
   }
 
-  static Future<Beneficiaries> getBeneficiaries(
+  static Future<List<Beneficiary>> getBeneficiaries(
       {@required String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
@@ -81,9 +82,14 @@ class Dapi {
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_BENEFICIARIES, arguments);
 
-    Map map = jsonDecode(resultPath);
 
-    var beneficiaries = Beneficiaries.fromJson(map);
+    List list = jsonDecode(resultPath);
+
+    // Map map = jsonDecode(resultPath);
+
+    var beneficiaries = list.map((i) => Beneficiary.fromJson(i)).toList();
+
+    // var beneficiaries = Beneficiaries.fromJson(map);
     return beneficiaries;
   }
 

@@ -6,8 +6,10 @@ import android.os.Handler
 import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
-import com.dapi.connect.data.endpoint_models.*
-import com.dapi.connect.data.models.*
+import com.dapi.connect.data.models.DapiBeneficiaryInfo
+import com.dapi.connect.data.models.DapiConfigurations
+import com.dapi.connect.data.models.DapiError
+import com.dapi.connect.data.models.LinesAddress
 import com.google.gson.Gson
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -21,7 +23,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     init {
         dapiClient.connect.setOnConnectListener(object : OnDapiConnectListener {
-            override fun onConnectionSuccessful(userID: String, bankID: String) = finishWithSuccess(userID)
+            override fun onConnectionSuccessful(userID: String, bankID: String) = successFinish(userID)
 
             override fun onConnectionFailure(error: DapiError, bankID: String) {
                 val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
@@ -62,7 +64,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     fun getActiveConnection(call: MethodCall, result: MethodChannel.Result?) {
         pendingResult = result
         dapiClient.connect.getConnections(onSuccess = {
-            finishActiveConnectionWithSuccess(it);
+            successFinish(it)
         },
                 onFailure = {
                     val errorMessage: String = if (it?.msg == null) "Get accounts error" else it?.msg!!;
@@ -74,7 +76,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
         pendingResult = result
         sourcePath?.let { dapiClient.userID = it };
-        dapiClient.data.getAccounts({ finishCurrentAccountWithSuccess(it); }
+        dapiClient.data.getAccounts({ successFinish(it.accounts); }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
             finishWithError(error.type.toString(), errorMessage)
@@ -87,7 +89,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         sourcePath?.let { dapiClient.userID = it };
         dapiClient.metadata.getAccountMetaData(
                 { accountMetaData ->
-                    finishCurrentAccountMetaDataWithSuccess(accountMetaData)
+                    successFinish(accountMetaData.accountsMetadata);
                 }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
@@ -101,7 +103,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         sourcePath?.let { dapiClient.userID = it };
         dapiClient.payment.getBeneficiaries(
                 { beneficiaries ->
-                    finishBeneficiariesWithSuccess(beneficiaries);
+                    successFinish(beneficiaries.beneficiaries);
                 }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
@@ -136,7 +138,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         } else {
             dapiClient.payment.createTransfer(beneficiaryId, accountId, amount!!, remark,
                     { createTransfer ->
-                        finishCreateTransferWithSuccess(createTransfer);
+                        successFinish(createTransfer);
                     }
             ) { error ->
                 val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
@@ -158,8 +160,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         pendingResult = result
         dapiClient.auth.delink(
                 { delink ->
-                    finishDelinkWithSuccess(delink);
-                    print("sds");
+                    successFinish(delink);
                 }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
@@ -169,18 +170,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
     fun getHistoryTransfers(call: MethodCall, result: MethodChannel.Result?) {
-//        val accountId = call.argument<String>(Consts.PARAMET_USER_ID);
-//        pendingResult = result
-//        val to = Calendar.getInstance()
-//        val from = Calendar.getInstance()
-//        from.set(1, 1, 1)
-////
-////        dapiClient.data.getTransactions(accountId!!, from.time, to.time, onFailure = {
-////            print("sd");
-////        }, onSuccess = {
-////            print("sd");
-////
-////        });
+
     }
 
     fun createBeneficiary(call: MethodCall, result: MethodChannel.Result?) {
@@ -222,8 +212,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         )
 
         dapiClient.payment.createBeneficiary(info, onSuccess = {
-            finishCreateBeneficiariesWithSuccess(it)
-            print("")
+            successFinish(it)
         }, onFailure = {
             val errorMessage: String = if (it.msg == null) "Get accounts error" else it.msg!!;
             finishWithError(it.type.toString(), errorMessage)
@@ -232,51 +221,8 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     }
 
 
-    private fun finishDelinkWithSuccess(beneficiaries: DelinkUser) {
-        val json = Gson().toJson(beneficiaries)
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(json)
-                clearMethodCallAndResult()
-            };
-        }
-    }
-
-
-    private fun finishCreateTransferWithSuccess(beneficiaries: CreateTransfer) {
-        val json = Gson().toJson(beneficiaries)
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(json)
-                clearMethodCallAndResult()
-            };
-        }
-    }
-
-
-    private fun finishCreateBeneficiariesWithSuccess(beneficiaries: CreateBeneficiary) {
-        val json = Gson().toJson(beneficiaries)
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(json)
-                clearMethodCallAndResult()
-            };
-        }
-    }
-
-    private fun finishBeneficiariesWithSuccess(beneficiaries: GetBeneficiaries) {
-        val json = Gson().toJson(beneficiaries)
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(json)
-                clearMethodCallAndResult()
-            };
-        }
-    }
-
-
-    private fun finishCurrentAccountMetaDataWithSuccess(metaData: AccountMetaData) {
-        val json = Gson().toJson(metaData.accountsMetadata)
+    private fun <T> successFinish(data: T) {
+        val json = Gson().toJson(data)
         if (pendingResult != null) {
             uiThreadHandler.post {
                 pendingResult!!.success(json)
@@ -290,44 +236,6 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
             pendingResult!!.error(errorCode, errorMessage, null);
         }
     }
-
-    private fun finishCurrentAccountWithSuccess(connections: GetAccounts) {
-        val json = Gson().toJson(connections.accounts)
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(json)
-                clearMethodCallAndResult()
-            };
-        }
-    }
-
-
-    private fun finishActiveConnectionWithSuccess(connections: List<DapiConnection>) {
-        val json = Gson().toJson(connections)
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(json)
-                clearMethodCallAndResult()
-            };
-        }
-    }
-
-    private fun finishWithSuccess(imagePath: String) {
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(imagePath)
-                clearMethodCallAndResult()
-            };
-        }
-    }
-
-    private fun finishWithError(errorCode: String, errorMessage: String, throwable: Throwable) {
-        if (pendingResult != null) {
-            pendingResult!!.error(errorCode, errorMessage, throwable)
-            clearMethodCallAndResult()
-        }
-    }
-
 
     private fun clearMethodCallAndResult() {
         pendingResult = null

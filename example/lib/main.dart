@@ -1,5 +1,5 @@
 import 'package:dapi/dapi_plugin.dart';
-import 'package:dapi/models/beneficiaries.dart';
+import 'package:dapi/models/beneficiary.dart';
 import 'package:dapi/models/connections.dart';
 import 'package:dapi/models/dapi_bank_metadata.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +24,8 @@ class _MyAppState extends State<MyApp> {
   String _accountId = 'null';
   String _transferStatus = 'null';
   String _createBeneficiariesStatus = 'null';
-  Beneficiaries _beneficiariesList;
+
+   List<Beneficiary> _beneficiariesList;
   List<Connections> connections;
 
   DapiBankMetadata accountsMetadata;
@@ -266,7 +267,7 @@ class _MyAppState extends State<MyApp> {
                         var result =
                             await Dapi.getBeneficiaries(userId: _accessId);
                         _beneficiaries = result.toString();
-                        _beneficiariarId = result.beneficiaries.first?.id;
+                        _beneficiariarId = result.first?.id;
                         _beneficiariesList = result;
                         setState(() {});
                       } on PlatformException catch (e) {

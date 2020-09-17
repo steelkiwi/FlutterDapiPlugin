@@ -136,17 +136,32 @@ class DapiConnectDelegate: NSObject {
     }
 
     func beneficiaries(_ call: FlutterMethodCall) {
-//        val sourcePath = call.argument<String>(Consts.PARAMET_USER_ID);
-//        pendingResult = result
-//        sourcePath?.let { dapiClient.setUserID(it) };
-//        dapiClient.payment.getBeneficiaries(
-//                { benefs ->
-//                    finishBeneficiariesWithSuccess(benefs);
-//                }
-//        ) { error ->
-//            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-//            finishWithError(error.type.toString(), errorMessage)
-//        }
+        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
+                  finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
+                  return}
+        client.userID = userId
+        client.payment.getBeneficiaries { (beneficiary:[DapiBeneficiary]?, Error, String) in
+            if let beneficiary = beneficiary {
+                var beneficiaries=[BeneficiaryModel]();
+                    for j in 0...beneficiary.count-1 {
+                           let beneficiaryItem=beneficiary[j];
+                        var beneficiary=BeneficiaryModel(accountNumber: beneficiaryItem.accountNumber, iban: beneficiaryItem.iban, id: beneficiaryItem.accountID, name:beneficiaryItem.name, status: beneficiaryItem.status, type: beneficiaryItem.type)
+                        
+                           beneficiaries.append(beneficiary)
+                           }
+                        let jsonConnections =  getJsonFromModel(from:beneficiaries)
+                self.pendingResult?.self(jsonConnections)
+                    
+                   
+            
+        
+        
+            }}
+        
+        
+        
+        
+
     }
 
     func createBeneficiary(_ call: FlutterMethodCall) {
