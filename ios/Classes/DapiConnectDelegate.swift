@@ -266,7 +266,9 @@ class DapiConnectDelegate: NSObject {
 
 extension DapiConnectDelegate: DPCConnectDelegate {
        func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
-        pendingResult?.self(userID)
+        
+        let jsonConnections =  getJsonFromModel(from:userID)
+        self.pendingResult?.self(jsonConnections)
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
