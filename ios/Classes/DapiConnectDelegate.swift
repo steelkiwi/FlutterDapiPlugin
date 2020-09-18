@@ -57,7 +57,7 @@ class DapiConnectDelegate: NSObject {
                 if(!it.accounts.isEmpty){
                 for j in 0...it.accounts.count-1 {
                     let accountItem=it.accounts[j];
-                    let subAccountModel=SubAccountModel(currency:PairModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
+                    let subAccountModel=SubAccountModel(currency:CurrencyModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
                     accounts.append(subAccountModel)
                     }}
 
@@ -94,7 +94,7 @@ class DapiConnectDelegate: NSObject {
             if let dapiAccounts = dapiAccounts {
             for j in 0...dapiAccounts.count-1 {
                    let accountItem=dapiAccounts[j];
-                   let subAccountModel=SubAccountModel(currency:PairModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
+                   let subAccountModel=SubAccountModel(currency:CurrencyModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
                    accounts.append(subAccountModel)
                    }
                 let jsonConnections =  getJsonFromModel(from:accounts)
@@ -126,7 +126,7 @@ class DapiConnectDelegate: NSObject {
             let dapiBankMetaData = DapiBankMetadataModel(
                    bankName: bankMetadata.bankName,
                    coolDownPeriod: coolDownPeriod,
-                   country: PairModel(unit: bankMetadata.country.name, value: bankMetadata.country.code),
+                   country: CountryModel(name: bankMetadata.country.name, code: bankMetadata.country.code),
                    branchAddress: bankMetadata.branchAddress,
                    branchName:bankMetadata.branchName,
                    isCreateBeneficiaryRequired: bankMetadata.isCreateBeneficairyEndpointRequired,

@@ -11,7 +11,7 @@ import Foundation
 struct DapiBankMetadataModel:Codable{
     var bankName:String?
     var coolDownPeriod:CoolDownPeriodModel?
-    var country:PairModel?
+    var country:CountryModel?
     var branchAddress:String?
     var branchName:String?
     var isCreateBeneficiaryRequired:Bool?
