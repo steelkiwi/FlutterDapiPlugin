@@ -13,6 +13,7 @@ struct DapiBankMetadataModel:Codable{
     var coolDownPeriod:CoolDownPeriodModel?
     var country:PairModel?
     var branchAddress:String?
+    var branchName:String?
     var isCreateBeneficiaryRequired:Bool?
     var swiftCode:String?
     var address:AddressModel?

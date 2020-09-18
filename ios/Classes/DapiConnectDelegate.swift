@@ -127,6 +127,8 @@ class DapiConnectDelegate: NSObject {
                    bankName: bankMetadata.bankName,
                    coolDownPeriod: coolDownPeriod,
                    country: PairModel(unit: bankMetadata.country.name, value: bankMetadata.country.code),
+                   branchAddress: bankMetadata.branchAddress,
+                   branchName:bankMetadata.branchName,
                    isCreateBeneficiaryRequired: bankMetadata.isCreateBeneficairyEndpointRequired,
                    swiftCode:bankMetadata.swiftCode,
                    address: address
