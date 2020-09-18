@@ -7,10 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'models/account.dart';
-import 'models/dapi_bank_metadata.dart';
-import 'models/beneficiaries.dart';
 import 'models/beneficiary_request_success.dart';
 import 'models/connections.dart';
+import 'models/dapi_bank_metadata.dart';
 import 'models/delink_user.dart';
 
 class Dapi {
@@ -59,7 +58,7 @@ class Dapi {
 
   static Future<String> dapiConnect() async {
     final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);
-    return resultPath;
+    return jsonDecode(resultPath);
   }
 
   static Future<List<Connections>> getActiveConnect() async {
@@ -80,7 +79,6 @@ class Dapi {
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_BENEFICIARIES, arguments);
-
 
     List list = jsonDecode(resultPath);
 
@@ -129,8 +127,7 @@ class Dapi {
     return account;
   }
 
-  static Future<DapiBankMetadata> getBankMetadata(
-      {String userId}) async {
+  static Future<DapiBankMetadata> getBankMetadata({String userId}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
     };
