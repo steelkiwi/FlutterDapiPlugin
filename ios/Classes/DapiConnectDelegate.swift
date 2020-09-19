@@ -16,7 +16,7 @@ class DapiConnectDelegate: NSObject {
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
                                          clientUserID: "testUser")
-        configs.environment = .sandbox
+        configs.environment = .production
         configs.isExperimental = false
 
         let client = DapiClient(configurations: configs)
