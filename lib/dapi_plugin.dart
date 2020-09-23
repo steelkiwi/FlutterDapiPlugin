@@ -58,7 +58,7 @@ class Dapi {
 
   static Future<String> dapiConnect() async {
     final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);
-    return jsonDecode(resultPath);
+    return resultPath;
   }
 
   static Future<List<Connections>> getActiveConnect() async {

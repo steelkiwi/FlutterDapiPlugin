@@ -21,7 +21,9 @@ class DapiConnectDelegate: NSObject {
         configs.environment = .sandbox
         configs.isExperimental = false
         if let paymentId = paymentId {
-            configs.endPointExtraHeaderFields=[DPCEndPoint.createTransfer:["Dapi-Payment":paymentId]];}
+            configs.endPointExtraHeaderFields=[DPCEndPoint.createTransfer:["Dapi-Payment":paymentId]];
+          }
+
         return configs;
     }
     
@@ -232,13 +234,12 @@ class DapiConnectDelegate: NSObject {
         }
         
         let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
-        var newConfig = getDapiConfig(paymentId: paymentId)
-        client.configurations=newConfig;
-    
+        client.configurations=getDapiConfig(paymentId: paymentId);
         client.userID = userId
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
                                       toReceiverID: beneficiaryId,
+                                      
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
                                             self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
@@ -281,9 +282,7 @@ class DapiConnectDelegate: NSObject {
 
 extension DapiConnectDelegate: DPCConnectDelegate {
        func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
-        
-        let jsonConnections =  getJsonFromModel(from:userID)
-        self.pendingResult?.self(jsonConnections)
+        self.pendingResult?.self(userID)
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {

@@ -216,10 +216,14 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
 
     private fun <T> successFinish(data: T) {
-        val json = Gson().toJson(data)
+        var resultData: String = if (data is String) {
+            data;
+        } else {
+            Gson().toJson(data)
+        }
         if (pendingResult != null) {
             uiThreadHandler.post {
-                pendingResult!!.success(json)
+                pendingResult!!.success(resultData)
                 clearMethodCallAndResult()
             };
         }
