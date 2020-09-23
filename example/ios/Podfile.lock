@@ -1,5 +1,5 @@
 PODS:
-  - dapi (0.0.1):
+  - dapi (0.0.3):
     - DapiConnect (= 0.2.6)
     - Flutter
   - DapiConnect (0.2.6)
@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  dapi: 3f2c276b16f172defa0673d1db5dce569ece8771
+  dapi: 6f5b8a573debe2f0d99a8f03c20da6ec4df97140
   DapiConnect: b575013d7d22df8143243d3031dc271452a33398
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
 

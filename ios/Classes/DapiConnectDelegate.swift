@@ -287,6 +287,7 @@ extension DapiConnectDelegate: DPCConnectDelegate {
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
         print("connectDidFailConnecting")
+        finishWithError(errorMessage: error);
     }
     
     func connectBeneficiaryInfoForBank(withID bankID: String, beneficiaryInfo info: @escaping (DapiBeneficiaryInfo?) -> Void) {
@@ -300,7 +301,7 @@ extension DapiConnectDelegate: DPCConnectDelegate {
         beneficiaryInfo.accountNumber = "xxxxxxxxx";
         beneficiaryInfo.name = "xxxxx";
         beneficiaryInfo.bankName = "xxxx";
-        beneficiaryInfo.swiftCode = "xxxxx";
+        beneficiaryInfo.swiftCode = "xxxxxxxx";
         beneficiaryInfo.iban = "xxxxxxxxxxxxxxxxxxxxxxxxx";
         beneficiaryInfo.country = "UNITED ARAB EMIRATES";
         beneficiaryInfo.branchAddress = "branchAddress";
