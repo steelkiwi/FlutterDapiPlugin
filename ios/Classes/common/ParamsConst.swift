@@ -12,6 +12,7 @@ import Foundation
   case beneficiaryId = "beneficiary_id"
   case accountId = "account_id"
   case transferRemark = "transfer_remark"
+  case headerPaymentId = "header_payment_id"
 }
 
 

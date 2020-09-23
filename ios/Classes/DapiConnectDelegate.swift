@@ -7,21 +7,31 @@ class DapiConnectDelegate: NSObject {
     
     let appKey = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
 
-    lazy var client: DapiClient = {
+    func getDapiConfig(paymentId: String? = nil) ->  DapiConfigurations {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
         urlComponents.host = "api-lune.dev.steel.kiwi"
         urlComponents.port = 4041
+        
+        
         let configs = DapiConfigurations(appKey: appKey,
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
                                          clientUserID: "testUser")
         configs.environment = .production
         configs.isExperimental = false
-
-        let client = DapiClient(configurations: configs)
+        if let paymentId = paymentId {
+            configs.endPointExtraHeaderFields=[DPCEndPoint.createTransfer:["Dapi-Payment":paymentId]];}
+        return configs;
+    }
+    
+    
+    
+    
+    lazy var client: DapiClient = {
+        let client = DapiClient(configurations: getDapiConfig())
         client.connect.delegate = self
-        
+    
         client.autoFlow.connectDelegate = self
         return client
     }()
@@ -220,6 +230,11 @@ class DapiConnectDelegate: NSObject {
                 finishWithError(errorMessage: "Invalid arguments")
                 return
         }
+        
+        let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
+        var newConfig = getDapiConfig(paymentId: paymentId)
+        client.configurations=newConfig;
+    
         client.userID = userId
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
