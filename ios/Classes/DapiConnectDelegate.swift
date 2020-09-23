@@ -18,7 +18,7 @@ class DapiConnectDelegate: NSObject {
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
                                          clientUserID: "testUser")
-        configs.environment = .production
+        configs.environment = .sandbox
         configs.isExperimental = false
         if let paymentId = paymentId {
             configs.endPointExtraHeaderFields=[DPCEndPoint.createTransfer:["Dapi-Payment":paymentId]];}
