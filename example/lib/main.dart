@@ -172,8 +172,14 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Open connect"),
                     onPressed: () async {
-                      _accessId = await Dapi.dapiConnect();
-                      setState(() {});
+                      try {
+                        _accessId = await Dapi.dapiConnect();
+                        setState(() {});
+                      } on PlatformException catch (e) {
+                        setState(() {
+                          _accessId = e.message;
+                        });
+                      }
                     },
                   ),
                 ),
@@ -182,15 +188,21 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Get active connection"),
                     onPressed: () async {
-                      var connections = await Dapi.getActiveConnect();
-                      if (connections.isNotEmpty) {
-                        _activeConnection = connections.first.toString();
-                        _accessId = connections.first.userID;
-                        this.connections = connections;
-                      } else {
-                        _activeConnection = "No active connection";
+                      try {
+                        var connections = await Dapi.getActiveConnect();
+                        if (connections.isNotEmpty) {
+                          _activeConnection = connections.first.toString();
+                          _accessId = connections.first.userID;
+                          this.connections = connections;
+                        } else {
+                          _activeConnection = "No active connection";
+                        }
+                        setState(() {});
+                      } on PlatformException catch (e) {
+                        setState(() {
+                          _accessId = e.message;
+                        });
                       }
-                      setState(() {});
                     },
                   ),
                 ),

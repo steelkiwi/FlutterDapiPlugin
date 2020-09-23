@@ -115,9 +115,6 @@ class DapiConnectDelegate: NSObject {
            
         }
         
-       
-       
-    
     }
 
     func userAccountsMetaData(_ call: FlutterMethodCall) {
@@ -291,25 +288,7 @@ extension DapiConnectDelegate: DPCConnectDelegate {
     }
     
     func connectBeneficiaryInfoForBank(withID bankID: String, beneficiaryInfo info: @escaping (DapiBeneficiaryInfo?) -> Void) {
-        print("connectBeneficiaryInfoForBank")
-        let linesAddress=DapiLinesAddress();
-        linesAddress.line1="xxx";
-        linesAddress.line2="xxx";
-        linesAddress.line3="xxx";
-        let beneficiaryInfo=DapiBeneficiaryInfo();
-        beneficiaryInfo.linesAddress=linesAddress;
-        beneficiaryInfo.accountNumber = "xxxxxxxxx";
-        beneficiaryInfo.name = "xxxxx";
-        beneficiaryInfo.bankName = "xxxx";
-        beneficiaryInfo.swiftCode = "xxxxxxxx";
-        beneficiaryInfo.iban = "xxxxxxxxxxxxxxxxxxxxxxxxx";
-        beneficiaryInfo.country = "UNITED ARAB EMIRATES";
-        beneficiaryInfo.branchAddress = "branchAddress";
-        beneficiaryInfo.branchName = "branchName";
-        beneficiaryInfo.phoneNumber = "xxxxxxxxxxx";
-    
-        info(beneficiaryInfo)
-
+        info(nil)
     }
     
     func connectDidProceed(withBankID bankID: String, userID: String) {
