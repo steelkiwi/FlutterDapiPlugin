@@ -34,23 +34,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
             }
 
             override fun setBeneficiaryInfoOnConnect(bankID: String): DapiBeneficiaryInfo? {
-                val lineAddress = LinesAddress()
-                lineAddress.line1 = "line1"
-                lineAddress.line2 = "line2"
-                lineAddress.line3 = "line3"
-                val info = DapiBeneficiaryInfo(
-                        linesAddress = lineAddress,
-                        accountNumber = "xxxxxxxxx",
-                        name = "xxxxx",
-                        bankName = "xxxx",
-                        swiftCode = "xxxxx",
-                        iban = "xxxxxxxxxxxxxxxxxxxxxxxxx",
-                        country = "UNITED ARAB EMIRATES",
-                        branchAddress = "branchAddress",
-                        branchName = "branchName",
-                        phoneNumber = "xxxxxxxxxxx"
-                )
-                return info
+                return null;
             }
         })
 
@@ -136,7 +120,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         pendingResult = result
         userId?.let { dapiClient.userID = (it) };
         paymentID?.let {
-            val config = getDapiConfigurations(paymentId = it, host =dapiClient.getConfigurations().baseUrl ,environment = dapiClient.getConfigurations().environment)
+            val config = getDapiConfigurations(paymentId = it, host = dapiClient.getConfigurations().baseUrl, environment = dapiClient.getConfigurations().environment)
             dapiClient.setConfigurations(config)
 
         }
