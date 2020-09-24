@@ -89,7 +89,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
         val appKey = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
         val dapiConfigurations = DapiConfigurations(
                 appKey,
-                "https://api-lune.dev.steel.kiwi:4041",
+                "https://api-lune.stg.steel.kiwi:4041",
                 environment,
                 listOf("AE"),
                 "",

@@ -64,10 +64,11 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     fun initDapiEnvironment(call: MethodCall, result: MethodChannel.Result?) {
         val env = call.argument<String>(Consts.PARAMET_ENVIRONMENT);
+        //todo change this logic
         if (env == Consts.PARAMET_ENVIRONMENT_SANDBOX) {
-            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.SANDBOX));
+            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.SANDBOX, host = "https://api-lune.dev.steel.kiwi:4041"));
         } else {
-            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION));
+            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION, host = "https://api-lune.stg.steel.kiwi:4041"));
 
 
         }
@@ -251,7 +252,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         return true;
     }
 
-    private fun getDapiConfigurations(paymentId: String? = null, environment: DapiEnvironment = DapiEnvironment.PRODUCTION): DapiConfigurations {
+    private fun getDapiConfigurations(paymentId: String? = null, host: String?, environment: DapiEnvironment = DapiEnvironment.PRODUCTION): DapiConfigurations {
         val previousConfigs = dapiClient.getConfigurations();
         var externalHeader: HashMap<String, String> = hashMapOf<String, String>();
         if (paymentId != null)
@@ -260,7 +261,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
         var config = DapiConfigurations(
                 previousConfigs.appKey,
-                previousConfigs.baseUrl,
+                host ?: previousConfigs.baseUrl,
                 environment,
                 previousConfigs.supportedCountriesCodes,
                 previousConfigs.userID,
