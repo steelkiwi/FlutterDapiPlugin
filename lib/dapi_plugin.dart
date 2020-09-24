@@ -62,9 +62,8 @@ class Dapi {
 
   static Future<String> initEnvironment(DapiEnvironment dapiEnvironment) async {
     final arguments = <String, dynamic>{
-      PARAM_ENVIRONMENT: dapiEnvironment == DapiEnvironment.PRODUCTION
-          ? "production"
-          : "sandbox",
+      PARAM_ENVIRONMENT:
+          dapiEnvironment == DapiEnvironment.SANDBOX ? "sandbox" : "production",
     };
     _channel.invokeMethod(KEY_DAPI_INIT_ENVIRONMENT, arguments);
 
