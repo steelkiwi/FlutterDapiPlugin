@@ -136,7 +136,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         pendingResult = result
         userId?.let { dapiClient.userID = (it) };
         paymentID?.let {
-            val config = getDapiConfigurations(paymentId = it, environment = dapiClient.getConfigurations().environment)
+            val config = getDapiConfigurations(paymentId = it, host =dapiClient.getConfigurations().baseUrl ,environment = dapiClient.getConfigurations().environment)
             dapiClient.setConfigurations(config)
 
         }
