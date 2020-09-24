@@ -15,7 +15,7 @@ class Consts {
 
         final val PARAMET_ENVIRONMENT = "dapi_environment"
         final val PARAMET_ENVIRONMENT_PRODUCTION = "production"
-        final val PARAMET_ENVIRONMENT_SANDBPX = "sandbox"
+        final val PARAMET_ENVIRONMENT_SANDBOX = "sandbox"
 
 
 

@@ -281,10 +281,11 @@ class DapiConnectDelegate: NSObject {
     
     func initEnvironment(_ call: FlutterMethodCall) {
         let environment: String? = call.argument(key: Param.environmentType.rawValue);
-        if (environment == "production") {
-            client.configurations=getDapiConfig( env: DPCAppEnvironment.production);
+        if (environment == "sandbox") {
+                        client.configurations=getDapiConfig( env: DPCAppEnvironment.sandbox);
               } else {
-                client.configurations=getDapiConfig( env: DPCAppEnvironment.sandbox);
+                          client.configurations=getDapiConfig( env: DPCAppEnvironment.production);
+
               }
   
     }

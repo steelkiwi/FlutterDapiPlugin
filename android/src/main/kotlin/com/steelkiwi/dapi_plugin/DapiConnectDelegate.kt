@@ -64,10 +64,11 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     fun initDapiEnvironment(call: MethodCall, result: MethodChannel.Result?) {
         val env = call.argument<String>(Consts.PARAMET_ENVIRONMENT);
-        if (env == Consts.PARAMET_ENVIRONMENT_PRODUCTION) {
-            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION));
-        } else {
+        if (env == Consts.PARAMET_ENVIRONMENT_SANDBOX) {
             dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.SANDBOX));
+        } else {
+            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION));
+
 
         }
         print(("sdsd"))
