@@ -32,10 +32,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    Dapi.initEnvironment(DapiEnvironment.PRODUCTION);
     super.initState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
 
   @override
   Widget build(BuildContext context) {

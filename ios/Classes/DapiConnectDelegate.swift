@@ -7,7 +7,7 @@ class DapiConnectDelegate: NSObject {
     
     let appKey = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
 
-    func getDapiConfig(paymentId: String? = nil) ->  DapiConfigurations {
+    func getDapiConfig(paymentId: String? = nil,env: DPCAppEnvironment=DPCAppEnvironment.production) ->  DapiConfigurations {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
         urlComponents.host = "api-lune.dev.steel.kiwi"
@@ -18,12 +18,13 @@ class DapiConnectDelegate: NSObject {
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
                                          clientUserID: "testUser")
-        configs.environment = .production
+        configs.environment = env
         configs.isExperimental = false
         if let paymentId = paymentId {
             configs.endPointExtraHeaderFields=[DPCEndPoint.createTransfer:["Dapi-Payment":paymentId]];
           }
-
+        
+  
         return configs;
     }
     
@@ -49,6 +50,8 @@ class DapiConnectDelegate: NSObject {
         case .createBeneficiary: createBeneficiary(call)
         case .createTransfer: createTransfer(call)//implemented
         case .delink: delink(call)
+        case .initEnvironment: initEnvironment(call)
+
         default: finishWithError(errorMessage: "Wrong method: \(call.method)")
         }
     }
@@ -273,6 +276,17 @@ class DapiConnectDelegate: NSObject {
 
 
         }
+    }
+    
+    
+    func initEnvironment(_ call: FlutterMethodCall) {
+        let environment: String? = call.argument(key: Param.environmentType.rawValue);
+        if (environment == "production") {
+            client.configurations=getDapiConfig( env: DPCAppEnvironment.production);
+              } else {
+                client.configurations=getDapiConfig( env: DPCAppEnvironment.sandbox);
+              }
+  
     }
 
 }

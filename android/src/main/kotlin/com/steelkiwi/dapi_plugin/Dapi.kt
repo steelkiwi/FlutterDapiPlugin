@@ -32,6 +32,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     companion object {
         private val CHANNEL = "plugins.steelkiwi.com/dapi"
+        private val ACTION_CHANEL_DAPI_SET_ENVIRONMENT = "dapi_connect_set_environment"
         private val ACTION_CHANEL_DAPI_CONNECT = "dapi_connect"
         private val ACTION_CHANEL_DAPI_ACTIVE_CONNECTION = "dapi_active_connection"
         private val ACTION_CHANEL_DAPI_USER_ACCOUNT = "dapi_connection_accounts"
@@ -56,6 +57,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         when (call.method) {
+            ACTION_CHANEL_DAPI_SET_ENVIRONMENT -> delegate?.initDapiEnvironment(call, result);
             ACTION_CHANEL_DAPI_CONNECT -> delegate?.openDapiConnect(call, result);
             ACTION_CHANEL_DAPI_ACTIVE_CONNECTION -> delegate?.getActiveConnection(call, result);
             ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.getConnectionAccounts(call, result);
@@ -83,18 +85,21 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
         onAttachedToActivity(p0);
     }
 
-    private fun setupActivity(activity: Activity): DapiConnectDelegate? {
+    private fun getDapiConfiguration(environment: DapiEnvironment = DapiEnvironment.PRODUCTION): DapiConfigurations {
         val appKey = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
         val dapiConfigurations = DapiConfigurations(
                 appKey,
                 "https://api-lune.dev.steel.kiwi:4041",
-                DapiEnvironment.PRODUCTION,
+                environment,
                 listOf("AE"),
                 "",
                 "",
         );
-        val client = DapiClient(activity.application, dapiConfigurations)
+        return dapiConfigurations;
+    }
 
+    private fun setupActivity(activity: Activity): DapiConnectDelegate? {
+        val client = DapiClient(activity.application, getDapiConfiguration())
         delegate = DapiConnectDelegate(activity, client)
 
         return delegate

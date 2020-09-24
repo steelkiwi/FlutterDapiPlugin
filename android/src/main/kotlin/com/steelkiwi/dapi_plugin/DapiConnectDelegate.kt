@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
+import com.dapi.connect.core.enums.DapiEnvironment
 import com.dapi.connect.data.models.DapiBeneficiaryInfo
 import com.dapi.connect.data.models.DapiConfigurations
 import com.dapi.connect.data.models.DapiError
@@ -58,6 +59,19 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
     fun openDapiConnect(call: MethodCall, result: MethodChannel.Result?) {
         pendingResult = result
         dapiClient.connect.present()
+    }
+
+
+    fun initDapiEnvironment(call: MethodCall, result: MethodChannel.Result?) {
+        val env = call.argument<String>(Consts.PARAMET_ENVIRONMENT);
+        if (env == Consts.PARAMET_ENVIRONMENT_PRODUCTION) {
+            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION));
+        } else {
+            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.SANDBOX));
+
+        }
+        print(("sdsd"))
+
     }
 
     fun getActiveConnection(call: MethodCall, result: MethodChannel.Result?) {
@@ -119,18 +133,12 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val paymentID: String? = (call.argument<String>(Consts.HEADER_VALUE_PAYMENT_ID))
         pendingResult = result
         userId?.let { dapiClient.userID = (it) };
+
+
+
         paymentID?.let {
             val previousConfigs = dapiClient.getConfigurations();
-            val externalHeader = hashMapOf<String, String>(Consts.HEADER_KEY_PAYMENT_ID to it);
-            dapiClient.setConfigurations(DapiConfigurations(
-                    previousConfigs.appKey,
-                    previousConfigs.baseUrl,
-                    previousConfigs.environment,
-                    previousConfigs.supportedCountriesCodes,
-                    previousConfigs.userID,
-                    previousConfigs.clientUserID,
-                    extraHeaders = externalHeader,
-            ))
+            dapiClient.setConfigurations(getDapiConfigurations(paymentId = it, environment = previousConfigs.environment))
         }
         if (beneficiaryId == null || accountId == null) {
             finishWithError("Param is null", "Param is null")
@@ -243,4 +251,25 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         return true;
     }
 
+    private fun getDapiConfigurations(paymentId: String? = null, environment: DapiEnvironment = DapiEnvironment.PRODUCTION): DapiConfigurations {
+        val previousConfigs = dapiClient.getConfigurations();
+        var externalHeader: HashMap<String, String> = hashMapOf<String, String>();
+        if (paymentId != null)
+            externalHeader[Consts.HEADER_KEY_PAYMENT_ID] = paymentId;
+
+
+        var config = DapiConfigurations(
+                previousConfigs.appKey,
+                previousConfigs.baseUrl,
+                environment,
+                previousConfigs.supportedCountriesCodes,
+                previousConfigs.userID,
+                previousConfigs.clientUserID,
+                extraHeaders = externalHeader
+        );
+
+        dapiClient.setConfigurations(config)
+
+        return config;
+    }
 }

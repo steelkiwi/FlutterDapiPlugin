@@ -12,6 +12,8 @@ import 'models/connections.dart';
 import 'models/dapi_bank_metadata.dart';
 import 'models/delink_user.dart';
 
+enum DapiEnvironment { PRODUCTION, SANDBOX }
+
 class Dapi {
   static const MethodChannel _channel =
       const MethodChannel('plugins.steelkiwi.com/dapi');
@@ -24,9 +26,11 @@ class Dapi {
   static const KEY_DAPI_CREATE_BENEFICIARY = "dapi_create_beneficiary";
   static const KEY_DAPI_DELINK = "dapi_delink";
   static const KEY_DAPI_HISTORY_TRANSACTION = "dapi_history_transaction";
+  static const KEY_DAPI_INIT_ENVIRONMENT = "dapi_connect_set_environment";
 
   static const PARAM_AMOUNT = "param_amount";
   static const PARAM_USER_ID = "user_id";
+  static const PARAM_ENVIRONMENT = "dapi_environment";
   static const PARAM_BENEFICIARIES_ID = "beneficiary_id";
   static const PARAM_ACCOUNT_ID = "account_id";
   static const PARAM_REMARK = "transfer_remark";
@@ -55,6 +59,17 @@ class Dapi {
       "create_beneficiary_phone_number";
 
   static const HEADER_PAYMENT_ID = "header_payment_id";
+
+  static Future<String> initEnvironment(DapiEnvironment dapiEnvironment) async {
+    final arguments = <String, dynamic>{
+      PARAM_ENVIRONMENT: dapiEnvironment == DapiEnvironment.PRODUCTION
+          ? "production"
+          : "sandbox",
+    };
+    _channel.invokeMethod(KEY_DAPI_INIT_ENVIRONMENT, arguments);
+
+    return Future.value("Ok");
+  }
 
   static Future<String> dapiConnect() async {
     final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);

@@ -15,4 +15,7 @@ enum Action: String {
      case createBeneficiary = "dapi_create_beneficiary"
      case createTransfer = "dapi_create_transfer"
      case delink = "dapi_delink"
+     case initEnvironment = "dapi_connect_set_environment"
+
+    
    }

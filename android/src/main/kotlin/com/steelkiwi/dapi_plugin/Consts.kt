@@ -13,6 +13,10 @@ class Consts {
         final val PARAMET_ACCOUNT_ID = "account_id"
         final val PARAMET_REMARK = "transfer_remark"
 
+        final val PARAMET_ENVIRONMENT = "dapi_environment"
+        final val PARAMET_ENVIRONMENT_PRODUCTION = "production"
+        final val PARAMET_ENVIRONMENT_SANDBPX = "sandbox"
+
 
 
         final val PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1 = "create_beneficiary_line_addres1"
