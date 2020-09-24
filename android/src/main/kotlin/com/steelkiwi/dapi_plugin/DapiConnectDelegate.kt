@@ -134,8 +134,9 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         pendingResult = result
         userId?.let { dapiClient.userID = (it) };
         paymentID?.let {
-            val previousConfigs = dapiClient.getConfigurations();
-            dapiClient.setConfigurations(getDapiConfigurations(paymentId = it, environment = previousConfigs.environment))
+            val config = getDapiConfigurations(paymentId = it, environment = dapiClient.getConfigurations().environment)
+            dapiClient.setConfigurations(config)
+
         }
         print("Create transfer env: " + dapiClient.getConfigurations().environment.name())
         if (beneficiaryId == null || accountId == null) {
@@ -265,8 +266,6 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
                 previousConfigs.clientUserID,
                 extraHeaders = externalHeader
         );
-
-        dapiClient.setConfigurations(config)
 
         return config;
     }
