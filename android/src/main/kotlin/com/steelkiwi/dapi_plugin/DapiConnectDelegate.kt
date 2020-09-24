@@ -133,13 +133,11 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         val paymentID: String? = (call.argument<String>(Consts.HEADER_VALUE_PAYMENT_ID))
         pendingResult = result
         userId?.let { dapiClient.userID = (it) };
-
-
-
         paymentID?.let {
             val previousConfigs = dapiClient.getConfigurations();
             dapiClient.setConfigurations(getDapiConfigurations(paymentId = it, environment = previousConfigs.environment))
         }
+        print("Create transfer env: " + dapiClient.getConfigurations().environment.name())
         if (beneficiaryId == null || accountId == null) {
             finishWithError("Param is null", "Param is null")
         } else {
