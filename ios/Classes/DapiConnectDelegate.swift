@@ -10,7 +10,8 @@ class DapiConnectDelegate: NSObject {
     func getDapiConfig(paymentId: String? = nil,env: DPCAppEnvironment=DPCAppEnvironment.production) ->  DapiConfigurations {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
-        urlComponents.host = "api-lune.dev.steel.kiwi"
+        
+        urlComponents.host = (env==DPCAppEnvironment.production) ? "api-lune.stg.steel.kiwi":"api-lune.dev.steel.kiwi";
         urlComponents.port = 4041
         
         
