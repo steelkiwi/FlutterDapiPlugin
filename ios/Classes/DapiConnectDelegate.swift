@@ -23,6 +23,8 @@ class DapiConnectDelegate: NSObject {
         configs.isExperimental = false
         if let paymentId = paymentId {
             configs.endPointExtraHeaderFields=[DPCEndPoint.createTransfer:["Dapi-Payment":paymentId]];
+            configs.endPointExtraHeaderFields=[DPCEndPoint.resumeJob:["Dapi-Payment":paymentId]];
+
           }
         
   
