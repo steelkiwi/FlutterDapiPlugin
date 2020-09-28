@@ -9,7 +9,6 @@
     <application
         android:theme="@style/Theme.AppCompat"
         android:name="io.flutter.app.FlutterApplication"
-        android:label="dapi_plugin_example"
         tools:replace="android:theme"
         android:icon="@mipmap/ic_launcher">
         <activity

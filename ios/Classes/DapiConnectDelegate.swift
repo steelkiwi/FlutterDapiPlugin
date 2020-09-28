@@ -240,7 +240,7 @@ class DapiConnectDelegate: NSObject {
         }
         
         let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
-        client.configurations=getDapiConfig(paymentId: paymentId);
+        client.configurations=getDapiConfig(paymentId: paymentId,env: client.configurations.environment);
         client.userID = userId
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,

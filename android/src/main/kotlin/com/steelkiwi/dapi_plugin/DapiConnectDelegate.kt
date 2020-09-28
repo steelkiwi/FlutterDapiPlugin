@@ -31,6 +31,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
             }
 
             override fun onProceed(userID: String, bankID: String) {
+                print("Test")
             }
 
             override fun setBeneficiaryInfoOnConnect(bankID: String): DapiBeneficiaryInfo? {
@@ -56,7 +57,6 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
 
         }
-        print(("sdsd"))
 
     }
 

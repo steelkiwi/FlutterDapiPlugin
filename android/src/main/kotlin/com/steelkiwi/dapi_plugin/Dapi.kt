@@ -1,12 +1,11 @@
 package com.steelkiwi.dapi_plugin
 
 import android.app.Activity
-import androidx.annotation.NonNull;
-
+import android.content.Intent
+import androidx.annotation.NonNull
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.enums.DapiEnvironment
 import com.dapi.connect.data.models.DapiConfigurations
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -15,6 +14,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** DapiPlugin */
@@ -49,8 +49,6 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
             plugin.setupEngine(registrar.messenger())
             val delegate: DapiConnectDelegate = plugin.setupActivity(registrar.activity())!!
             registrar.addActivityResultListener(delegate)
-
-
         }
     }
 
