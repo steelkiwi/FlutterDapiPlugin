@@ -48,7 +48,7 @@ class DapiConnectDelegate: NSObject {
         case .connect: connect(call)//implemented
         case .activeConnection: activeConenction(call)//implemented
         case .connectionAccounts: connectionAccounts(call)//implemented
-        case .userAccountsMetaData: userAccountsMetaData(call)//implemented
+        case .bankMetaData: bankMetaData(call)//implemented
         case .beneficiaries: beneficiaries(call)//implemented
         case .createBeneficiary: createBeneficiary(call)
         case .createTransfer: createTransfer(call)//implemented
@@ -123,7 +123,7 @@ class DapiConnectDelegate: NSObject {
         
     }
 
-    func userAccountsMetaData(_ call: FlutterMethodCall) {
+    func bankMetaData(_ call: FlutterMethodCall) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
             return
@@ -134,9 +134,12 @@ class DapiConnectDelegate: NSObject {
                 self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                 return
             }
+            let result:DapiBankMetadata=bankMetadata;
+            
             let address=AddressModel(line1: bankMetadata.linesAddress.line1, line2:bankMetadata.linesAddress.line1, line3: bankMetadata.linesAddress.line1);
                
             let coolDownPeriod=CoolDownPeriodModel(unit: "", value: 24)
+            
                
             let dapiBankMetaData = DapiBankMetadataModel(
                    bankName: bankMetadata.bankName,

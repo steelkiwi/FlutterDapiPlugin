@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-
     package="com.steelkiwi.dapi_plugin">
 
     <!--    <application android:theme="@style/AppTheme">-->
@@ -9,7 +8,8 @@
     <!--&lt;!&ndash;            android:screenOrientation="fullSensor" />&ndash;&gt;-->
     <!--    </application>-->
     <application
+        android:label="Lune"
         android:theme="@android:style/Theme.Black.NoTitleBar"
-        tools:replace="android:theme"></application>
+        tools:replace="android:theme" />
 
 </manifest>
