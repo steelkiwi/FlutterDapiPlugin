@@ -1,4 +1,6 @@
 import 'package:dapi/dapi_plugin.dart';
+import 'package:dapi/models/auth_state.dart';
+import 'package:dapi/models/auth_status.dart';
 import 'package:dapi/models/beneficiary.dart';
 import 'package:dapi/models/connections.dart';
 import 'package:dapi/models/dapi_bank_metadata.dart';
@@ -171,14 +173,19 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Open connect"),
                     onPressed: () async {
-                      try {
-                        _accessId = await Dapi.dapiConnect();
-                        setState(() {});
-                      } on PlatformException catch (e) {
-                        setState(() {
-                          _accessId = e.message;
-                        });
-                      }
+                      var cancel = Dapi.dapiConnect((AuthState msg) {
+                        try {
+                          _accessId = msg.status == AuthStatus.SUCCESS
+                              ? msg.accessID
+                              : msg.status.toString();
+
+                          setState(() {});
+                        } on PlatformException catch (e) {
+                          setState(() {
+                            _accessId = e.message;
+                          });
+                        }
+                      });
                     },
                   ),
                 ),

@@ -1,7 +1,6 @@
 package com.steelkiwi.dapi_plugin
 
 import android.app.Activity
-import android.content.Intent
 import androidx.annotation.NonNull
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.enums.DapiEnvironment
@@ -10,16 +9,17 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** DapiPlugin */
-public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
+public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware, EventChannel.StreamHandler {
     private var channel: MethodChannel? = null
+    private var eventChannel: EventChannel? = null;
     private var activityPluginBinding: ActivityPluginBinding? = null
 
     private var delegate: DapiConnectDelegate? = null
@@ -49,11 +49,15 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
             plugin.setupEngine(registrar.messenger())
             val delegate: DapiConnectDelegate = plugin.setupActivity(registrar.activity())!!
             registrar.addActivityResultListener(delegate)
+            //  eventChannel.setStreamHandler(delegate)
+
+
         }
     }
 
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+
         when (call.method) {
             ACTION_CHANEL_DAPI_SET_ENVIRONMENT -> delegate?.initDapiEnvironment(call, result);
             ACTION_CHANEL_DAPI_CONNECT -> delegate?.openDapiConnect(call, result);
@@ -72,6 +76,7 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel?.setMethodCallHandler(null)
+        eventChannel?.setStreamHandler(null)
     }
 
     override fun onDetachedFromActivity() {
@@ -111,11 +116,22 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware {
     private fun setupEngine(messenger: BinaryMessenger) {
         val channel = MethodChannel(messenger, CHANNEL)
         channel.setMethodCallHandler(this)
+        eventChannel = EventChannel(messenger, "plugins.steelkiwi.com/dapi/connect")
+        eventChannel?.setStreamHandler(this)
+
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
         delegate?.dapiClient?.release()
         onDetachedFromActivity();
+    }
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        delegate?.present(events);
+    }
+
+    override fun onCancel(arguments: Any?) {
+        delegate?.cleanPresentListener()
     }
 
 }

@@ -3,6 +3,7 @@ package com.steelkiwi.dapi_plugin
 import android.app.Activity
 import android.content.Intent
 import android.os.Handler
+
 import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
@@ -12,9 +13,13 @@ import com.dapi.connect.data.models.DapiConfigurations
 import com.dapi.connect.data.models.DapiError
 import com.dapi.connect.data.models.LinesAddress
 import com.google.gson.Gson
+import com.steelkiwi.dapi_plugin.model.AuthState
+import com.steelkiwi.dapi_plugin.model.AuthStatus
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
+
 
 class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiClient)
     : PluginRegistry.ActivityResultListener {
@@ -22,28 +27,46 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     private var pendingResult: MethodChannel.Result? = null
 
-    init {
+
+    fun present(events: EventChannel.EventSink?) {
+        dapiClient.connect.present()
         dapiClient.connect.setOnConnectListener(object : OnDapiConnectListener {
-            override fun onConnectionSuccessful(userID: String, bankID: String) = successFinish(userID)
+            override fun onConnectionSuccessful(userID: String, bankID: String) {
+                uiThreadHandler.post {
+                    var result = Gson().toJson(AuthState(accessId = userID, status = AuthStatus.SUCCESS));
+                    events?.success(result)
+                    events?.endOfStream();
+                }
+
+            }
+
             override fun onConnectionFailure(error: DapiError, bankID: String) {
-                val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-                finishWithError(error.type.toString(), errorMessage)
+                uiThreadHandler.post {
+                    var result = Gson().toJson(AuthState(status = AuthStatus.FAILURE));
+                    events?.success(result)
+                }
+
             }
 
             override fun onProceed(userID: String, bankID: String) {
-                print("Test")
+                uiThreadHandler.post {
+                    var result = Gson().toJson(AuthState(accessId = userID, status = AuthStatus.PROCEED));
+                    events?.success(result)
+                }
             }
 
             override fun setBeneficiaryInfoOnConnect(bankID: String): DapiBeneficiaryInfo? {
                 return null;
             }
         })
+    }
 
+    fun cleanPresentListener() {
+        dapiClient.connect.dismiss()
     }
 
     fun openDapiConnect(call: MethodCall, result: MethodChannel.Result?) {
         pendingResult = result
-        dapiClient.connect.present()
     }
 
 
@@ -255,4 +278,6 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
         return config;
     }
+
+
 }

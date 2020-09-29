@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'models/account.dart';
+import 'models/auth_state.dart';
+import 'models/auth_status.dart';
 import 'models/beneficiary_request_success.dart';
 import 'models/connections.dart';
 import 'models/dapi_bank_metadata.dart';
@@ -14,9 +16,15 @@ import 'models/delink_user.dart';
 
 enum DapiEnvironment { PRODUCTION, SANDBOX }
 
+typedef void Listener(AuthState msg);
+typedef void CancelListening();
+
 class Dapi {
   static const MethodChannel _channel =
       const MethodChannel('plugins.steelkiwi.com/dapi');
+  static const EventChannel _events =
+      const EventChannel('plugins.steelkiwi.com/dapi/connect');
+
   static const KEY_DAPI_CONNECT = "dapi_connect";
   static const KEY_DAPI_ACTIVE_CONNECTION = "dapi_active_connection";
   static const KEY_CONNECTION_ACCOUNTS = "dapi_connection_accounts";
@@ -70,9 +78,35 @@ class Dapi {
     return Future.value("Ok");
   }
 
-  static Future<String> dapiConnect() async {
-    final String resultPath = await _channel.invokeMethod(KEY_DAPI_CONNECT);
-    return resultPath;
+  static int nextListenerId = 1;
+  static var streamTransformer = StreamTransformer<dynamic, AuthState>.fromHandlers(
+    handleData: (dynamic data, EventSink sink) {
+      if (data is String) {
+        Map map = jsonDecode(data);
+        var obj = AuthState(
+            accessID: map["accessId"],
+            status: map["status"] == "PROCEED"
+                ? AuthStatus.PROCEED
+                : map["status"] == "SUCCESS"
+                ? AuthStatus.SUCCESS
+                : AuthStatus.FAILURE);
+        sink.add(obj);
+      }
+    },
+    handleError: (Object error, StackTrace stacktrace, EventSink sink) {
+      sink.addError('Something went wrong: $error');
+    },
+    handleDone: (EventSink sink) => sink.close(),
+  );
+
+  static CancelListening dapiConnect(Listener listener) {
+    var subscription = _events
+        .receiveBroadcastStream(nextListenerId++)
+        .transform(streamTransformer)
+        .listen(listener, cancelOnError: true);
+    return () {
+      subscription.cancel();
+    };
   }
 
   static Future<List<Connections>> getActiveConnect() async {
@@ -99,8 +133,6 @@ class Dapi {
     // Map map = jsonDecode(resultPath);
 
     var beneficiaries = list.map((i) => Beneficiary.fromJson(i)).toList();
-
-    // var beneficiaries = Beneficiaries.fromJson(map);
     return beneficiaries;
   }
 

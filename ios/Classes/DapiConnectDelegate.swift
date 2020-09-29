@@ -4,6 +4,7 @@ import DapiConnect
 
 class DapiConnectDelegate: NSObject {
     private var pendingResult: FlutterResult?
+    private var loginEvent: FlutterEventSink?
     
     let appKey = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
 
@@ -42,10 +43,14 @@ class DapiConnectDelegate: NSObject {
         return client
     }()
     
+    
+    func clear(){
+        self.loginEvent=nil;
+    }
     func executeAction(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         pendingResult = result
         switch Action(rawValue: call.method) {
-        case .connect: connect(call)//implemented
+//        case .connect: connect(call)//implemented
         case .activeConnection: activeConenction(call)//implemented
         case .connectionAccounts: connectionAccounts(call)//implemented
         case .bankMetaData: bankMetaData(call)//implemented
@@ -59,7 +64,8 @@ class DapiConnectDelegate: NSObject {
         }
     }
 
-    func connect(_ call: FlutterMethodCall) {
+    func connect(eventSink events: FlutterEventSink?) {
+        loginEvent=events;
         client.connect.present()
         
     }
@@ -300,12 +306,14 @@ class DapiConnectDelegate: NSObject {
 
 extension DapiConnectDelegate: DPCConnectDelegate {
        func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
-        self.pendingResult?.self(userID)
+        guard loginEvent != nil else { return }
+        let result =  getJsonFromModel(from:AuthStateModel(accessId: userID, status: "SUCCESS"))
+        self.loginEvent?.self(result)
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
-        print("connectDidFailConnecting")
-        finishWithError(errorMessage: error);
+        let result =  getJsonFromModel(from:AuthStateModel(status: "FAILURE"))
+        self.loginEvent?.self(result)
     }
     
     func connectBeneficiaryInfoForBank(withID bankID: String, beneficiaryInfo info: @escaping (DapiBeneficiaryInfo?) -> Void) {
@@ -313,8 +321,8 @@ extension DapiConnectDelegate: DPCConnectDelegate {
     }
     
     func connectDidProceed(withBankID bankID: String, userID: String) {
-        print("connectDidProceed")
-
+        let result =  getJsonFromModel(from:AuthStateModel(accessId: userID, status: "PROCEED"))
+        self.loginEvent?.self(result)
     }
     
 
