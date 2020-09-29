@@ -254,12 +254,13 @@ class DapiConnectDelegate: NSObject {
                                       
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
+                                            self?.client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);
                                             self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                                             return
                                         }
                                         
                                         let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
-                                        self?.pendingResult?.self(getJsonFromModel(from:response))
+                                        self?.client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);                                        self?.pendingResult?.self(getJsonFromModel(from:response))
 
                                         
                                        

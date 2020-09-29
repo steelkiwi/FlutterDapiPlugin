@@ -154,10 +154,14 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
             dapiClient.payment.createTransfer(beneficiaryId, accountId, amount!!, remark,
                     { createTransfer ->
                         successFinish(createTransfer);
+                        val config = getDapiConfigurations(host = dapiClient.getConfigurations().baseUrl, environment = dapiClient.getConfigurations().environment)
+                        dapiClient.setConfigurations(config)
                     }
             ) { error ->
                 val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
                 finishWithError(error.type.toString(), errorMessage)
+                val config = getDapiConfigurations(host = dapiClient.getConfigurations().baseUrl, environment = dapiClient.getConfigurations().environment)
+                dapiClient.setConfigurations(config)
             }
         }
 
