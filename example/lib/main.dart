@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    Dapi.initEnvironment(DapiEnvironment.SANDBOX);
+    Dapi.initEnvironment();
     super.initState();
   }
 

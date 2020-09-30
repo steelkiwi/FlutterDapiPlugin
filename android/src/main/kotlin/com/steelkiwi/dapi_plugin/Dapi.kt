@@ -134,11 +134,11 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware, EventChanne
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        delegate?.present(events);
+        delegate?.action(events = events, action = DapiActions.LOGIN)
     }
 
     override fun onCancel(arguments: Any?) {
-        delegate?.cleanPresentListener()
+        delegate?.action(action = DapiActions.CLEAR_LOGIN_LISTENER)
     }
 
 }

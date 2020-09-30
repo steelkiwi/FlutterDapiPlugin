@@ -2,9 +2,6 @@ package com.steelkiwi.dapi_plugin
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Handler
-
-import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
 import com.dapi.connect.core.enums.DapiEnvironment
@@ -21,14 +18,28 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 
 
-class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiClient)
+class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiClient? = null)
     : PluginRegistry.ActivityResultListener {
     private val uiThreadHandler: Handler = Handler(Looper.getMainLooper())
 
-    private var pendingResult: MethodChannel.Result? = null
+
+    fun action(call: MethodCall? = null, result: MethodChannel.Result? = null, events: EventChannel.EventSink? = null, action: DapiActions) {
+        if (dapiClient != null) {
+            when (action) {
+                DapiActions.LOGIN -> present(events, dapiClient!!)
+                DapiActions.CLEAR_LOGIN_LISTENER -> dapiClient?.connect?.dismiss();
+                DapiActions.GET_ACTIVE_CONNECTION -> getActiveConnection(call = call,result=result,dapiClient)
+                DapiActions.CREATE_TRANSACTION -> TODO()
+            }
+        } else {
+            finishWithError("-1", "Dapi client hasn't inited");
+        }
 
 
-    fun present(events: EventChannel.EventSink?) {
+    }
+
+
+    private fun present(events: EventChannel.EventSink?, dapiClient: DapiClient) {
         dapiClient.connect.present()
         dapiClient.connect.setOnConnectListener(object : OnDapiConnectListener {
             override fun onConnectionSuccessful(userID: String, bankID: String) {
@@ -61,34 +72,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         })
     }
 
-    fun cleanPresentListener() {
-        dapiClient.connect.dismiss()
-    }
-
-    fun openDapiConnect(call: MethodCall, result: MethodChannel.Result?) {
-        pendingResult = result
-    }
-
-
-    fun initDapiEnvironment(call: MethodCall, result: MethodChannel.Result?) {
-        val env = call.argument<String>(Consts.PARAMET_ENVIRONMENT);
-
-        //todo change this logic
-        if (env == Consts.PARAMET_ENVIRONMENT_SANDBOX) {
-            val appKeyDev = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
-
-            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.SANDBOX, host = "https://api-lune.dev.steel.kiwi:4041", appKey = appKeyDev));
-        } else {
-            val appKeyProd = "569b5cc724de8ea69a81d44b3e83ff6463724d07070f77b5c8008d77cf48eab9"
-
-            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION, host = "https://api-lune.stg.steel.kiwi:4041", appKey = appKeyProd));
-
-
-        }
-
-    }
-
-    fun getActiveConnection(call: MethodCall, result: MethodChannel.Result?) {
+    private fun getActiveConnection(call: MethodCall, result: MethodChannel.Result?, dapiClient: DapiClient) {
         pendingResult = result
         dapiClient.connect.getConnections(onSuccess = {
             successFinish(it)

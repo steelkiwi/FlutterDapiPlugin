@@ -42,6 +42,9 @@ class Dapi {
   static const PARAM_BENEFICIARIES_ID = "beneficiary_id";
   static const PARAM_ACCOUNT_ID = "account_id";
   static const PARAM_REMARK = "transfer_remark";
+  static const PARAM_HOST = "PARAM_HOST";
+  static const PARAM_PORT = "PARAM_PORT";
+  static const PARAM_APP_KEY = "PARAM_APP_KEY";
 
   static const PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1 =
       "create_beneficiary_line_addres1";
@@ -68,10 +71,20 @@ class Dapi {
 
   static const HEADER_PAYMENT_ID = "header_payment_id";
 
-  static Future<String> initEnvironment(DapiEnvironment dapiEnvironment) async {
+  static Future<String> initEnvironment(
+      {DapiEnvironment dapiEnvironment,
+      String host,
+      int port,
+      String appKey}) async {
     final arguments = <String, dynamic>{
-      PARAM_ENVIRONMENT:
-          dapiEnvironment == DapiEnvironment.SANDBOX ? "sandbox" : "production",
+      PARAM_ENVIRONMENT: dapiEnvironment == DapiEnvironment.SANDBOX
+          ? "sandbox"
+          : dapiEnvironment == DapiEnvironment.PRODUCTION
+              ? "production"
+              : "stage",
+      PARAM_HOST: host,
+      PARAM_PORT: port,
+      PARAM_APP_KEY: appKey
     };
     _channel.invokeMethod(KEY_DAPI_INIT_ENVIRONMENT, arguments);
 
@@ -79,7 +92,8 @@ class Dapi {
   }
 
   static int nextListenerId = 1;
-  static var streamTransformer = StreamTransformer<dynamic, AuthState>.fromHandlers(
+  static var streamTransformer =
+      StreamTransformer<dynamic, AuthState>.fromHandlers(
     handleData: (dynamic data, EventSink sink) {
       if (data is String) {
         Map map = jsonDecode(data);
@@ -88,8 +102,8 @@ class Dapi {
             status: map["status"] == "PROCEED"
                 ? AuthStatus.PROCEED
                 : map["status"] == "SUCCESS"
-                ? AuthStatus.SUCCESS
-                : AuthStatus.FAILURE);
+                    ? AuthStatus.SUCCESS
+                    : AuthStatus.FAILURE);
         sink.add(obj);
       }
     },
