@@ -72,11 +72,19 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
     fun initDapiEnvironment(call: MethodCall, result: MethodChannel.Result?) {
         val env = call.argument<String>(Consts.PARAMET_ENVIRONMENT);
+        val appKeyDev = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
+        val appKeyProd = "569b5cc724de8ea69a81d44b3e83ff6463724d07070f77b5c8008d77cf48eab9"
+
+        val key = if (environment == DapiEnvironment.SANDBOX) {
+            appKeyDev
+        } else {
+            appKeyProd
+        }
         //todo change this logic
         if (env == Consts.PARAMET_ENVIRONMENT_SANDBOX) {
-            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.SANDBOX, host = "https://api-lune.dev.steel.kiwi:4041"));
+            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.SANDBOX, host = "https://api-lune.dev.steel.kiwi:4041",appKey = key));
         } else {
-            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION, host = "https://api-lune.stg.steel.kiwi:4041"));
+            dapiClient.setConfigurations(getDapiConfigurations(environment = DapiEnvironment.PRODUCTION, host = "https://api-lune.stg.steel.kiwi:4041",appKey = key));
 
 
         }
@@ -263,7 +271,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
         return true;
     }
 
-    private fun getDapiConfigurations(paymentId: String? = null, host: String?, environment: DapiEnvironment = DapiEnvironment.PRODUCTION): DapiConfigurations {
+    private fun getDapiConfigurations(paymentId: String? = null, host: String?, environment: DapiEnvironment = DapiEnvironment.PRODUCTION, appKey:String?): DapiConfigurations {
         val previousConfigs = dapiClient.getConfigurations();
         var externalHeader: HashMap<String, String> = hashMapOf<String, String>();
         if (paymentId != null)
@@ -271,7 +279,7 @@ class DapiConnectDelegate(private var activity: Activity, val dapiClient: DapiCl
 
 
         var config = DapiConfigurations(
-                previousConfigs.appKey,
+               appKey?: previousConfigs.appKey,
                 host ?: previousConfigs.baseUrl,
                 environment,
                 previousConfigs.supportedCountriesCodes,

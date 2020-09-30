@@ -5,8 +5,9 @@ import DapiConnect
 class DapiConnectDelegate: NSObject {
     private var pendingResult: FlutterResult?
     private var loginEvent: FlutterEventSink?
-    
-    let appKey = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
+    let appKeyDev = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
+    let appKeyProd = "569b5cc724de8ea69a81d44b3e83ff6463724d07070f77b5c8008d77cf48eab9"
+
 
     func getDapiConfig(paymentId: String? = nil,env: DPCAppEnvironment=DPCAppEnvironment.production) ->  DapiConfigurations {
         var urlComponents = URLComponents()
@@ -16,7 +17,7 @@ class DapiConnectDelegate: NSObject {
         urlComponents.port = 4041
         
         
-        let configs = DapiConfigurations(appKey: appKey,
+        let configs = DapiConfigurations(appKey: (env==DPCAppEnvironment.sandbox) ? appKeyDev:appKeyProd,
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
                                          clientUserID: "testUser")

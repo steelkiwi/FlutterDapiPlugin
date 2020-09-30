@@ -6,7 +6,7 @@ public class SwiftDapi: NSObject, FlutterPlugin,FlutterStreamHandler {
     
     
    static let channelName = "plugins.steelkiwi.com/dapi"
-    static let eventAuthName = "plugins.steelkiwi.com/dapi/connect"
+   static let eventAuthName = "plugins.steelkiwi.com/dapi/connect"
 
     
     var connectDelegate: DapiConnectDelegate?
