@@ -134,8 +134,8 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
             override fun onConnectionFailure(error: DapiError, bankID: String) {
                 uiThreadHandler.post {
                     val errorMessage: String = if (error.msg == null) "Failure auth" else error.msg!!;
-                    val result = Gson().toJson(AuthState(status = AuthStatus.FAILURE, error = errorMessage));
-                    events?.success(result)
+                    events?.error(error.type ?: bankID, errorMessage, null);
+
                 }
 
             }
