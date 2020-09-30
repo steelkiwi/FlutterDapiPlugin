@@ -2,9 +2,6 @@ import Flutter
 import UIKit
 
 public class SwiftDapi: NSObject, FlutterPlugin,FlutterStreamHandler {
-   
-    
-    
    static let channelName = "plugins.steelkiwi.com/dapi"
    static let eventAuthName = "plugins.steelkiwi.com/dapi/connect"
 
@@ -27,9 +24,8 @@ public class SwiftDapi: NSObject, FlutterPlugin,FlutterStreamHandler {
         connectDelegate?.executeAction(call, result)
     }
     
-    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        
-        connectDelegate?.connect(eventSink: events)
+    public func onListen(withArguments arguments: Any?, eventSink : @escaping FlutterEventSink) -> FlutterError? {
+        connectDelegate?.connect(eventSink: eventSink)
 
         return nil
     }

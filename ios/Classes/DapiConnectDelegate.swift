@@ -5,18 +5,49 @@ import DapiConnect
 class DapiConnectDelegate: NSObject {
     private var pendingResult: FlutterResult?
     private var loginEvent: FlutterEventSink?
-    let appKeyDev = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
-    let appKeyProd = "569b5cc724de8ea69a81d44b3e83ff6463724d07070f77b5c8008d77cf48eab9"
+    
+    private var client: DapiClient?
+    
+   
+    func executeAction(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        pendingResult = result
+        if call.method == Action.initEnvironment.rawValue {
+            initEnvironment(call)
+        } else {
+            if client != nil{
+                    switch Action(rawValue: call.method) {
+                        case .activeConnection: activeConenction(call,client: client!)//implemented
+                        case .connectionAccounts: connectionAccounts(call,client: client!)//implemented
+                        case .bankMetaData: bankMetaData(call,client: client!)//implemented
+                        case .beneficiaries: beneficiaries(call,client: client!)//implemented
+                        case .createBeneficiary: createBeneficiary(call,client: client!)
+                        case .createTransfer: createTransfer(call,client: client!)//implemented
+                        case .delink: delink(call,client: client!)
+                    default: finishWithError(errorMessage: "Wrong method: \(call.method)")
+            }}else{
+            finishWithError(errorMessage: "Dapi client hasn't inited")
+        }}
+    }
+
+    func initEnvironment(_ call: FlutterMethodCall) {
+        let client = DapiClient(configurations: getDapiConfig())
+               client.connect.delegate = self
+               client.autoFlow.connectDelegate = self
+    }
+    
+    func clear(){
+        self.loginEvent=nil;
+    }
 
 
     func getDapiConfig(paymentId: String? = nil,env: DPCAppEnvironment=DPCAppEnvironment.production) ->  DapiConfigurations {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
-        
+
         urlComponents.host = (env==DPCAppEnvironment.production) ? "api-lune.stg.steel.kiwi":"api-lune.dev.steel.kiwi";
         urlComponents.port = 4041
-        
-        
+
+
         let configs = DapiConfigurations(appKey: (env==DPCAppEnvironment.sandbox) ? appKeyDev:appKeyProd,
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
@@ -28,50 +59,34 @@ class DapiConnectDelegate: NSObject {
             configs.endPointExtraHeaderFields=[DPCEndPoint.resumeJob:["Dapi-Payment":paymentId]];
 
           }
-        
-  
+
+
         return configs;
     }
     
     
     
     
-    lazy var client: DapiClient = {
-        let client = DapiClient(configurations: getDapiConfig())
-        client.connect.delegate = self
-    
-        client.autoFlow.connectDelegate = self
-        return client
-    }()
     
     
-    func clear(){
-        self.loginEvent=nil;
-    }
-    func executeAction(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        pendingResult = result
-        switch Action(rawValue: call.method) {
-//        case .connect: connect(call)//implemented
-        case .activeConnection: activeConenction(call)//implemented
-        case .connectionAccounts: connectionAccounts(call)//implemented
-        case .bankMetaData: bankMetaData(call)//implemented
-        case .beneficiaries: beneficiaries(call)//implemented
-        case .createBeneficiary: createBeneficiary(call)
-        case .createTransfer: createTransfer(call)//implemented
-        case .delink: delink(call)
-        case .initEnvironment: initEnvironment(call)
+    
 
-        default: finishWithError(errorMessage: "Wrong method: \(call.method)")
-        }
-    }
-
-    func connect(eventSink events: FlutterEventSink?) {
-        loginEvent=events;
-        client.connect.present()
+    func connect(eventSink : FlutterEventSink?) {
+        guard let eventSink = eventSink else {
+             return
+           }
+        if client != nil {
+                loginEvent=eventSink;
+                client!.connect.present()
+            }else {
+                eventSink(FlutterError(code:  "-1",
+                                    message: "Dapi client hasn't inited",
+                                    details: nil))
+            }
         
     }
     
-    func activeConenction(_ call: FlutterMethodCall) {
+    func activeConenction(_ call: FlutterMethodCall,client:DapiClient) {
         let result = client.connect.getConnections();
         var connectionsModel=[ConnectionModel]();
         if(!result.isEmpty){
@@ -106,7 +121,7 @@ class DapiConnectDelegate: NSObject {
 
     }
 
-    func connectionAccounts(_ call: FlutterMethodCall) {
+    func connectionAccounts(_ call: FlutterMethodCall,client:DapiClient) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
             return
@@ -130,7 +145,7 @@ class DapiConnectDelegate: NSObject {
         
     }
 
-    func bankMetaData(_ call: FlutterMethodCall) {
+    func bankMetaData(_ call: FlutterMethodCall,client:DapiClient) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
             return
@@ -163,7 +178,7 @@ class DapiConnectDelegate: NSObject {
             self?.pendingResult?.self(jsonConnections)        }
     }
 
-    func beneficiaries(_ call: FlutterMethodCall) {
+    func beneficiaries(_ call: FlutterMethodCall,client:DapiClient) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
                   finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
                   return}
@@ -185,10 +200,9 @@ class DapiConnectDelegate: NSObject {
     }
 
     
-//    val userId = call.argument<String>(Consts.PARAMET_USER_ID);
 
 
-    func createBeneficiary(_ call: FlutterMethodCall) {
+    func createBeneficiary(_ call: FlutterMethodCall,client:DapiClient) {
         guard let result = pendingResult else { return }
 
         guard let userId: String = call.argument(key: Param.userId.rawValue),
@@ -236,7 +250,7 @@ class DapiConnectDelegate: NSObject {
 
     }
 
-    func createTransfer(_ call: FlutterMethodCall) {
+    func createTransfer(_ call: FlutterMethodCall,client:DapiClient) {
         guard let beneficiaryId: String = call.argument(key: Param.beneficiaryId.rawValue),
             let accountId: String = call.argument(key: Param.accountId.rawValue),
             let userId: String = call.argument(key: Param.userId.rawValue),
@@ -247,7 +261,8 @@ class DapiConnectDelegate: NSObject {
         }
         
         let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
-        client.configurations=getDapiConfig(paymentId: paymentId,env: client.configurations.environment);
+        //todo chna
+        //client.configurations=getDapiConfig(paymentId: paymentId,env: client.configurations.environment);
         client.userID = userId
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
@@ -255,13 +270,13 @@ class DapiConnectDelegate: NSObject {
                                       
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
-                                            self?.client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);
+//                                            client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);
                                             self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                                             return
                                         }
                                         
                                         let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
-                                        self?.client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);                                        self?.pendingResult?.self(getJsonFromModel(from:response))
+//                                      client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);                                        self?.pendingResult?.self(getJsonFromModel(from:response))
 
                                         
                                        
@@ -274,7 +289,7 @@ class DapiConnectDelegate: NSObject {
     }
 
 
-    func delink(_ call: FlutterMethodCall) {
+    func delink(_ call: FlutterMethodCall,client:DapiClient) {
         guard let userId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
             return
@@ -293,16 +308,7 @@ class DapiConnectDelegate: NSObject {
     }
     
     
-    func initEnvironment(_ call: FlutterMethodCall) {
-        let environment: String? = call.argument(key: Param.environmentType.rawValue);
-        if (environment == "sandbox") {
-                        client.configurations=getDapiConfig( env: DPCAppEnvironment.sandbox);
-              } else {
-                          client.configurations=getDapiConfig( env: DPCAppEnvironment.production);
 
-              }
-  
-    }
 
 }
 
@@ -336,12 +342,9 @@ extension DapiConnectDelegate: DPCConnectDelegate {
         result(FlutterError(code: errorCode ?? "-1",
                             message: errorMessage,
                             details: nil))
-        clearMethodCallAndResult()
     }
 
-    private func clearMethodCallAndResult() {
-        pendingResult = nil
-    }
+
 }
 
 
