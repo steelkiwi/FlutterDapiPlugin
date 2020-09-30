@@ -1,8 +1,14 @@
 package com.steelkiwi.dapi_plugin
 
 enum class DapiActions {
+    INIT,
     LOGIN,
     CLEAR_LOGIN_LISTENER,
     CREATE_TRANSACTION,
-    GET_ACTIVE_CONNECTION
+    DELINK,
+    GET_BANK_METADATA,
+    CREATE_BENEFICIARY,
+    GET_SUB_ACCOUNTS,
+    GET_ACTIVE_CONNECTION,
+    GET_BENEFICIARIES
 }

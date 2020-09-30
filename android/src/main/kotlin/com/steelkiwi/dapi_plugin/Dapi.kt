@@ -2,9 +2,6 @@ package com.steelkiwi.dapi_plugin
 
 import android.app.Activity
 import androidx.annotation.NonNull
-import com.dapi.connect.core.base.DapiClient
-import com.dapi.connect.core.enums.DapiEnvironment
-import com.dapi.connect.data.models.DapiConfigurations
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -49,7 +46,6 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware, EventChanne
             plugin.setupEngine(registrar.messenger())
             val delegate: DapiConnectDelegate = plugin.setupActivity(registrar.activity())!!
             registrar.addActivityResultListener(delegate)
-            //  eventChannel.setStreamHandler(delegate)
 
 
         }
@@ -59,16 +55,14 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware, EventChanne
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
 
         when (call.method) {
-            ACTION_CHANEL_DAPI_SET_ENVIRONMENT -> delegate?.initDapiEnvironment(call, result);
-            ACTION_CHANEL_DAPI_CONNECT -> delegate?.openDapiConnect(call, result);
-            ACTION_CHANEL_DAPI_ACTIVE_CONNECTION -> delegate?.getActiveConnection(call, result);
-            ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.getConnectionAccounts(call, result);
-            ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT -> delegate?.getDapiBankMetadata(call, result);
-            ACTION_CHANEL_DAPI_BENEFICIARIES -> delegate?.getBeneficiaries(call, result);
-            ACTION_CHANEL_CREATE_TRANSFER -> delegate?.createTransfer(call, result);
-            ACTION_CHANEL_DELINK -> delegate?.delink(call, result);
-            ACTION_CHANEL_DAPI_CREATE_BENEFICIARY -> delegate?.createBeneficiary(call, result);
-            ACTION_CHANEL_HISTORY_DELEGATE -> delegate?.getHistoryTransfers(call, result);
+            ACTION_CHANEL_DAPI_SET_ENVIRONMENT -> delegate?.initDpiClient(call = call, result);
+            ACTION_CHANEL_DAPI_ACTIVE_CONNECTION -> delegate?.action(call = call, result = result, action = DapiActions.GET_ACTIVE_CONNECTION);
+            ACTION_CHANEL_DAPI_USER_ACCOUNT -> delegate?.action(call = call, result = result, action = DapiActions.GET_SUB_ACCOUNTS)
+            ACTION_CHANEL_DAPI_USER_META_DATA_ACCOUNT -> delegate?.action(call = call, result = result, action = DapiActions.GET_BANK_METADATA)
+            ACTION_CHANEL_DAPI_BENEFICIARIES -> delegate?.action(call = call, result = result, action = DapiActions.GET_BENEFICIARIES)
+            ACTION_CHANEL_CREATE_TRANSFER -> delegate?.action(call = call, result = result, action = DapiActions.CREATE_TRANSACTION)
+            ACTION_CHANEL_DELINK -> delegate?.action(call = call, result = result, action = DapiActions.DELINK)
+            ACTION_CHANEL_DAPI_CREATE_BENEFICIARY -> delegate?.action(call = call, result = result, action = DapiActions.CREATE_BENEFICIARY)
         }
 
 
@@ -88,30 +82,9 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware, EventChanne
         onAttachedToActivity(p0);
     }
 
-    private fun getDapiConfiguration(environment: DapiEnvironment = DapiEnvironment.PRODUCTION): DapiConfigurations {
-        val appKeyDev = "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4"
-        val appKeyProd = "569b5cc724de8ea69a81d44b3e83ff6463724d07070f77b5c8008d77cf48eab9"
-
-        val key = if (environment == DapiEnvironment.SANDBOX) {
-            appKeyDev
-        } else {
-            appKeyProd
-        }
-        val dapiConfigurations = DapiConfigurations(
-                key,
-                "https://api-lune.stg.steel.kiwi:4041",
-                environment,
-                listOf("AE"),
-                "",
-                "",
-        );
-        return dapiConfigurations;
-    }
 
     private fun setupActivity(activity: Activity): DapiConnectDelegate? {
-        val client = DapiClient(activity.application, getDapiConfiguration())
-        delegate = DapiConnectDelegate(activity, client)
-
+        delegate = DapiConnectDelegate(activity)
         return delegate
     }
 
@@ -134,7 +107,9 @@ public class Dapi : FlutterPlugin, MethodCallHandler, ActivityAware, EventChanne
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        delegate?.action(events = events, action = DapiActions.LOGIN)
+        events?.let {
+            delegate?.action(events = events, action = DapiActions.LOGIN);
+        }
     }
 
     override fun onCancel(arguments: Any?) {

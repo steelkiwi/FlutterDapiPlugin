@@ -21,9 +21,9 @@ typedef void CancelListening();
 
 class Dapi {
   static const MethodChannel _channel =
-      const MethodChannel('plugins.steelkiwi.com/dapi');
+  const MethodChannel('plugins.steelkiwi.com/dapi');
   static const EventChannel _events =
-      const EventChannel('plugins.steelkiwi.com/dapi/connect');
+  const EventChannel('plugins.steelkiwi.com/dapi/connect');
 
   static const KEY_DAPI_CONNECT = "dapi_connect";
   static const KEY_DAPI_ACTIVE_CONNECTION = "dapi_active_connection";
@@ -71,17 +71,15 @@ class Dapi {
 
   static const HEADER_PAYMENT_ID = "header_payment_id";
 
-  static Future<String> initEnvironment(
-      {DapiEnvironment dapiEnvironment,
-      String host,
-      int port,
-      String appKey}) async {
+  static Future<String> initEnvironment({DapiEnvironment dapiEnvironment,
+    String host,
+    int port,
+    String appKey}) async {
+    var env = dapiEnvironment == DapiEnvironment.SANDBOX
+        ? "sandbox"
+        : "production";
     final arguments = <String, dynamic>{
-      PARAM_ENVIRONMENT: dapiEnvironment == DapiEnvironment.SANDBOX
-          ? "sandbox"
-          : dapiEnvironment == DapiEnvironment.PRODUCTION
-              ? "production"
-              : "stage",
+      PARAM_ENVIRONMENT: env,
       PARAM_HOST: host,
       PARAM_PORT: port,
       PARAM_APP_KEY: appKey
@@ -93,7 +91,7 @@ class Dapi {
 
   static int nextListenerId = 1;
   static var streamTransformer =
-      StreamTransformer<dynamic, AuthState>.fromHandlers(
+  StreamTransformer<dynamic, AuthState>.fromHandlers(
     handleData: (dynamic data, EventSink sink) {
       if (data is String) {
         Map map = jsonDecode(data);
@@ -103,8 +101,8 @@ class Dapi {
             status: map["status"] == "PROCEED"
                 ? AuthStatus.PROCEED
                 : map["status"] == "SUCCESS"
-                    ? AuthStatus.SUCCESS
-                    : AuthStatus.FAILURE);
+                ? AuthStatus.SUCCESS
+                : AuthStatus.FAILURE);
         sink.add(obj);
       }
     },
@@ -126,7 +124,7 @@ class Dapi {
 
   static Future<List<Connections>> getActiveConnect() async {
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_ACTIVE_CONNECTION);
+    await _channel.invokeMethod(KEY_DAPI_ACTIVE_CONNECTION);
 
     List<dynamic> list = jsonDecode(resultPath);
 
@@ -141,7 +139,7 @@ class Dapi {
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_BENEFICIARIES, arguments);
+    await _channel.invokeMethod(KEY_DAPI_BENEFICIARIES, arguments);
 
     List list = jsonDecode(resultPath);
 
@@ -157,7 +155,7 @@ class Dapi {
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_CONNECTION_ACCOUNTS, arguments);
+    await _channel.invokeMethod(KEY_CONNECTION_ACCOUNTS, arguments);
 
     List list = jsonDecode(resultPath);
 
@@ -166,13 +164,12 @@ class Dapi {
     return accounts;
   }
 
-  static Future<CreateTransferResponse> createTransfer(
-      {@required String userId,
-      @required String beneficiaryId,
-      @required String accountId,
-      @required double amount,
-      @required String remark,
-      String paymentId}) async {
+  static Future<CreateTransferResponse> createTransfer({@required String userId,
+    @required String beneficiaryId,
+    @required String accountId,
+    @required double amount,
+    @required String remark,
+    String paymentId}) async {
     final arguments = <String, dynamic>{
       PARAM_AMOUNT: amount,
       PARAM_BENEFICIARIES_ID: beneficiaryId,
@@ -182,7 +179,7 @@ class Dapi {
       HEADER_PAYMENT_ID: paymentId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_CREATED_TRANSFER, arguments);
+    await _channel.invokeMethod(KEY_DAPI_CREATED_TRANSFER, arguments);
     Map map = jsonDecode(resultPath);
     var account = CreateTransferResponse.fromJson(map);
     return account;
@@ -193,7 +190,7 @@ class Dapi {
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_BANK_METADATA, arguments);
+    await _channel.invokeMethod(KEY_BANK_METADATA, arguments);
 
     Map map = jsonDecode(resultPath);
 
@@ -202,20 +199,19 @@ class Dapi {
     return account;
   }
 
-  static Future<BeneficiaryRequestSuccess> createBeneficiary(
-      {String userId,
-      @required String addres1,
-      @required String addres2,
-      @required String addres3,
-      @required String accountNumber,
-      @required String name,
-      @required String bankName,
-      @required String swiftCode,
-      @required String iban,
-      @required String country,
-      @required String branchAddress,
-      @required String branchName,
-      @required String phoneNumber}) async {
+  static Future<BeneficiaryRequestSuccess> createBeneficiary({String userId,
+    @required String addres1,
+    @required String addres2,
+    @required String addres3,
+    @required String accountNumber,
+    @required String name,
+    @required String bankName,
+    @required String swiftCode,
+    @required String iban,
+    @required String country,
+    @required String branchAddress,
+    @required String branchName,
+    @required String phoneNumber}) async {
     final arguments = <String, dynamic>{
       PARAM_USER_ID: userId,
       PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1: addres1,
@@ -232,7 +228,7 @@ class Dapi {
       PARAMET_CREATE_BENEFICIARY_PHONE_NUMBER: phoneNumber
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_CREATE_BENEFICIARY, arguments);
+    await _channel.invokeMethod(KEY_DAPI_CREATE_BENEFICIARY, arguments);
     Map map = jsonDecode(resultPath);
     var account = BeneficiaryRequestSuccess.fromJson(map);
     return account;
@@ -243,7 +239,7 @@ class Dapi {
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_DELINK, arguments);
+    await _channel.invokeMethod(KEY_DAPI_DELINK, arguments);
     Map map = jsonDecode(resultPath);
     var account = DelinkUser.fromJson(map);
     return account;
@@ -255,7 +251,7 @@ class Dapi {
       PARAM_USER_ID: userId,
     };
     final String resultPath =
-        await _channel.invokeMethod(KEY_DAPI_HISTORY_TRANSACTION, arguments);
+    await _channel.invokeMethod(KEY_DAPI_HISTORY_TRANSACTION, arguments);
     Map map = jsonDecode(resultPath);
     var account = DelinkUser.fromJson(map);
     return account;

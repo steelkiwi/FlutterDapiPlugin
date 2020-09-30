@@ -2,6 +2,8 @@ package com.steelkiwi.dapi_plugin
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
 import com.dapi.connect.core.enums.DapiEnvironment
@@ -21,21 +23,99 @@ import io.flutter.plugin.common.PluginRegistry
 class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiClient? = null)
     : PluginRegistry.ActivityResultListener {
     private val uiThreadHandler: Handler = Handler(Looper.getMainLooper())
+    fun action(call: MethodCall, result: MethodChannel.Result, action: DapiActions) {
+        if (dapiClient != null) {
+            when (action) {
+                DapiActions.GET_ACTIVE_CONNECTION -> getActiveConnection(call = call, result = result, dapiClient!!)
+                DapiActions.CREATE_TRANSACTION -> createTransfer(call = call, result = result, dapiClient!!)
+                DapiActions.GET_BANK_METADATA -> getDapiBankMetadata(call = call, result = result, dapiClient!!);
+                DapiActions.CREATE_BENEFICIARY -> createBeneficiary(call = call, result = result, dapiClient!!);
+                DapiActions.GET_SUB_ACCOUNTS -> getSubAccounts(call = call, result = result, dapiClient!!)
+                DapiActions.GET_BENEFICIARIES -> getBeneficiaries(call = call, result = result, dapiClient!!)
+                DapiActions.DELINK -> delink(call = call, result = result, dapiClient!!)
+            }
+        } else {
+            result.error("-1", "Dapi client hasn't inited", null);
 
+        }
+    }
 
-    fun action(call: MethodCall? = null, result: MethodChannel.Result? = null, events: EventChannel.EventSink? = null, action: DapiActions) {
+    fun action(events: EventChannel.EventSink? = null, action: DapiActions) {
         if (dapiClient != null) {
             when (action) {
                 DapiActions.LOGIN -> present(events, dapiClient!!)
                 DapiActions.CLEAR_LOGIN_LISTENER -> dapiClient?.connect?.dismiss();
-                DapiActions.GET_ACTIVE_CONNECTION -> getActiveConnection(call = call,result=result,dapiClient)
-                DapiActions.CREATE_TRANSACTION -> TODO()
+
             }
         } else {
-            finishWithError("-1", "Dapi client hasn't inited");
+            events?.error("-1", "Dapi client hasn't inited", null);
+        }
+    }
+
+
+    fun initDpiClient(call: MethodCall, result: MethodChannel.Result) {
+        val appKey = call.argument<String>(Consts.PARAM_APP_KEY);
+        val host = call.argument<String>(Consts.PARAM_HOST);
+        val port = call.argument<Int>(Consts.PARAM_PORT);
+        val env = call.argument<String>(Consts.PARAMET_ENVIRONMENT);
+        if (appKey == null) {
+            result.error("-1", "App key can't be null", null);
+            return;
+        }
+        if (host == null) {
+            result.error("-1", "Host  can't be null", null);
+            return
+        }
+        if (port == null) {
+            result.error("-1", "Port  can't be null", null);
+            return;
+        }
+        if (env == null) {
+            result.error("-1", "Env  can't be null", null);
+            return
+        }
+        if (!(env.contains(Consts.ENVIRONMENT_SANDBOX) || env.contains(Consts.ENVIRONMENT_PRODUCTION))) {
+            result.error("-1", "$env environment is not correct", null);
+            return
         }
 
 
+        val environment: DapiEnvironment = if (env == Consts.ENVIRONMENT_SANDBOX)
+            DapiEnvironment.SANDBOX;
+        else
+            DapiEnvironment.PRODUCTION;
+
+        val fullHost = "$host:$port";
+
+        dapiClient = DapiClient(activity.application, getDapiConfiguration(appKey = appKey!!, host = fullHost, env = environment!!))
+
+    }
+
+
+    private fun getDapiConfiguration(env: DapiEnvironment, host: String, appKey: String, headers: HashMap<String, String>? = null): DapiConfigurations {
+        var externalHeader: HashMap<String, String> = headers ?: hashMapOf();
+        val dapiConfigurations = DapiConfigurations(
+                appKey = appKey,
+                baseUrl = host,
+                environment = env,
+                extraHeaders = externalHeader,
+                supportedCountriesCodes = listOf("AE"),
+                userID = "",
+                clientUserID = ""
+        );
+        return dapiConfigurations;
+    }
+
+    private fun updateHeaderForDapiClient(headers: HashMap<String, String>? = null) {
+        dapiClient?.let {
+            var dapiCongig = it.getConfigurations();
+            val config = getDapiConfiguration(
+                    host = dapiCongig.baseUrl,
+                    env = dapiCongig.environment,
+                    appKey = dapiCongig.appKey,
+                    headers = headers ?: hashMapOf())
+            it.setConfigurations(config)
+        }
     }
 
 
@@ -44,7 +124,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         dapiClient.connect.setOnConnectListener(object : OnDapiConnectListener {
             override fun onConnectionSuccessful(userID: String, bankID: String) {
                 uiThreadHandler.post {
-                    var result = Gson().toJson(AuthState(accessId = userID, status = AuthStatus.SUCCESS));
+                    val result = Gson().toJson(AuthState(accessId = userID, status = AuthStatus.SUCCESS));
                     events?.success(result)
                     events?.endOfStream();
                 }
@@ -54,7 +134,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
             override fun onConnectionFailure(error: DapiError, bankID: String) {
                 uiThreadHandler.post {
                     val errorMessage: String = if (error.msg == null) "Failure auth" else error.msg!!;
-                    var result = Gson().toJson(AuthState(status = AuthStatus.FAILURE, error = errorMessage));
+                    val result = Gson().toJson(AuthState(status = AuthStatus.FAILURE, error = errorMessage));
                     events?.success(result)
                 }
 
@@ -62,7 +142,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
 
             override fun onProceed(userID: String, bankID: String) {
                 uiThreadHandler.post {
-                    var result = Gson().toJson(AuthState(accessId = userID, status = AuthStatus.PROCEED));
+                    val result = Gson().toJson(AuthState(accessId = userID, status = AuthStatus.PROCEED));
                     events?.success(result)
                 }
             }
@@ -73,111 +153,100 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         })
     }
 
-    private fun getActiveConnection(call: MethodCall, result: MethodChannel.Result?, dapiClient: DapiClient) {
-        pendingResult = result
+    private fun getActiveConnection(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         dapiClient.connect.getConnections(onSuccess = {
-            successFinish(it)
+            successFinish(it, result)
         },
                 onFailure = {
                     val errorMessage: String = if (it?.msg == null) "Get accounts error" else it?.msg!!;
-                    finishWithError(it?.type.toString(), errorMessage)
+                    result.error(it?.type ?: "", errorMessage, null);
                 })
     }
 
-    fun getConnectionAccounts(call: MethodCall, result: MethodChannel.Result?) {
+    private fun getSubAccounts(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
-        pendingResult = result
         userId?.let { dapiClient.userID = it };
-        dapiClient.data.getAccounts({ successFinish(it.accounts); }
+        dapiClient.data.getAccounts({ successFinish(it.accounts, result); }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-            finishWithError(error.type.toString(), errorMessage)
+            result.error(error.type ?: "", errorMessage, null);
         }
     }
 
-    fun getDapiBankMetadata(call: MethodCall, result: MethodChannel.Result?) {
+    private fun getDapiBankMetadata(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
-        pendingResult = result
         userId?.let { dapiClient.userID = it };
         dapiClient.metadata.getAccountMetaData(
                 { accountMetaData ->
-                    successFinish(accountMetaData.accountsMetadata);
+                    successFinish(accountMetaData.accountsMetadata, result);
                 }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-            finishWithError(error.type.toString(), errorMessage)
+            result.error(error?.type ?: "", errorMessage, null);
         }
     }
 
-    fun getBeneficiaries(call: MethodCall, result: MethodChannel.Result?) {
+    private fun getBeneficiaries(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
-        pendingResult = result
         userId?.let { dapiClient.userID = it };
         dapiClient.payment.getBeneficiaries(
                 { beneficiaries ->
-                    successFinish(beneficiaries.beneficiaries);
+                    successFinish(beneficiaries.beneficiaries, result);
                 }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-            finishWithError(error.type.toString(), errorMessage)
+            result.error(error?.type ?: "", errorMessage, null);
         }
     }
 
-    fun createTransfer(call: MethodCall, result: MethodChannel.Result?) {
+    private fun createTransfer(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val beneficiaryId = call.argument<String>(Consts.PARAMET_BENEFICIARY_ID);
         val accountId = call.argument<String>(Consts.PARAMET_ACCOUNT_ID);
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         val amount = call.argument<Double>(Consts.PARAMET_AMOUNT);
         val remark = call.argument<String>(Consts.PARAMET_REMARK);
         val paymentID: String? = (call.argument<String>(Consts.HEADER_VALUE_PAYMENT_ID))
-        pendingResult = result
         userId?.let { dapiClient.userID = (it) };
         paymentID?.let {
-            val config = getDapiConfigurations(paymentId = it, host = dapiClient.getConfigurations().baseUrl, environment = dapiClient.getConfigurations().environment, appKey = dapiClient.getConfigurations().appKey)
-            dapiClient.setConfigurations(config)
-
+            updateHeaderForDapiClient(hashMapOf<String, String>(Consts.HEADER_KEY_PAYMENT_ID to paymentID))
         }
         print("Create transfer env: " + dapiClient.getConfigurations().environment.name())
         if (beneficiaryId == null || accountId == null) {
-            finishWithError("Param is null", "Param is null")
+            result.error("-1", "Beneficiary id or Account is is null", null);
+
         } else {
             dapiClient.payment.createTransfer(beneficiaryId, accountId, amount!!, remark,
                     { createTransfer ->
-                        successFinish(createTransfer);
-                        val config = getDapiConfigurations(host = dapiClient.getConfigurations().baseUrl, environment = dapiClient.getConfigurations().environment, appKey = dapiClient.getConfigurations().appKey)
-                        dapiClient.setConfigurations(config)
+                        successFinish(createTransfer, result);
+                        updateHeaderForDapiClient()
+
                     }
             ) { error ->
                 val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-                finishWithError(error.type.toString(), errorMessage)
-                val config = getDapiConfigurations(host = dapiClient.getConfigurations().baseUrl, environment = dapiClient.getConfigurations().environment, appKey = dapiClient.getConfigurations().appKey)
-                dapiClient.setConfigurations(config)
+                result.error(error.type ?: "", errorMessage, null);
+                updateHeaderForDapiClient()
+
             }
         }
 
     }
 
 
-    fun delink(call: MethodCall, result: MethodChannel.Result?) {
+    private fun delink(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         userId?.let { dapiClient.userID = (it) };
-        pendingResult = result
         dapiClient.auth.delink(
                 { delink ->
-                    successFinish(delink);
+                    successFinish(delink, result);
                 }
         ) { error ->
-            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-            finishWithError(error.type.toString(), errorMessage)
+            val errorMessage: String = if (error.msg == null) "Delink error" else error.msg!!;
+            result.error(error?.type ?: "", errorMessage, null);
         }
 
     }
 
-    fun getHistoryTransfers(call: MethodCall, result: MethodChannel.Result?) {
-
-    }
-
-    fun createBeneficiary(call: MethodCall, result: MethodChannel.Result?) {
+    private fun createBeneficiary(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val userId = call.argument<String>(Consts.PARAMET_USER_ID);
         val addressLine1 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1);
         val addressLine2 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2);
@@ -194,7 +263,6 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
 
         userId?.let { dapiClient.userID = (it) };
 
-        pendingResult = result
         dapiClient.payment
 
 
@@ -216,62 +284,32 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         )
 
         dapiClient.payment.createBeneficiary(info, onSuccess = {
-            successFinish(it)
+            successFinish(it, result)
         }, onFailure = {
             val errorMessage: String = if (it.msg == null) "Get accounts error" else it.msg!!;
-            finishWithError(it.type.toString(), errorMessage)
+            result.error(it?.type ?: "", errorMessage, null);
         })
 
     }
 
 
-    private fun <T> successFinish(data: T) {
+    private fun <T> successFinish(data: T, pendingResult: MethodChannel.Result) {
         var resultData: String = if (data is String) {
             data;
         } else {
             Gson().toJson(data)
         }
-        if (pendingResult != null) {
-            uiThreadHandler.post {
-                pendingResult!!.success(resultData)
-                clearMethodCallAndResult()
-            };
+        uiThreadHandler.post {
+            pendingResult!!.success(resultData)
+
         }
     }
 
-    private fun finishWithError(errorCode: String, errorMessage: String) {
-        if (pendingResult != null) {
-            pendingResult!!.error(errorCode, errorMessage, null);
-        }
-    }
-
-    private fun clearMethodCallAndResult() {
-        pendingResult = null
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        return true;
-    }
-
-    private fun getDapiConfigurations(paymentId: String? = null, host: String?, environment: DapiEnvironment = DapiEnvironment.PRODUCTION, appKey: String?): DapiConfigurations {
-        val previousConfigs = dapiClient.getConfigurations();
-        var externalHeader: HashMap<String, String> = hashMapOf<String, String>();
-        if (paymentId != null)
-            externalHeader[Consts.HEADER_KEY_PAYMENT_ID] = paymentId;
-
-
-        var config = DapiConfigurations(
-                appKey ?: previousConfigs.appKey,
-                host ?: previousConfigs.baseUrl,
-                environment,
-                previousConfigs.supportedCountriesCodes,
-                previousConfigs.userID,
-                previousConfigs.clientUserID,
-                extraHeaders = externalHeader
-        );
-
-        return config;
-    }
-
-
+        return true; }
 }
+
+
+
+
