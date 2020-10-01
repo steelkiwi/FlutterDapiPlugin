@@ -1,7 +1,7 @@
 name: dapi
 description: Plugin for dapi
-version: 0.0.3
-author:
+version: 0.0.4
+author: Serdun Dmitro
 homepage:
 
 environment:
