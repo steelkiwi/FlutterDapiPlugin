@@ -22,7 +22,8 @@ class DapiConnectDelegate: NSObject {
         let configs = DapiConfigurations(appKey:appKey,
                                          baseUrl: urlComponents,
                                          countries: ["AE"],
-                                         clientUserID: "testUser")
+                                         clientUserID: "testUser"
+        )
         configs.environment = env
         configs.isExperimental = false
         
@@ -87,33 +88,34 @@ class DapiConnectDelegate: NSObject {
         if (appKey == nil) {
                 finishWithError(errorMessage: "App key can't be null")
                 return;
-              }
-              if (host == nil) {
+            }
+        if (host == nil) {
                   finishWithError(errorMessage: "Host key can't be null")
                   return
               }
-              if (port == nil) {
+        if (port == nil) {
                   finishWithError(errorMessage: "Port key can't be null")
                   return;
               }
-              if env == nil {
+        if env == nil {
                  finishWithError(errorMessage: "Env key can't be null")
                   return
               }
         
-              if (!(env!.contains(Constants.ENVIRONMENT_SANDBOX) || env!.contains(Constants.ENVIRONMENT_PRODUCTION))) {
+        if (!(env!.contains(Constants.ENVIRONMENT_SANDBOX) || env!.contains(Constants.ENVIRONMENT_PRODUCTION))) {
                 finishWithError(errorMessage: "\(String(describing: env)) environment is not correc")
                   return
               }
         
+        let hostWithoutShema=host?.replacingOccurrences(of: "https://", with: "")
+        
         let environment:DPCAppEnvironment = (env == Constants.ENVIRONMENT_SANDBOX) ? DPCAppEnvironment.sandbox:DPCAppEnvironment.production
 
 
-        let conf:DapiConfigurations = getDapiConfig(env: environment, host: host!, port: port ?? 4041, appKey: appKey!,header: nil)
+        let conf:DapiConfigurations = getDapiConfig(env: environment, host: hostWithoutShema!, port: port ?? 4041, appKey: appKey!,header: nil)
         
         client = DapiClient(configurations:conf)
-        client?.connect.delegate = self
-        client?.autoFlow.connectDelegate = self
+        client!.connect.delegate = self
         
         
     }
@@ -123,20 +125,13 @@ class DapiConnectDelegate: NSObject {
     }
 
 
- 
-    
-    
-    
-    
-    
-    
-
-    func connect(eventSink : FlutterEventSink?) {
+ func connect(eventSink : FlutterEventSink?) {
         guard let eventSink = eventSink else {
              return
            }
         if client != nil {
                 loginEvent=eventSink;
+                client!.connect.delegate = self
                 client!.connect.present()
             }else {
                 eventSink(FlutterError(code:  "-1",
@@ -317,11 +312,6 @@ class DapiConnectDelegate: NSObject {
     }
 
     func createTransfer(_ call: FlutterMethodCall,client:DapiClient) {
-        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
-            finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
-            return
-        }
-        client.userID = userId
         guard let beneficiaryId: String = call.argument(key: Param.beneficiaryId.rawValue),
             let accountId: String = call.argument(key: Param.accountId.rawValue),
             let userId: String = call.argument(key: Param.userId.rawValue),
@@ -379,7 +369,12 @@ class DapiConnectDelegate: NSObject {
     }
     
     
-
+    private func finishWithError(errorCode: String? = nil, errorMessage: String, details: Any? = nil) {
+        guard let result = pendingResult else { return }
+        result(FlutterError(code: errorCode ?? "-1",
+                            message: errorMessage,
+                            details: nil))
+    }
 
 }
 
@@ -391,7 +386,7 @@ extension DapiConnectDelegate: DPCConnectDelegate {
     }
     
     func connectDidFailConnecting(toBankID bankID: String, withError error: String) {
-        let result =  getJsonFromModel(from:AuthStateModel(status: "FAILURE"))
+        let result =  getJsonFromModel(from:AuthStateModel(status: "FAILURE",error: error))
         self.loginEvent?.self(result)
     }
     
@@ -403,20 +398,8 @@ extension DapiConnectDelegate: DPCConnectDelegate {
         let result =  getJsonFromModel(from:AuthStateModel(accessId: userID, status: "PROCEED"))
         self.loginEvent?.self(result)
     }
-    
-
-
-
-
-    private func finishWithError(errorCode: String? = nil, errorMessage: String, details: Any? = nil) {
-        guard let result = pendingResult else { return }
-        result(FlutterError(code: errorCode ?? "-1",
-                            message: errorMessage,
-                            details: nil))
-    }
-
-
 }
+
 
 
 
