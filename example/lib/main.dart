@@ -35,6 +35,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     Dapi.initEnvironment(
+      dapiEnvironment: DapiEnvironment.SANDBOX,
       appKey:
           "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4",
       host: "https://api-lune.dev.steel.kiwi",

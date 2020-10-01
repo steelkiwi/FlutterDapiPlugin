@@ -5,6 +5,8 @@
 //  Created by Dmitro Serdun on 18.09.2020.
 //
 
+
+
 import Foundation
 enum Action: String {
      case connect = "dapi_connect"
@@ -16,6 +18,8 @@ enum Action: String {
      case createTransfer = "dapi_create_transfer"
      case delink = "dapi_delink"
      case initEnvironment = "dapi_connect_set_environment"
+    
+    
 
     
    }

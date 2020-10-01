@@ -8,11 +8,59 @@ class DapiConnectDelegate: NSObject {
     
     private var client: DapiClient?
     
-   
+    func getDapiConfig(env: DPCAppEnvironment,
+                       host:String,
+                       port:Int,
+                       appKey:String,
+                       header: [DPCEndPoint : [String : String]]?) ->  DapiConfigurations! {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+
+        urlComponents.host = host;
+        urlComponents.port = port
+
+        let configs = DapiConfigurations(appKey:appKey,
+                                         baseUrl: urlComponents,
+                                         countries: ["AE"],
+                                         clientUserID: "testUser")
+        configs.environment = env
+        configs.isExperimental = false
+        
+        if header != nil {
+            configs.endPointExtraHeaderFields=header!
+            
+        }
+        
+        return configs;
+    }
+    
+     func updateHeaderForDapiClient(headers: [DPCEndPoint : [String : String]]?=nil) {
+        let lastConfig=client!.configurations;
+        let configs = getDapiConfig(env: lastConfig.environment,
+                                    host: lastConfig.baseUrl.host!,
+                                    port: lastConfig.baseUrl.port!,
+                                    appKey: lastConfig.appKey,
+                                    header: headers)
+        client?.configurations=configs!
+       }
+    
+    func addPaymentIdToHeader(paymentId:String?){
+        if paymentId != nil {
+        updateHeaderForDapiClient(headers: [DPCEndPoint.createTransfer:["Dapi-Payment":paymentId!],
+                                            DPCEndPoint.resumeJob:["Dapi-Payment":paymentId!]]
+        )}
+    }
+    
+    
+    
+    
+    
+    
+    
     func executeAction(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         pendingResult = result
         if call.method == Action.initEnvironment.rawValue {
-            initEnvironment(call)
+            initEnvironment(call: call)
         } else {
             if client != nil{
                     switch Action(rawValue: call.method) {
@@ -29,10 +77,45 @@ class DapiConnectDelegate: NSObject {
         }}
     }
 
-    func initEnvironment(_ call: FlutterMethodCall) {
-        let client = DapiClient(configurations: getDapiConfig())
-               client.connect.delegate = self
-               client.autoFlow.connectDelegate = self
+    func initEnvironment(call: FlutterMethodCall) {
+        let appKey: String? = call.argument(key: Param.app_key.rawValue)
+        let port: Int? = call.argument(key: Param.port.rawValue)
+        let host: String? = call.argument(key: Param.host.rawValue)
+        let env: String? = call.argument(key: Param.environmentType.rawValue)
+        
+        
+        if (appKey == nil) {
+                finishWithError(errorMessage: "App key can't be null")
+                return;
+              }
+              if (host == nil) {
+                  finishWithError(errorMessage: "Host key can't be null")
+                  return
+              }
+              if (port == nil) {
+                  finishWithError(errorMessage: "Port key can't be null")
+                  return;
+              }
+              if env == nil {
+                 finishWithError(errorMessage: "Env key can't be null")
+                  return
+              }
+        
+              if (!(env!.contains(Constants.ENVIRONMENT_SANDBOX) || env!.contains(Constants.ENVIRONMENT_PRODUCTION))) {
+                finishWithError(errorMessage: "\(String(describing: env)) environment is not correc")
+                  return
+              }
+        
+        let environment:DPCAppEnvironment = (env == Constants.ENVIRONMENT_SANDBOX) ? DPCAppEnvironment.sandbox:DPCAppEnvironment.production
+
+
+        let conf:DapiConfigurations = getDapiConfig(env: environment, host: host!, port: port ?? 4041, appKey: appKey!,header: nil)
+        
+        client = DapiClient(configurations:conf)
+        client?.connect.delegate = self
+        client?.autoFlow.connectDelegate = self
+        
+        
     }
     
     func clear(){
@@ -40,30 +123,7 @@ class DapiConnectDelegate: NSObject {
     }
 
 
-    func getDapiConfig(paymentId: String? = nil,env: DPCAppEnvironment=DPCAppEnvironment.production) ->  DapiConfigurations {
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "https"
-
-        urlComponents.host = (env==DPCAppEnvironment.production) ? "api-lune.stg.steel.kiwi":"api-lune.dev.steel.kiwi";
-        urlComponents.port = 4041
-
-
-        let configs = DapiConfigurations(appKey: (env==DPCAppEnvironment.sandbox) ? appKeyDev:appKeyProd,
-                                         baseUrl: urlComponents,
-                                         countries: ["AE"],
-                                         clientUserID: "testUser")
-        configs.environment = env
-        configs.isExperimental = false
-        if let paymentId = paymentId {
-            configs.endPointExtraHeaderFields=[DPCEndPoint.createTransfer:["Dapi-Payment":paymentId]];
-            configs.endPointExtraHeaderFields=[DPCEndPoint.resumeJob:["Dapi-Payment":paymentId]];
-
-          }
-
-
-        return configs;
-    }
-    
+ 
     
     
     
@@ -87,6 +147,11 @@ class DapiConnectDelegate: NSObject {
     }
     
     func activeConenction(_ call: FlutterMethodCall,client:DapiClient) {
+        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
+            finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
+            return
+        }
+        client.userID = userId
         let result = client.connect.getConnections();
         var connectionsModel=[ConnectionModel]();
         if(!result.isEmpty){
@@ -223,6 +288,7 @@ class DapiConnectDelegate: NSObject {
             return
             
         }
+        client.userID = userId
         
         let linesAddress=DapiLinesAddress();
               linesAddress.line1=addressLine1;
@@ -251,6 +317,11 @@ class DapiConnectDelegate: NSObject {
     }
 
     func createTransfer(_ call: FlutterMethodCall,client:DapiClient) {
+        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
+            finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
+            return
+        }
+        client.userID = userId
         guard let beneficiaryId: String = call.argument(key: Param.beneficiaryId.rawValue),
             let accountId: String = call.argument(key: Param.accountId.rawValue),
             let userId: String = call.argument(key: Param.userId.rawValue),
@@ -261,8 +332,7 @@ class DapiConnectDelegate: NSObject {
         }
         
         let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
-        //todo chna
-        //client.configurations=getDapiConfig(paymentId: paymentId,env: client.configurations.environment);
+        addPaymentIdToHeader(paymentId: paymentId)
         client.userID = userId
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
@@ -270,13 +340,14 @@ class DapiConnectDelegate: NSObject {
                                       
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
-//                                            client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);
+                                            self?.updateHeaderForDapiClient(headers: nil)
                                             self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                                             return
                                         }
                                         
                                         let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
-//                                      client.configurations=self!.getDapiConfig(paymentId: nil,env: self!.client.configurations.environment);                                        self?.pendingResult?.self(getJsonFromModel(from:response))
+                                        self?.updateHeaderForDapiClient(headers: nil)
+
 
                                         
                                        

@@ -5,6 +5,18 @@
 //  Created by Dmitro Serdun on 18.09.2020.
 //
 
+//final val PARAMET_ENVIRONMENT = "dapi_environment"
+//       final val ENVIRONMENT_PRODUCTION = "production"
+//       final val ENVIRONMENT_SANDBOX = "sandbox"
+//       final val PARAM_HOST = "PARAM_HOST";
+//       final val PARAM_PORT = "PARAM_PORT";
+//       final val PARAM_APP_KEY = "PARAM_APP_KEY";
+struct Constants {
+    static let ENVIRONMENT_PRODUCTION = "production"
+    static let ENVIRONMENT_SANDBOX = "sandbox"
+    
+}
+
 import Foundation
  enum Param: String {
   case amount = "param_amount"
@@ -14,6 +26,12 @@ import Foundation
   case transferRemark = "transfer_remark"
   case headerPaymentId = "header_payment_id"
   case environmentType = "dapi_environment"
+  case host = "PARAM_HOST"
+  case port = "PARAM_PORT"
+  case app_key = "PARAM_APP_KEY"
+
+    
+    
 
 }
 

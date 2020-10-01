@@ -71,7 +71,7 @@ class Dapi {
 
   static const HEADER_PAYMENT_ID = "header_payment_id";
 
-  static Future<String> initEnvironment({DapiEnvironment dapiEnvironment,
+  static Future<String> initEnvironment({@required DapiEnvironment dapiEnvironment,
     String host,
     int port,
     String appKey}) async {
