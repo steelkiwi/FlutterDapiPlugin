@@ -142,11 +142,6 @@ class DapiConnectDelegate: NSObject {
     }
     
     func activeConenction(_ call: FlutterMethodCall,client:DapiClient) {
-        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
-            finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
-            return
-        }
-        client.userID = userId
         let result = client.connect.getConnections();
         var connectionsModel=[ConnectionModel]();
         if(!result.isEmpty){

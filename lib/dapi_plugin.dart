@@ -199,7 +199,7 @@ class Dapi {
     return account;
   }
 
-  static Future<BeneficiaryRequestSuccess> createBeneficiary({String userId,
+  static Future<BeneficiaryRequestSuccess> createBeneficiary({@required String userId,
     @required String addres1,
     @required String addres2,
     @required String addres3,
