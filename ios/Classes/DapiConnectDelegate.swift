@@ -332,6 +332,8 @@ class DapiConnectDelegate: NSObject {
                                         
                                         let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
                                         self?.updateHeaderForDapiClient(headers: nil)
+                                        self?.pendingResult?.self(getJsonFromModel(from:response))
+
 
 
                                         
