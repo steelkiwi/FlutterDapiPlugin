@@ -223,7 +223,7 @@ class _MyAppState extends State<MyApp> {
                     color: Colors.green.withOpacity(0.5),
                     child: Text("Delink"),
                     onPressed: () async {
-                      var result = await Dapi.delink(userId: _accessId);
+                      var result = await Dapi.delink(dapiAccessId: _accessId);
                       if (result.success) {
                         _accessId = 'null';
                         _account = 'null';

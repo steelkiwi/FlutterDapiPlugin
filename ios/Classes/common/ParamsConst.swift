@@ -11,9 +11,21 @@
 //       final val PARAM_HOST = "PARAM_HOST";
 //       final val PARAM_PORT = "PARAM_PORT";
 //       final val PARAM_APP_KEY = "PARAM_APP_KEY";
+
+
+struct Headers {
+    static let LUN_PAYMENT_ID = "Dapi-Account"
+
+
+    
+}
+
 struct Constants {
     static let ENVIRONMENT_PRODUCTION = "production"
     static let ENVIRONMENT_SANDBOX = "sandbox"
+    
+    static let PAREMETR_LUN_PAYMENT_ID = "lun_payment_id"
+
     
 }
 

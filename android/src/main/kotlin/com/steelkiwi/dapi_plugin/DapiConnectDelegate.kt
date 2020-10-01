@@ -164,7 +164,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
     }
 
     private fun getSubAccounts(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
-        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_DAPI_ACCESS_ID);
         userId?.let { dapiClient.userID = it };
         dapiClient.data.getAccounts({ successFinish(it.accounts, result); }
         ) { error ->
@@ -174,7 +174,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
     }
 
     private fun getDapiBankMetadata(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
-        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_DAPI_ACCESS_ID);
         userId?.let { dapiClient.userID = it };
         dapiClient.metadata.getAccountMetaData(
                 { accountMetaData ->
@@ -187,7 +187,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
     }
 
     private fun getBeneficiaries(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
-        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_DAPI_ACCESS_ID);
         userId?.let { dapiClient.userID = it };
         dapiClient.payment.getBeneficiaries(
                 { beneficiaries ->
@@ -202,7 +202,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
     private fun createTransfer(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val beneficiaryId = call.argument<String>(Consts.PARAMET_BENEFICIARY_ID);
         val accountId = call.argument<String>(Consts.PARAMET_ACCOUNT_ID);
-        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_DAPI_ACCESS_ID);
         val amount = call.argument<Double>(Consts.PARAMET_AMOUNT);
         val remark = call.argument<String>(Consts.PARAMET_REMARK);
         val paymentID: String? = (call.argument<String>(Consts.HEADER_VALUE_PAYMENT_ID))
@@ -233,13 +233,23 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
 
 
     private fun delink(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
-        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
-        userId?.let { dapiClient.userID = (it) };
-        dapiClient.auth.delink(
-                { delink ->
-                    successFinish(delink, result);
-                }
+        val dapiAccessId = call.argument<String>(Consts.PARAMET_DAPI_ACCESS_ID);
+        val userId = call.argument<String>(Consts.PARAMET_LUN_PAYMENT_ID);
+        dapiAccessId?.let {
+            dapiClient.userID = (it)
+        };
+        userId?.let {
+            updateHeaderForDapiClient(hashMapOf<String, String>(Consts.HEADER_KEY_PAYMENT_LUN to it))
+        }
+
+        dapiClient.auth.delink({
+            successFinish(it, result);
+            updateHeaderForDapiClient()
+
+        }
         ) { error ->
+            updateHeaderForDapiClient()
+
             val errorMessage: String = if (error.msg == null) "Delink error" else error.msg!!;
             result.error(error?.type ?: "", errorMessage, null);
         }
@@ -247,7 +257,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
     }
 
     private fun createBeneficiary(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
-        val userId = call.argument<String>(Consts.PARAMET_USER_ID);
+        val userId = call.argument<String>(Consts.PARAMET_DAPI_ACCESS_ID);
         val addressLine1 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1);
         val addressLine2 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2);
         val addressLine3 = call.argument<String>(Consts.PARAMET_CREATE_BENEFICIARY_LINE_ADDRES3);

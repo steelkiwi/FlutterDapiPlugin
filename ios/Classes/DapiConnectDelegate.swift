@@ -52,6 +52,12 @@ class DapiConnectDelegate: NSObject {
         )}
     }
     
+    func addLunPaymentIdToHeader(lunPaymentId:String?){
+        if lunPaymentId != nil {
+            updateHeaderForDapiClient(headers: [DPCEndPoint.delinkUser:[Headers.LUN_PAYMENT_ID:lunPaymentId!],]
+        )}
+    }
+    
     
     
     
@@ -348,12 +354,16 @@ class DapiConnectDelegate: NSObject {
 
 
     func delink(_ call: FlutterMethodCall,client:DapiClient) {
-        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
+        let lunPaymentId: String? = call.argument(key: Headers.LUN_PAYMENT_ID)
+
+        guard let dapiAccessId: String = call.argument(key: Param.userId.rawValue) else {
             finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
             return
         }
-        client.userID = userId
+        client.userID = dapiAccessId
+        addLunPaymentIdToHeader(lunPaymentId: lunPaymentId)
         client.auth.delinkUser { [weak self] response, error in
+            self?.updateHeaderForDapiClient(headers: nil)
             guard let response = response, error == nil else {
                 self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
                 return

@@ -3,11 +3,13 @@ package com.steelkiwi.dapi_plugin
 class Consts {
     companion object {
         final val HEADER_KEY_PAYMENT_ID = "Dapi-Payment";
+        final val HEADER_KEY_PAYMENT_LUN = "Dapi-Account";
         final val HEADER_VALUE_PAYMENT_ID = "header_payment_id"
 
 
         final val PARAMET_AMOUNT = "param_amount"
-        final val PARAMET_USER_ID = "user_id"
+        final val PARAMET_DAPI_ACCESS_ID = "user_id"
+        final val PARAMET_LUN_PAYMENT_ID = "lun_payment_id"
         final val PARAMET_BENEFICIARY_ID = "beneficiary_id"
         final val PARAMET_ACCOUNT_ID = "account_id"
         final val PARAMET_REMARK = "transfer_remark"
