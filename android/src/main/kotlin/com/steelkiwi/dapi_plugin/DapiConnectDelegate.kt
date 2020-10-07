@@ -231,16 +231,15 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         paymentID?.let {
             updateHeaderForDapiClient(hashMapOf<String, String>(Consts.HEADER_KEY_PAYMENT_ID to paymentID))
         }
-        if (accountId == null || amount == null) {
-            result.error("-1", "Beneficiary id or Account or Amount  is null", null);
+
+        if (accountId != null && amount != null && beneficiaryId != null && iban == null && name == null) {
+            dapiClient.payment.createTransfer(
+                    beneficiaryId, accountId, amount, remark, successCallback, errorCallback)
         } else {
-            if ((iban == null || name == null || accountNumber == null) && beneficiaryId != null) {
-                dapiClient.payment.createTransfer(
-                        beneficiaryId, accountId, amount, remark, successCallback, errorCallback)
-            } else {
-                dapiClient.payment.createTransfer(iban!!, name!!, beneficiaryId!!, amount!!, remark, successCallback, errorCallback)
-            }
+            dapiClient.payment.createTransfer(iban!!, name!!, beneficiaryId!!, amount!!, remark, successCallback, errorCallback)
+
         }
+
 
     }
 
