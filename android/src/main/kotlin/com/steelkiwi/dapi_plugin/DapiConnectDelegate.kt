@@ -238,7 +238,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
                 dapiClient.payment.createTransfer(
                         beneficiaryId, accountId, amount, remark, successCallback, errorCallback)
             } else {
-                dapiClient.payment.createTransfer(iban!!, name!!, accountId!!, amount!!, remark, successCallback, errorCallback)
+                dapiClient.payment.createTransfer(iban!!, name!!, beneficiaryId!!, amount!!, remark, successCallback, errorCallback)
             }
         }
 
