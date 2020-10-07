@@ -221,10 +221,9 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
             updateHeaderForDapiClient()
         };
 
-        val errorCallback = { error: DapiError ->
-            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-            result.error(error.type ?: "", errorMessage, null);
+        val errorCallback = { err: DapiError ->
             updateHeaderForDapiClient()
+            result.error(err.type ?: "", err.msg ?: "Error", null);
         };
 
 
@@ -239,12 +238,6 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
                 dapiClient.payment.createTransfer(
                         beneficiaryId, accountId, amount, remark, successCallback, errorCallback)
             } else {
-//
-//                Intrinsics.checkNotNullParameter(var1, "iban");
-//                Intrinsics.checkNotNullParameter(var2, "name");
-//                Intrinsics.checkNotNullParameter(var3, "senderID");
-//                Intrinsics.checkNotNullParameter(var7, "onSuccess");
-//                Intrinsics.checkNotNullParameter(var8, "onFailure");
                 dapiClient.payment.createTransfer(iban!!, name!!, accountId!!, amount!!, remark, successCallback, errorCallback)
             }
         }
