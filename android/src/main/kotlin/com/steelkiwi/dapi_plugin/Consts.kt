@@ -13,6 +13,10 @@ class Consts {
         final val PARAMET_BENEFICIARY_ID = "beneficiary_id"
         final val PARAMET_ACCOUNT_ID = "account_id"
         final val PARAMET_REMARK = "transfer_remark"
+        final val PARAMET_IBAN = "iban"
+        final val PARAMET_NAME = "name"
+        final val PARAMET_ACCOUNT_NUMBER = "account_number"
+
 
         final val PARAMET_ENVIRONMENT = "dapi_environment"
         final val ENVIRONMENT_PRODUCTION = "production"

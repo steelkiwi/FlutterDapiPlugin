@@ -47,6 +47,10 @@ class Dapi {
   static const PARAM_PORT = "PARAM_PORT";
   static const PARAM_APP_KEY = "PARAM_APP_KEY";
 
+  static const PARAM_IBAN = "iban";
+  static const PARAM_NAME = "name";
+  static const PARAM_ACCOUNT_NUMBER = "account_number";
+
   static const PARAMET_CREATE_BENEFICIARY_LINE_ADDRES1 =
       "create_beneficiary_line_addres1";
   static const PARAMET_CREATE_BENEFICIARY_LINE_ADDRES2 =
@@ -165,12 +169,20 @@ class Dapi {
     return accounts;
   }
 
+  // You do not need to send a Create Beneficiaries request. Instead, you will include these additional parameters in Create Transfer when sending money to a new beneficiary:
+  // name
+  // iban
+  // senderID
+  // amount
+  // https://docs.dapi.co/docs/exceptions
   static Future<CreateTransferResponse> createTransfer(
       {@required String userId,
-      @required String beneficiaryId,
       @required String accountId,
       @required double amount,
       @required String remark,
+      String beneficiaryId,
+      String iban,
+      String name,
       String paymentId}) async {
     final arguments = <String, dynamic>{
       PARAM_AMOUNT: amount,
@@ -179,6 +191,8 @@ class Dapi {
       PARAM_USER_ID: userId,
       PARAM_REMARK: remark,
       HEADER_PAYMENT_ID: paymentId,
+      PARAM_IBAN: iban,
+      PARAM_NAME: name,
     };
     final String resultPath =
         await _channel.invokeMethod(KEY_DAPI_CREATED_TRANSFER, arguments);

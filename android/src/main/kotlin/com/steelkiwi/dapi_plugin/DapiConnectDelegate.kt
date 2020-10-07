@@ -7,6 +7,7 @@ import android.os.Looper
 import com.dapi.connect.core.base.DapiClient
 import com.dapi.connect.core.callbacks.OnDapiConnectListener
 import com.dapi.connect.core.enums.DapiEnvironment
+import com.dapi.connect.data.endpoint_models.CreateTransfer
 import com.dapi.connect.data.models.DapiBeneficiaryInfo
 import com.dapi.connect.data.models.DapiConfigurations
 import com.dapi.connect.data.models.DapiError
@@ -199,6 +200,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         }
     }
 
+
     private fun createTransfer(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val beneficiaryId = call.argument<String>(Consts.PARAMET_BENEFICIARY_ID);
         val accountId = call.argument<String>(Consts.PARAMET_ACCOUNT_ID);
@@ -206,26 +208,36 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         val amount = call.argument<Double>(Consts.PARAMET_AMOUNT);
         val remark = call.argument<String>(Consts.PARAMET_REMARK);
         val paymentID: String? = (call.argument<String>(Consts.HEADER_VALUE_PAYMENT_ID))
+
+        val iban: String? = (call.argument<String>(Consts.PARAMET_IBAN))
+        val name: String? = (call.argument<String>(Consts.PARAMET_NAME))
+        val accountNumber: String? = (call.argument<String>(Consts.PARAMET_ACCOUNT_NUMBER))
+
+
+        val successCallback = { value: CreateTransfer ->
+            successFinish(value, result);
+            updateHeaderForDapiClient()
+        };
+
+        val errorCallback = { error: DapiError ->
+            val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
+            result.error(error.type ?: "", errorMessage, null);
+            updateHeaderForDapiClient()
+        };
+
+
         userId?.let { dapiClient.userID = (it) };
         paymentID?.let {
             updateHeaderForDapiClient(hashMapOf<String, String>(Consts.HEADER_KEY_PAYMENT_ID to paymentID))
         }
-        print("Create transfer env: " + dapiClient.getConfigurations().environment.name())
-        if (beneficiaryId == null || accountId == null) {
-            result.error("-1", "Beneficiary id or Account is is null", null);
-
+        if (beneficiaryId == null || accountId == null || amount == null) {
+            result.error("-1", "Beneficiary id or Account or Amount  is null", null);
         } else {
-            dapiClient.payment.createTransfer(beneficiaryId, accountId, amount!!, remark,
-                    { createTransfer ->
-                        successFinish(createTransfer, result);
-                        updateHeaderForDapiClient()
-
-                    }
-            ) { error ->
-                val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
-                result.error(error.type ?: "", errorMessage, null);
-                updateHeaderForDapiClient()
-
+            if (iban == null || name == null || accountNumber == null) {
+                dapiClient.payment.createTransfer(
+                        beneficiaryId, accountId, amount!!, remark, successCallback, errorCallback)
+            } else {
+                dapiClient.payment.createTransfer(iban, name, accountId, amount, remark, successCallback, errorCallback)
             }
         }
 
