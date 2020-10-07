@@ -167,7 +167,9 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
     private fun getSubAccounts(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val userId = call.argument<String>(Consts.PARAMET_DAPI_ACCESS_ID);
         userId?.let { dapiClient.userID = it };
-        dapiClient.data.getAccounts({ successFinish(it.accounts, result); }
+        dapiClient.data.getAccounts({
+            successFinish(it.accounts, result);
+        }
         ) { error ->
             val errorMessage: String = if (error.msg == null) "Get accounts error" else error.msg!!;
             result.error(error.type ?: "", errorMessage, null);
@@ -230,14 +232,14 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         paymentID?.let {
             updateHeaderForDapiClient(hashMapOf<String, String>(Consts.HEADER_KEY_PAYMENT_ID to paymentID))
         }
-        if (beneficiaryId == null || accountId == null || amount == null) {
+        if (accountId == null || amount == null) {
             result.error("-1", "Beneficiary id or Account or Amount  is null", null);
         } else {
-            if (iban == null || name == null || accountNumber == null) {
+            if ((iban == null || name == null || accountNumber == null) && beneficiaryId != null) {
                 dapiClient.payment.createTransfer(
-                        beneficiaryId, accountId, amount!!, remark, successCallback, errorCallback)
+                        beneficiaryId, accountId, amount, remark, successCallback, errorCallback)
             } else {
-                dapiClient.payment.createTransfer(iban, name, accountId, amount, remark, successCallback, errorCallback)
+                dapiClient.payment.createTransfer(iban!!, name!!, accountId, amount, remark, successCallback, errorCallback)
             }
         }
 
@@ -305,9 +307,9 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
                 phoneNumber = phone
         )
 
-        dapiClient.payment.createBeneficiary(info, onSuccess = {
+        dapiClient.payment.createBeneficiary(info, {
             successFinish(it, result)
-        }, onFailure = {
+        }, {
             val errorMessage: String = if (it.msg == null) "Get accounts error" else it.msg!!;
             result.error(it?.type ?: "", errorMessage, null);
         })
