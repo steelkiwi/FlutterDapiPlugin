@@ -239,7 +239,13 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
                 dapiClient.payment.createTransfer(
                         beneficiaryId, accountId, amount, remark, successCallback, errorCallback)
             } else {
-                dapiClient.payment.createTransfer(iban!!, name!!, accountId, amount, remark, successCallback, errorCallback)
+//
+//                Intrinsics.checkNotNullParameter(var1, "iban");
+//                Intrinsics.checkNotNullParameter(var2, "name");
+//                Intrinsics.checkNotNullParameter(var3, "senderID");
+//                Intrinsics.checkNotNullParameter(var7, "onSuccess");
+//                Intrinsics.checkNotNullParameter(var8, "onFailure");
+                dapiClient.payment.createTransfer(iban!!, name!!, accountId!!, amount!!, remark, successCallback, errorCallback)
             }
         }
 

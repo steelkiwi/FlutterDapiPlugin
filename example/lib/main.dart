@@ -311,11 +311,14 @@ class _MyAppState extends State<MyApp> {
                       try {
                         var result = await Dapi.createTransfer(
                             userId: _accessId,
-                            accountId: _accountId,
-                            beneficiaryId: _beneficiariarId,
+                            accountId:
+                                "wsqFM5oD+etNQSXx1N2s4I4NBiOkFElBU2cxIX2Yb9CWQsTWMo/wnfqTVQhbKDui6xgP7eCx91j/N0SEQsy+6g==",
+                            name: "DAPI Sandbox Account",
+                            // beneficiaryId: _beneficiariarId,
                             remark:
                                 "{ \"name\":\"John\", \"age\":30, \"car\":null }",
                             amount: 1.0,
+                            iban: "GB33BAEDB20201555555893",
                             paymentId: "83515136-9146-523a-9936-3229d51fd49d");
                         // _beneficiaries = result.toString();
                         // _beneficiariarId = result.beneficiaries.first?.id;
