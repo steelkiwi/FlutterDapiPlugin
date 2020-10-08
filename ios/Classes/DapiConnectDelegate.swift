@@ -313,27 +313,28 @@ class DapiConnectDelegate: NSObject {
     }
 
     func createTransfer(_ call: FlutterMethodCall,client:DapiClient) {
-        guard let beneficiaryId: String = call.argument(key: Param.beneficiaryId.rawValue),
+        guard
             let accountId: String = call.argument(key: Param.accountId.rawValue),
             let userId: String = call.argument(key: Param.userId.rawValue),
-            let iban: String = call.argument(key: Constants.PARAM_IBAN),
-            let name: String = call.argument(key:Constants.PARAM_NAME),
-
             let amount: NSNumber = call.argument(key: Param.amount.rawValue)
              else {
                 finishWithError(errorMessage: "Invalid arguments")
                 return
         }
         
+        let beneficiaryId: String? = call.argument(key: Param.beneficiaryId.rawValue)
+        let iban: String? = call.argument(key: Constants.PARAM_IBAN)
+        let name: String? = call.argument(key:Constants.PARAM_NAME)
+        
         let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
         addPaymentIdToHeader(paymentId: paymentId)
         client.userID = userId
     
         
-        if(iban==nil&&name==nil){
+        if(iban==nil && name==nil){
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
-                                      toReceiverID: beneficiaryId,
+                                      toReceiverID: beneficiaryId!,
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
                                             self?.updateHeaderForDapiClient(headers: nil)
@@ -349,8 +350,8 @@ class DapiConnectDelegate: NSObject {
         }else{
             client.payment.createTransfer(withSenderID: accountId,
                                           amount: amount,
-                                          iban:iban,
-                                          name: name,
+                                          iban:iban!,
+                                          name: name!,
                                           completion: { [weak self] result, error, string in
                                             guard let result = result, error == nil else {
                                                 self?.updateHeaderForDapiClient(headers: nil)
