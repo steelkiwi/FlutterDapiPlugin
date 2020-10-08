@@ -9,6 +9,7 @@ import Foundation
 struct AuthStateModel:Codable{
     var accessId:String?
     var status:String?
+    var bankId:String?
     var error:String?
 
  

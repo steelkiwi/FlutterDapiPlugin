@@ -402,7 +402,7 @@ class DapiConnectDelegate: NSObject {
 extension DapiConnectDelegate: DPCConnectDelegate {
        func connectDidSuccessfullyConnect(toBankID bankID: String, userID: String) {
         guard loginEvent != nil else { return }
-        let result =  getJsonFromModel(from:AuthStateModel(accessId: userID, status: "SUCCESS"))
+        let result =  getJsonFromModel(from:AuthStateModel(accessId: userID, status: "SUCCESS",bankId:bankID))
         self.loginEvent?.self(result)
     }
     
