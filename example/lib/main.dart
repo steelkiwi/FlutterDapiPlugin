@@ -314,7 +314,7 @@ class _MyAppState extends State<MyApp> {
                             accountId:
                                 "wsqFM5oD+etNQSXx1N2s4I4NBiOkFElBU2cxIX2Yb9CWQsTWMo/wnfqTVQhbKDui6xgP7eCx91j/N0SEQsy+6g==",
                             name: "DAPI Sandbox Account",
-                            // beneficiaryId: _beneficiariarId,
+                             beneficiaryId: "Test",
                             remark:
                                 "{ \"name\":\"John\", \"age\":30, \"car\":null }",
                             amount: 1.0,
