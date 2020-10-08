@@ -125,7 +125,7 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
         dapiClient.connect.setOnConnectListener(object : OnDapiConnectListener {
             override fun onConnectionSuccessful(userID: String, bankID: String) {
                 uiThreadHandler.post {
-                    val result = Gson().toJson(AuthState(accessId = userID, status = AuthStatus.SUCCESS));
+                    val result = Gson().toJson(AuthState(accessId = userID, bankId = bankID, status = AuthStatus.SUCCESS));
                     events?.success(result)
                     events?.endOfStream();
                 }
