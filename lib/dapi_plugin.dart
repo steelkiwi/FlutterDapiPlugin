@@ -102,6 +102,7 @@ class Dapi {
         Map map = jsonDecode(data);
         var obj = AuthState(
             accessID: map["accessId"],
+            bankId: map["bankId"],
             error: map["error"],
             status: map["status"] == "PROCEED"
                 ? AuthStatus.PROCEED
