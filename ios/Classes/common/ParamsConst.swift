@@ -23,8 +23,9 @@ struct Headers {
 struct Constants {
     static let ENVIRONMENT_PRODUCTION = "production"
     static let ENVIRONMENT_SANDBOX = "sandbox"
-    
     static let PAREMETR_LUN_PAYMENT_ID = "lun_payment_id"
+    static let PARAM_IBAN = "iban";
+    static let PARAM_NAME = "name";
 
     
 }

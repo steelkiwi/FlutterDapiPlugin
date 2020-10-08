@@ -1,8 +1,8 @@
 PODS:
   - dapi (0.0.3):
-    - DapiConnect (= 0.2.8)
+    - DapiConnect (= 0.2.10)
     - Flutter
-  - DapiConnect (0.2.8)
+  - DapiConnect (0.2.10)
   - Flutter (1.0.0)
 
 DEPENDENCIES:
@@ -20,10 +20,10 @@ EXTERNAL SOURCES:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  dapi: 22ea5dad22eef84094bffa503aa13fd7be76a070
-  DapiConnect: 8d2c9409a4c87c3d171a52ffbba42e01b6fb7be2
+  dapi: d5d0f78563f5230eb2c08a5c5db996f20a6b0cb9
+  DapiConnect: e439883774c71bcd8577bba088e0bfca0d935c97
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
 
 PODFILE CHECKSUM: a1b07c5b2097815348160f8277896d8a6aef2652
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0.rc.1

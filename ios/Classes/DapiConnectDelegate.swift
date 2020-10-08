@@ -316,6 +316,9 @@ class DapiConnectDelegate: NSObject {
         guard let beneficiaryId: String = call.argument(key: Param.beneficiaryId.rawValue),
             let accountId: String = call.argument(key: Param.accountId.rawValue),
             let userId: String = call.argument(key: Param.userId.rawValue),
+            let iban: String = call.argument(key: Constants.PARAM_IBAN),
+            let name: String = call.argument(key:Constants.PARAM_NAME),
+
             let amount: NSNumber = call.argument(key: Param.amount.rawValue)
              else {
                 finishWithError(errorMessage: "Invalid arguments")
@@ -325,10 +328,12 @@ class DapiConnectDelegate: NSObject {
         let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
         addPaymentIdToHeader(paymentId: paymentId)
         client.userID = userId
+    
+        
+        if(iban==nil&&name==nil){
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
                                       toReceiverID: beneficiaryId,
-                                      
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
                                             self?.updateHeaderForDapiClient(headers: nil)
@@ -339,17 +344,26 @@ class DapiConnectDelegate: NSObject {
                                         let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
                                         self?.updateHeaderForDapiClient(headers: nil)
                                         self?.pendingResult?.self(getJsonFromModel(from:response))
-
-
-
-                                        
-                                       
-                                        
-                                        
-                                        
-                                        
-                                        
-            })
+                                      })
+            
+        }else{
+            client.payment.createTransfer(withSenderID: accountId,
+                                          amount: amount,
+                                          iban:iban,
+                                          name: name,
+                                          completion: { [weak self] result, error, string in
+                                            guard let result = result, error == nil else {
+                                                self?.updateHeaderForDapiClient(headers: nil)
+                                                self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
+                                                return
+                                            }
+                                            
+                                            let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
+                                            self?.updateHeaderForDapiClient(headers: nil)
+                                            self?.pendingResult?.self(getJsonFromModel(from:response))
+                                          })
+            
+        }
     }
 
 
