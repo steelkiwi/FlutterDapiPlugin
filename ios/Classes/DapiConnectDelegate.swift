@@ -325,20 +325,22 @@ class DapiConnectDelegate: NSObject {
         let beneficiaryId: String? = call.argument(key: Param.beneficiaryId.rawValue)
         let iban: String? = call.argument(key: Constants.PARAM_IBAN)
         let name: String? = call.argument(key:Constants.PARAM_NAME)
+        let acountNumber: String? = call.argument(key:Constants.PARAM_ACCOUNT_NUMBER)
+
         
         let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
         addPaymentIdToHeader(paymentId: paymentId)
         client.userID = userId
     
         
-        if(iban==nil && name==nil){
+        if (beneficiaryId != nil) {
         client.payment.createTransfer(withSenderID: accountId,
                                       amount: amount,
                                       toReceiverID: beneficiaryId!,
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
                                             self?.updateHeaderForDapiClient(headers: nil)
-                                            self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
+                                            self?.finishWithError(errorMessage: error?.localizedDescription ?? "Transaction error")
                                             return
                                         }
                                         
@@ -347,7 +349,7 @@ class DapiConnectDelegate: NSObject {
                                         self?.pendingResult?.self(getJsonFromModel(from:response))
                                       })
             
-        }else{
+        } else if (iban != nil && name != nil) {
             client.payment.createTransfer(withSenderID: accountId,
                                           amount: amount,
                                           iban:iban!,
@@ -355,7 +357,7 @@ class DapiConnectDelegate: NSObject {
                                           completion: { [weak self] result, error, string in
                                             guard let result = result, error == nil else {
                                                 self?.updateHeaderForDapiClient(headers: nil)
-                                                self?.finishWithError(errorMessage: error?.localizedDescription ?? "Get accounts error")
+                                                self?.finishWithError(errorMessage: error?.localizedDescription ?? "Transaction error")
                                                 return
                                             }
                                             
@@ -363,8 +365,14 @@ class DapiConnectDelegate: NSObject {
                                             self?.updateHeaderForDapiClient(headers: nil)
                                             self?.pendingResult?.self(getJsonFromModel(from:response))
                                           })
+        } else {
+            finishWithError(errorMessage: "Missed some parm for transaction")
+    }
+        
+
+        
             
-        }
+        
     }
 
 

@@ -232,14 +232,17 @@ class DapiConnectDelegate(private var activity: Activity, var dapiClient: DapiCl
             updateHeaderForDapiClient(hashMapOf<String, String>(Consts.HEADER_KEY_PAYMENT_ID to paymentID))
         }
 
-        if (iban == null && name == null) {
-            dapiClient.payment.createTransfer(beneficiaryId!!, accountId!!, amount!!, remark, successCallback, errorCallback)
+
+        if (beneficiaryId != null && accountId != null) {
+            dapiClient.payment.createTransfer(beneficiaryId, accountId, amount!!, remark, successCallback, errorCallback)
+        } else if (iban != null && name != null) {
+            dapiClient.payment.createTransfer(iban, name, accountId!!, amount!!, remark, successCallback, errorCallback)
+        } else if (name != null && accountNumber != null) {
+            dapiClient.payment.createTransfer(accountNumber, name!!, amount!!, accountId!!, remark, successCallback, errorCallback)
         } else {
-            dapiClient.payment.createTransfer(iban!!, name!!, accountId!!, amount!!, remark, successCallback, errorCallback)
+            result.error("No param", "Missed some parm for transaction", null);
 
         }
-
-
     }
 
 

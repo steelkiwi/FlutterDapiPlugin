@@ -26,7 +26,7 @@ struct Constants {
     static let PAREMETR_LUN_PAYMENT_ID = "lun_payment_id"
     static let PARAM_IBAN = "iban";
     static let PARAM_NAME = "name";
-
+    static let PARAM_ACCOUNT_NUMBER = "account_number";
     
 }
 
