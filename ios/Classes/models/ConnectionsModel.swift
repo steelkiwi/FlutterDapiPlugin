@@ -16,7 +16,6 @@ struct ConnectionModel:Codable{
     var fullBankName:String?
     var isCreateBeneficiaryRequired:Bool?
     var userID:String?
-    var subAccounts:[SubAccountModel]
 }
 
 
@@ -55,8 +54,8 @@ struct SubAccountModel:Codable{
 
 
 struct CurrencyModel:Codable{
-    var unit:String
-    var value:String
+    var name:String
+    var code:String
 }
 
 struct CountryModel:Codable{

@@ -6,8 +6,8 @@ class Currency {
 
     factory Currency.fromJson(Map<String, dynamic> json) {
         return Currency(
-            code: "json['code']",
-            name: "json['name']",
+            code: json['code'],
+            name: json['name'],
         );
     }
 

@@ -153,14 +153,14 @@ class DapiConnectDelegate: NSObject {
         if(!result.isEmpty){
             for i in 0...result.count-1 {
                 let it=result[i];
-                var accounts=[SubAccountModel]();
+//                var accounts=[SubAccountModel]();
                 
-                if(!it.accounts.isEmpty){
-                for j in 0...it.accounts.count-1 {
-                    let accountItem=it.accounts[j];
-                    let subAccountModel=SubAccountModel(currency:CurrencyModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
-                    accounts.append(subAccountModel)
-                    }}
+//                if(!it.accounts.isEmpty){
+//                for j in 0...it.accounts.count-1 {
+//                    let accountItem=it.accounts[j];
+//                    let subAccountModel=SubAccountModel(currency:CurrencyModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
+//                    accounts.append(subAccountModel)
+//                    }}
 
                 let connectionModel=ConnectionModel(
                     bankID:it.bankID,
@@ -169,8 +169,7 @@ class DapiConnectDelegate: NSObject {
                     country: it.countryName,
                     fullBankName: it.bankName,
                     isCreateBeneficiaryRequired: it.isCreateBeneficiaryEndpointRequired,
-                    userID: it.userID,
-                    subAccounts:accounts)
+                    userID: it.userID)
                 
                 connectionsModel.append(connectionModel)
                             
@@ -195,7 +194,7 @@ class DapiConnectDelegate: NSObject {
             if let dapiAccounts = dapiAccounts {
             for j in 0...dapiAccounts.count-1 {
                    let accountItem=dapiAccounts[j];
-                   let subAccountModel=SubAccountModel(currency:CurrencyModel(unit: accountItem.currency.name, value: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
+                   let subAccountModel=SubAccountModel(currency:CurrencyModel(name: accountItem.currency.name, code: accountItem.currency.code) , iban: accountItem.iban, id: accountItem.accountID, isFavourite: accountItem.isFavourite, name: accountItem.name, number: accountItem.number, type: accountItem.type);
                    accounts.append(subAccountModel)
                    }
                 let jsonConnections =  getJsonFromModel(from:accounts)
