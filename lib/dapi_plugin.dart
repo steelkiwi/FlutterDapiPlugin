@@ -8,8 +8,8 @@ import 'package:dapi/models/create_transfer_response.dart';
 import 'package:flutter/widgets.dart';
 
 import 'configs/channels.dart';
+import 'configs/const_actions.dart';
 import 'configs/const_messages.dart';
-import 'configs/consts_action.dart';
 import 'configs/consts_env.dart';
 import 'configs/environment.dart';
 import 'models/account.dart';
@@ -132,7 +132,7 @@ class Dapi {
       ConstParameters.transactionRemark: remark,
       ConstHeaders.transactionPaymentId: paymentId,
       ConstParameters.iBan: iban,
-      ConstParameters.transactionSenderName: name,
+      ConstParameters.transactionReceiverName: name,
     };
     final String resultPath = await _channels.baseChannel
         .invokeMethod(ConstAction.createTransferIdToIBan, arguments);
@@ -155,7 +155,7 @@ class Dapi {
       ConstParameters.transactionBankAccountId: accountId,
       ConstParameters.transactionRemark: remark,
       ConstHeaders.transactionPaymentId: paymentId,
-      ConstParameters.transactionSenderName: name,
+      ConstParameters.transactionReceiverName: name,
     };
     final String resultPath = await _channels.baseChannel
         .invokeMethod(ConstAction.createTransferIDToNumber, arguments);

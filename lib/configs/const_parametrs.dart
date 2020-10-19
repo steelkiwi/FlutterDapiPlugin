@@ -20,7 +20,7 @@ class ConstParameters {
   static const transactionBeneficiaryId = "beneficiary_id";
   static const transactionBankAccountId = "account_id";
   static const transactionRemark = "transfer_remark";
-  static const transactionSenderName = "name";
+  static const transactionReceiverName = "receiver_name";
 
   static const beneficiaryAddressLine1 = "create_beneficiary_line_addres1";
   static const beneficiaryAddressLine2 = "create_beneficiary_line_addres2";
