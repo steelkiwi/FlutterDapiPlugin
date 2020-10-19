@@ -1,3 +1,4 @@
+import 'package:dapi/configs/environment.dart';
 import 'package:dapi/dapi_plugin.dart';
 import 'package:dapi/models/auth_state.dart';
 import 'package:dapi/models/auth_status.dart';
@@ -35,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     Dapi.initEnvironment(
-      dapiEnvironment: DapiEnvironment.SANDBOX,
+      environment: Environment.SANDBOX,
       appKey:
           "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4",
       host: "https://api-lune.dev.steel.kiwi",
@@ -309,16 +310,14 @@ class _MyAppState extends State<MyApp> {
                         "Create transfer for first available beneficiaries"),
                     onPressed: () async {
                       try {
-                        var result = await Dapi.createTransfer(
+                        var result = await Dapi.createTransferIDToID(
                             userId: _accessId,
                             accountId:
                                 "wsqFM5oD+etNQSXx1N2s4I4NBiOkFElBU2cxIX2Yb9CWQsTWMo/wnfqTVQhbKDui6xgP7eCx91j/N0SEQsy+6g==",
-                            name: "DAPI Sandbox Account",
-                             beneficiaryId: "Test",
+                            beneficiaryId: "Test",
                             remark:
                                 "{ \"name\":\"John\", \"age\":30, \"car\":null }",
                             amount: 1.0,
-                            iban: "GB33BAEDB20201555555893",
                             paymentId: "83515136-9146-523a-9936-3229d51fd49d");
                         // _beneficiaries = result.toString();
                         // _beneficiariarId = result.beneficiaries.first?.id;
