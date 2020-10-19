@@ -8,7 +8,7 @@ import 'package:dapi/models/create_transfer_response.dart';
 import 'package:flutter/widgets.dart';
 
 import 'configs/channels.dart';
-import 'configs/consts.dart';
+import 'configs/const_messages.dart';
 import 'configs/consts_action.dart';
 import 'configs/consts_env.dart';
 import 'configs/environment.dart';
@@ -42,10 +42,9 @@ class Dapi {
       ConstParameters.environmentPort: port,
       ConstParameters.environmentAppKey: appKey
     };
-    _channels.baseChannel
-        .invokeMethod(Consts.KEY_DAPI_INIT_ENVIRONMENT, arguments);
+    _channels.baseChannel.invokeMethod(ConstAction.initEnvironment, arguments);
 
-    return Future.value(Consts.success);
+    return Future.value(ConstMessages.success);
   }
 
   static CancelListening dapiConnect(Listener listener) {
@@ -59,13 +58,10 @@ class Dapi {
   }
 
   static Future<List<Connections>> getActiveConnect() async {
-    final String resultPath = await _channels.baseChannel
-        .invokeMethod(Consts.KEY_DAPI_ACTIVE_CONNECTION);
-
+    final String resultPath =
+        await _channels.baseChannel.invokeMethod(ConstAction.activeConnection);
     List<dynamic> list = jsonDecode(resultPath);
-
     var connection = (list).map((i) => Connections.fromJson(i)).toList();
-
     return connection;
   }
 
@@ -75,11 +71,9 @@ class Dapi {
       ConstParameters.currentConnectId: userId,
     };
     final String resultPath = await _channels.baseChannel
-        .invokeMethod(Consts.KEY_DAPI_BENEFICIARIES, arguments);
+        .invokeMethod(ConstAction.beneficiaries, arguments);
 
     List list = jsonDecode(resultPath);
-
-    // Map map = jsonDecode(resultPath);
 
     var beneficiaries = list.map((i) => Beneficiary.fromJson(i)).toList();
     return beneficiaries;
@@ -91,7 +85,7 @@ class Dapi {
       ConstParameters.currentConnectId: userId,
     };
     final String resultPath = await _channels.baseChannel
-        .invokeMethod(Consts.KEY_CONNECTION_ACCOUNTS, arguments);
+        .invokeMethod(ConstAction.connectionAccounts, arguments);
 
     List list = jsonDecode(resultPath);
 
@@ -175,7 +169,7 @@ class Dapi {
       ConstParameters.currentConnectId: userId,
     };
     final String resultPath = await _channels.baseChannel
-        .invokeMethod(Consts.KEY_BANK_METADATA, arguments);
+        .invokeMethod(ConstAction.bankMetaData, arguments);
 
     Map map = jsonDecode(resultPath);
 
@@ -214,7 +208,7 @@ class Dapi {
       ConstParameters.phoneNumber: phoneNumber
     };
     final String resultPath = await _channels.baseChannel
-        .invokeMethod(Consts.KEY_DAPI_CREATE_BENEFICIARY, arguments);
+        .invokeMethod(ConstAction.createBeneficiary, arguments);
     Map map = jsonDecode(resultPath);
     var account = BeneficiaryRequestSuccess.fromJson(map);
     return account;
@@ -224,20 +218,8 @@ class Dapi {
     final arguments = <String, dynamic>{
       ConstParameters.currentConnectId: dapiAccessId,
     };
-    final String resultPath = await _channels.baseChannel
-        .invokeMethod(Consts.KEY_DAPI_DELINK, arguments);
-    Map map = jsonDecode(resultPath);
-    var account = DelinkUser.fromJson(map);
-    return account;
-  }
-
-  static Future<DelinkUser> getHistoryTransaction(
-      {@required String userId}) async {
-    final arguments = <String, dynamic>{
-      ConstParameters.currentConnectId: userId,
-    };
-    final String resultPath = await _channels.baseChannel
-        .invokeMethod(Consts.KEY_DAPI_HISTORY_TRANSACTION, arguments);
+    final String resultPath =
+        await _channels.baseChannel.invokeMethod(ConstAction.deLink, arguments);
     Map map = jsonDecode(resultPath);
     var account = DelinkUser.fromJson(map);
     return account;

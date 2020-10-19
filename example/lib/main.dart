@@ -360,15 +360,6 @@ class _MyAppState extends State<MyApp> {
                     },
                   ),
                 ),
-                InkWell(
-                  child: FlatButton(
-                    color: Colors.green.withOpacity(0.5),
-                    child: Text("Get history "),
-                    onPressed: () async {
-                      await Dapi.getHistoryTransaction(userId: _accountId);
-                    },
-                  ),
-                )
               ],
             ),
           ),
