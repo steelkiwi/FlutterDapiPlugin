@@ -52,17 +52,6 @@ class DapiConnectDelegate: NSObject {
         )}
     }
     
-    func addLunPaymentIdToHeader(lunPaymentId:String?){
-        if lunPaymentId != nil {
-            updateHeaderForDapiClient(headers: [DPCEndPoint.delinkUser:[Headers.LUN_PAYMENT_ID:lunPaymentId!],]
-        )}
-    }
-    
-    
-    
-    
-    
-    
     
     func executeAction(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         pendingResult = result
@@ -76,8 +65,10 @@ class DapiConnectDelegate: NSObject {
                         case .bankMetaData: bankMetaData(call,client: client!)//implemented
                         case .beneficiaries: beneficiaries(call,client: client!)//implemented
                         case .createBeneficiary: createBeneficiary(call,client: client!)
-                        case .createTransfer: createTransfer(call,client: client!)//implemented
-                        case .delink: delink(call,client: client!)
+                        case .createTransferIdToId: createTransferIdToId(call,client: client!)//implemented
+                        case .createTransferIdToIBan: createTransferIdToIBan(call,client: client!)//implemented
+                        case .createTransferIDToNumber: createTransferIdToNumber(call,client: client!)//implemented
+                        case .deLink: delink(call,client: client!)
                     default: finishWithError(errorMessage: "Wrong method: \(call.method)")
             }}else{
             finishWithError(errorMessage: "Dapi client hasn't inited")
@@ -85,10 +76,10 @@ class DapiConnectDelegate: NSObject {
     }
 
     func initEnvironment(call: FlutterMethodCall) {
-        let appKey: String? = call.argument(key: Param.app_key.rawValue)
-        let port: Int? = call.argument(key: Param.port.rawValue)
-        let host: String? = call.argument(key: Param.host.rawValue)
-        let env: String? = call.argument(key: Param.environmentType.rawValue)
+        let appKey: String? = call.argument(key: ConstParameters.environmentAppKey)
+        let port: Int? = call.argument(key: ConstParameters.environmentPort)
+        let host: String? = call.argument(key:ConstParameters.environmentHost)
+        let env: String? = call.argument(key: ConstParameters.environmentType)
         
         
         if (appKey == nil) {
@@ -182,8 +173,8 @@ class DapiConnectDelegate: NSObject {
     }
 
     func connectionAccounts(_ call: FlutterMethodCall,client:DapiClient) {
-        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
-            finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
+        guard let userId: String = call.argument(key: ConstParameters.currentConnectId) else {
+            finishWithError(errorMessage: "Parameter currentConnectId doesn't exists.")
             return
         }
         client.userID = userId
@@ -206,8 +197,8 @@ class DapiConnectDelegate: NSObject {
     }
 
     func bankMetaData(_ call: FlutterMethodCall,client:DapiClient) {
-        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
-            finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
+        guard let userId: String = call.argument(key:  ConstParameters.currentConnectId) else {
+            finishWithError(errorMessage: "Parameter currentConnectId doesn't exists.")
             return
         }
         client.userID = userId
@@ -239,8 +230,8 @@ class DapiConnectDelegate: NSObject {
     }
 
     func beneficiaries(_ call: FlutterMethodCall,client:DapiClient) {
-        guard let userId: String = call.argument(key: Param.userId.rawValue) else {
-                  finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
+        guard let userId: String = call.argument(key:  ConstParameters.currentConnectId) else {
+                  finishWithError(errorMessage: "Parameter currentConnectId doesn't exists.")
                   return}
         client.userID = userId
         client.payment.getBeneficiaries { (beneficiary:[DapiBeneficiary]?, Error, String) in
@@ -265,19 +256,19 @@ class DapiConnectDelegate: NSObject {
     func createBeneficiary(_ call: FlutterMethodCall,client:DapiClient) {
         guard let result = pendingResult else { return }
 
-        guard let userId: String = call.argument(key: Param.userId.rawValue),
-        let addressLine1: String = call.argument(key: ParamBeneficiary.addressLine1.rawValue),
-        let addressLine2: String = call.argument(key: ParamBeneficiary.addressLine2.rawValue),
-        let addressLine3: String = call.argument(key: ParamBeneficiary.addressLine3.rawValue),
-        let accountNumber: String = call.argument(key: ParamBeneficiary.accountNumber.rawValue),
-        let accountName: String = call.argument(key: ParamBeneficiary.accountName.rawValue),
-        let bankName: String = call.argument(key: ParamBeneficiary.bankName.rawValue),
-        let swiftCode: String = call.argument(key: ParamBeneficiary.swiftCode.rawValue),
-        let iban: String = call.argument(key: ParamBeneficiary.iban.rawValue),
-        let country: String = call.argument(key: ParamBeneficiary.country.rawValue),
-        let branchAddress: String = call.argument(key: ParamBeneficiary.branchAddress.rawValue),
-        let branchName: String = call.argument(key: ParamBeneficiary.branchName.rawValue),
-        let phone: String = call.argument(key: ParamBeneficiary.phone.rawValue)
+        guard let userId: String = call.argument(key:  ConstParameters.currentConnectId),
+        let addressLine1: String = call.argument(key: ConstParameters.beneficiaryAddressLine1),
+        let addressLine2: String = call.argument(key: ConstParameters.beneficiaryAddressLine2),
+        let addressLine3: String = call.argument(key: ConstParameters.beneficiaryAddressLine3),
+        let accountNumber: String = call.argument(key: ConstParameters.accountNumber),
+        let accountName: String = call.argument(key: ConstParameters.beneficiaryName),
+        let bankName: String = call.argument(key: ConstParameters.beneficiaryBankName),
+        let swiftCode: String = call.argument(key: ConstParameters.swiftCode),
+        let iban: String = call.argument(key: ConstParameters.iBan),
+        let country: String = call.argument(key: ConstParameters.country),
+        let branchAddress: String = call.argument(key: ConstParameters.beneficiaryBranchAddress),
+        let branchName: String = call.argument(key: ConstParameters.beneficiaryBranchName),
+        let phone: String = call.argument(key: ConstParameters.phoneNumber)
         else {
                       finishWithError(errorMessage: "Invalid arguments")
             return
@@ -311,30 +302,32 @@ class DapiConnectDelegate: NSObject {
 
     }
 
-    func createTransfer(_ call: FlutterMethodCall,client:DapiClient) {
-        guard
-            let accountId: String = call.argument(key: Param.accountId.rawValue),
-            let userId: String = call.argument(key: Param.userId.rawValue),
-            let amount: NSNumber = call.argument(key: Param.amount.rawValue)
-             else {
-                finishWithError(errorMessage: "Invalid arguments")
-                return
-        }
-        
-        let beneficiaryId: String? = call.argument(key: Param.beneficiaryId.rawValue)
-        let iban: String? = call.argument(key: Constants.PARAM_IBAN)
-        let name: String? = call.argument(key:Constants.PARAM_NAME)
-        let acountNumber: String? = call.argument(key:Constants.PARAM_ACCOUNT_NUMBER)
-
-        
-        let paymentId: String? = call.argument(key: Param.headerPaymentId.rawValue)
+    func createTransferIdToId(_ call: FlutterMethodCall,client:DapiClient) {
+        let accountId: String? = call.argument(key: ConstParameters.transactionBankAccountId)
+        let userId: String? = call.argument(key: ConstParameters.currentConnectId);
+        let amount: NSNumber? = call.argument(key:ConstParameters.transactionAmount);
+        let beneficiaryId: String? = call.argument(key: ConstParameters.transactionBeneficiaryId)
+        let paymentId: String? = call.argument(key: Headers.transactionPaymentId)
         addPaymentIdToHeader(paymentId: paymentId)
-        client.userID = userId
-    
+        if(beneficiaryId==nil){
+            finishWithError(errorMessage:ConstantsMessage.BENEFICIARY_ID_NULL);
+            return
+        }
+        if(accountId==nil){
+           finishWithError(errorMessage:ConstantsMessage.ACCOUNT_ID_NULL);
+            return;
+        }
+        if(userId==nil){
+            finishWithError(errorMessage:ConstantsMessage.CURRENT_CONNECTION_ID_NULL);
+            return;
+        }
+        if(amount==nil){
+           finishWithError(errorMessage:ConstantsMessage.AMOUNT_IS_NULL);
+            return;
+            }
         
-        if (beneficiaryId != nil) {
-        client.payment.createTransfer(withSenderID: accountId,
-                                      amount: amount,
+        client.payment.createTransfer(withSenderID: accountId!,
+                                      amount: amount!,
                                       toReceiverID: beneficiaryId!,
                                       completion: { [weak self] result, error, string in
                                         guard let result = result, error == nil else {
@@ -342,48 +335,119 @@ class DapiConnectDelegate: NSObject {
                                             self?.finishWithError(errorMessage: error?.localizedDescription ?? "Transaction error")
                                             return
                                         }
-                                        
                                         let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
                                         self?.updateHeaderForDapiClient(headers: nil)
                                         self?.pendingResult?.self(getJsonFromModel(from:response))
                                       })
             
-        } else if (iban != nil && name != nil) {
-            client.payment.createTransfer(withSenderID: accountId,
-                                          amount: amount,
-                                          iban:iban!,
-                                          name: name!,
-                                          completion: { [weak self] result, error, string in
-                                            guard let result = result, error == nil else {
-                                                self?.updateHeaderForDapiClient(headers: nil)
-                                                self?.finishWithError(errorMessage: error?.localizedDescription ?? "Transaction error")
-                                                return
-                                            }
-                                            
-                                            let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
-                                            self?.updateHeaderForDapiClient(headers: nil)
-                                            self?.pendingResult?.self(getJsonFromModel(from:response))
-                                          })
-        } else {
-            finishWithError(errorMessage: "Missed some parm for transaction")
     }
-        
+    
+    func createTransferIdToIBan(_ call: FlutterMethodCall,client:DapiClient) {
+        let accountId: String? = call.argument(key: ConstParameters.transactionBankAccountId)
+        let userId: String? = call.argument(key: ConstParameters.currentConnectId);
+        let amount: NSNumber? = call.argument(key:ConstParameters.transactionAmount);
+        let iBan: String? = call.argument(key: ConstParameters.iBan)
+        let receiverName: String? = call.argument(key: ConstParameters.transactionReceiverName)
 
+        let paymentId: String? = call.argument(key: Headers.transactionPaymentId)
+        addPaymentIdToHeader(paymentId: paymentId)
+        if(iBan==nil){
+            finishWithError(errorMessage:ConstantsMessage.I_BAN_NULL);
+            return
+        }
+        if(receiverName==nil){
+            finishWithError(errorMessage:ConstantsMessage.RECEIVER_NAME_NULL);
+            return
+        }
+        if(accountId==nil){
+           finishWithError(errorMessage:ConstantsMessage.ACCOUNT_ID_NULL);
+            return;
+        }
+        if(userId==nil){
+            finishWithError(errorMessage:ConstantsMessage.CURRENT_CONNECTION_ID_NULL);
+            return;
+        }
+        if(amount==nil){
+           finishWithError(errorMessage:ConstantsMessage.AMOUNT_IS_NULL);
+            return;
+            }
         
+        client.payment.createTransfer(withSenderID: accountId!,
+                                      amount: amount!,
+                                      iban:iBan!,
+                                      name: receiverName!,
+                                      completion: { [weak self] result, error, string in
+                                        guard let result = result, error == nil else {
+                                            self?.updateHeaderForDapiClient(headers: nil)
+                                            self?.finishWithError(errorMessage: error?.localizedDescription ?? "Transaction error")
+                                            return
+                                        }
+                                        let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
+                                        self?.updateHeaderForDapiClient(headers: nil)
+                                        self?.pendingResult?.self(getJsonFromModel(from:response))
+                                      })
             
-        
     }
+        
+    
+    func createTransferIdToNumber(_ call: FlutterMethodCall,client:DapiClient) {
+        let accountId: String? = call.argument(key: ConstParameters.transactionBankAccountId)
+        let userId: String? = call.argument(key: ConstParameters.currentConnectId);
+        let amount: NSNumber? = call.argument(key:ConstParameters.transactionAmount);
+        let receiverNumber: String? = call.argument(key: ConstParameters.accountNumber)
+        let receiverName: String? = call.argument(key: ConstParameters.transactionReceiverName)
+
+        let paymentId: String? = call.argument(key: Headers.transactionPaymentId)
+        addPaymentIdToHeader(paymentId: paymentId)
+        if(receiverNumber==nil){
+            finishWithError(errorMessage:ConstantsMessage.RECEIVER_ACCOUNT_NUMBER_NULL);
+            return
+        }
+        if(receiverName==nil){
+            finishWithError(errorMessage:ConstantsMessage.RECEIVER_NAME_NULL);
+            return
+        }
+        if(accountId==nil){
+           finishWithError(errorMessage:ConstantsMessage.ACCOUNT_ID_NULL);
+            return;
+        }
+        if(userId==nil){
+            finishWithError(errorMessage:ConstantsMessage.CURRENT_CONNECTION_ID_NULL);
+            return;
+        }
+        if(amount==nil){
+           finishWithError(errorMessage:ConstantsMessage.AMOUNT_IS_NULL);
+            return;
+            }
+        
+        client.payment.createTransfer(withSenderID: accountId!,
+                                      amount: amount!,
+                                      toAccountNumber: receiverNumber!,
+                                      name: receiverName!,
+                                      completion: { [weak self] result, error, string in
+                                        guard let result = result, error == nil else {
+                                            self?.updateHeaderForDapiClient(headers: nil)
+                                            self?.finishWithError(errorMessage: error?.localizedDescription ?? "Transaction error")
+                                            return
+                                        }
+                                        let response:DapiResultModel=DapiResultModel(jobID:result.jobID,status:result.status,success:result.success)
+                                        self?.updateHeaderForDapiClient(headers: nil)
+                                        self?.pendingResult?.self(getJsonFromModel(from:response))
+                                      })
+            
+    }
+        
+        
+    
 
 
     func delink(_ call: FlutterMethodCall,client:DapiClient) {
-        let lunPaymentId: String? = call.argument(key: Headers.LUN_PAYMENT_ID)
 
-        guard let dapiAccessId: String = call.argument(key: Param.userId.rawValue) else {
-            finishWithError(errorMessage: "Parameter \(Param.userId) doesn't exists.")
+        guard let dapiAccessId: String = call.argument(key: ConstParameters.currentConnectId) else {
+            finishWithError(errorMessage: "Parameter currentConnectId doesn't exists.")
             return
         }
         client.userID = dapiAccessId
-        addLunPaymentIdToHeader(lunPaymentId: lunPaymentId)
         client.auth.delinkUser { [weak self] response, error in
             self?.updateHeaderForDapiClient(headers: nil)
             guard let response = response, error == nil else {

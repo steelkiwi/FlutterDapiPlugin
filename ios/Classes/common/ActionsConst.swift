@@ -9,15 +9,17 @@
 
 import Foundation
 enum Action: String {
-     case connect = "dapi_connect"
-     case activeConnection = "dapi_active_connection"
-     case connectionAccounts = "dapi_connection_accounts"
-     case bankMetaData = "dapi_user_accounts_meta_data"
-     case beneficiaries = "dapi_beneficiaries"
-     case createBeneficiary = "dapi_create_beneficiary"
-     case createTransfer = "dapi_create_transfer"
-     case delink = "dapi_delink"
-     case initEnvironment = "dapi_connect_set_environment"
+    case initEnvironment = "initEnvironmentISerdun"
+    case connect = "connectISerdun"
+    case activeConnection = "activeConnectionISerdun"
+    case connectionAccounts = "connectionAccountsISerdun"
+    case bankMetaData = "userAccountsMetaDataISerdun"
+    case beneficiaries = "beneficiariesISerdun"
+    case createBeneficiary = "createBeneficiaryISerdun"
+    case deLink = "delinkISerdun"
+    case createTransferIdToId = "createTransferIdToIdISerdun"
+    case createTransferIdToIBan = "createTransferIdToIBanISerdun"
+    case createTransferIDToNumber = "createTransferIdToNumberISerdun"
     
     
 
