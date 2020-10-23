@@ -154,6 +154,7 @@ class Dapi {
       ConstParameters.transactionAmount: amount,
       ConstParameters.transactionBankAccountId: accountId,
       ConstParameters.transactionRemark: remark,
+      ConstParameters.accountNumber: accountNumber,
       ConstHeaders.transactionPaymentId: paymentId,
       ConstParameters.transactionReceiverName: name,
     };

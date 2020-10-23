@@ -45,6 +45,9 @@ class DapiConnectDelegate: NSObject {
         client?.configurations=configs!
        }
     
+    
+    
+    
     func addPaymentIdToHeader(paymentId:String?){
         if paymentId != nil {
         updateHeaderForDapiClient(headers: [DPCEndPoint.createTransfer:["Dapi-Payment":paymentId!],
