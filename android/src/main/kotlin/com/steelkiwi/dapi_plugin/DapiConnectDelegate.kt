@@ -216,22 +216,22 @@ class DapiConnectDelegate(private var activity: Activity, var client: DapiClient
         val userId = call.argument<String?>(ConstParameters.CURRENT_CONNECT_ID)
         val amount = call.argument<Double?>(ConstParameters.TRANSACTION_AMOUNT)
         val remark = call.argument<String?>(ConstParameters.TRANSACTION_REMARK)
-        val paymentID: String? = call.argument<String?>(ConstHeader.TRANSACTION_PAYMENT_ID)
+        val paymentID: String? = call.argument<String?>(ConstHeader.TRANSACTION_PAYMENT_VALUE)
 
-        if(beneficiaryId==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.BENEFICIARY_ID_NULL, null)
+        if (beneficiaryId == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.BENEFICIARY_ID_NULL, null)
             return
         }
-        if(accountId==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.ACCOUNT_ID_NULL, null)
+        if (accountId == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.ACCOUNT_ID_NULL, null)
             return;
         }
-        if(userId==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.CURRENT_CONNECTION_ID_NULL, null)
+        if (userId == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.CURRENT_CONNECTION_ID_NULL, null)
             return;
         }
-        if(amount==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.AMOUNT_IS_NULL, null)
+        if (amount == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.AMOUNT_IS_NULL, null)
             return;
         }
 
@@ -243,12 +243,13 @@ class DapiConnectDelegate(private var activity: Activity, var client: DapiClient
 
         val errorCallback = { err: DapiError ->
             updateHeaderForDapiClient()
-            result.error(err.type ?: "", err.msg ?: ConstMessage.SOMETHING_HAPPENED_DAPI_RESPONSE, null)
+            result.error(err.type ?: "", err.msg
+                    ?: ConstMessage.SOMETHING_HAPPENED_DAPI_RESPONSE, null)
         }
 
         userId?.let { dapiClient.userID = (it) };
         paymentID?.let {
-            updateHeaderForDapiClient(hashMapOf<String, String>(ConstHeader.TRANSACTION_PAYMENT_ID to paymentID))
+            updateHeaderForDapiClient(hashMapOf<String, String>(ConstHeader.TRANSACTION_PAYMENT_HEADER to paymentID))
         }
         dapiClient.payment.createTransfer(beneficiaryId, accountId, amount!!, remark, successCallback, errorCallback)
 
@@ -261,26 +262,26 @@ class DapiConnectDelegate(private var activity: Activity, var client: DapiClient
         val userId = call.argument<String?>(ConstParameters.CURRENT_CONNECT_ID)
         val amount = call.argument<Double?>(ConstParameters.TRANSACTION_AMOUNT)
         val remark = call.argument<String?>(ConstParameters.TRANSACTION_REMARK)
-        val paymentID: String? = call.argument<String?>(ConstHeader.TRANSACTION_PAYMENT_ID)
+        val paymentID: String? = call.argument<String?>(ConstHeader.TRANSACTION_PAYMENT_VALUE)
 
-        if(iBanReceiver==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.I_BAN_NULL, null)
+        if (iBanReceiver == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.I_BAN_NULL, null)
             return
         }
-        if(nameReceiver==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.RECEIVER_NAME_NULL, null)
+        if (nameReceiver == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.RECEIVER_NAME_NULL, null)
             return
         }
-        if(accountId==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.ACCOUNT_ID_NULL, null)
+        if (accountId == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.ACCOUNT_ID_NULL, null)
             return;
         }
-        if(userId==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.CURRENT_CONNECTION_ID_NULL, null)
+        if (userId == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.CURRENT_CONNECTION_ID_NULL, null)
             return;
         }
-        if(amount==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.AMOUNT_IS_NULL, null)
+        if (amount == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.AMOUNT_IS_NULL, null)
             return;
         }
 
@@ -291,16 +292,18 @@ class DapiConnectDelegate(private var activity: Activity, var client: DapiClient
 
         val errorCallback = { err: DapiError ->
             updateHeaderForDapiClient()
-            result.error(err.type ?: "", err.msg ?: ConstMessage.SOMETHING_HAPPENED_DAPI_RESPONSE, null)
+            result.error(err.type ?: "", err.msg
+                    ?: ConstMessage.SOMETHING_HAPPENED_DAPI_RESPONSE, null)
         }
 
-       dapiClient.userID = userId
+        dapiClient.userID = userId
         paymentID?.let {
-            updateHeaderForDapiClient(hashMapOf(ConstHeader.TRANSACTION_PAYMENT_ID to paymentID))
+            updateHeaderForDapiClient(hashMapOf(ConstHeader.TRANSACTION_PAYMENT_HEADER to paymentID))
         }
-         dapiClient.payment.createTransfer(iBanReceiver, nameReceiver, accountId, amount, remark, successCallback, errorCallback)
+        dapiClient.payment.createTransfer(iBanReceiver, nameReceiver, accountId, amount, remark, successCallback, errorCallback)
 
     }
+
     private fun createTransferIdToNumber(call: MethodCall, result: MethodChannel.Result, dapiClient: DapiClient) {
         val receiverAccountNumber = call.argument<String?>(ConstParameters.ACCOUNT_NUMBER)
         val receiverName = call.argument<String?>(ConstParameters.TRANSACTION_RECEIVER_NAME)
@@ -308,26 +311,26 @@ class DapiConnectDelegate(private var activity: Activity, var client: DapiClient
         val userId = call.argument<String?>(ConstParameters.CURRENT_CONNECT_ID)
         val amount = call.argument<Double?>(ConstParameters.TRANSACTION_AMOUNT)
         val remark = call.argument<String?>(ConstParameters.TRANSACTION_REMARK)
-        val paymentID: String? = call.argument<String?>(ConstHeader.TRANSACTION_PAYMENT_ID)
+        val paymentID: String? = call.argument<String?>(ConstHeader.TRANSACTION_PAYMENT_VALUE)
 
-        if(receiverAccountNumber==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.RECEIVER_ACCOUNT_NUMBER_NULL, null)
+        if (receiverAccountNumber == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.RECEIVER_ACCOUNT_NUMBER_NULL, null)
             return
         }
-        if(receiverName==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.RECEIVER_NAME_NULL, null)
+        if (receiverName == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.RECEIVER_NAME_NULL, null)
             return
         }
-        if(accountId==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.ACCOUNT_ID_NULL, null)
+        if (accountId == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.ACCOUNT_ID_NULL, null)
             return;
         }
-        if(userId==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.CURRENT_CONNECTION_ID_NULL, null)
+        if (userId == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.CURRENT_CONNECTION_ID_NULL, null)
             return;
         }
-        if(amount==null){
-            result.error(ConstMessage.VALIDATION_BY_NULL,  ConstMessage.AMOUNT_IS_NULL, null)
+        if (amount == null) {
+            result.error(ConstMessage.VALIDATION_BY_NULL, ConstMessage.AMOUNT_IS_NULL, null)
             return;
         }
 
@@ -338,14 +341,15 @@ class DapiConnectDelegate(private var activity: Activity, var client: DapiClient
 
         val errorCallback = { err: DapiError ->
             updateHeaderForDapiClient()
-            result.error(err.type ?: "", err.msg ?: ConstMessage.SOMETHING_HAPPENED_DAPI_RESPONSE, null)
+            result.error(err.type ?: "", err.msg
+                    ?: ConstMessage.SOMETHING_HAPPENED_DAPI_RESPONSE, null)
         }
 
-       dapiClient.userID = userId
+        dapiClient.userID = userId
         paymentID?.let {
-            updateHeaderForDapiClient(hashMapOf(ConstHeader.TRANSACTION_PAYMENT_ID to paymentID))
+            updateHeaderForDapiClient(hashMapOf(ConstHeader.TRANSACTION_PAYMENT_HEADER to paymentID))
         }
-            dapiClient.payment.createTransfer(receiverAccountNumber, receiverName, amount, accountId, remark, successCallback, errorCallback)
+        dapiClient.payment.createTransfer(receiverAccountNumber, receiverName, amount, accountId, remark, successCallback, errorCallback)
 
     }
 
