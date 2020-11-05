@@ -1,17 +1,12 @@
 class CoolDownPeriod {
   String unit;
-  int value;
+  String value;
 
   CoolDownPeriod({this.unit, this.value});
-
   factory CoolDownPeriod.fromJson(Map<String, dynamic> json) {
-    var value = 24;
-    try {
-      value = int.parse(json["value"]);
-    } catch (e) {}
     return CoolDownPeriod(
-      unit: json['unit'],
-      value: value,
+      unit: json['unit'].toString(),
+      value: json["value"].toString(),
     );
   }
 

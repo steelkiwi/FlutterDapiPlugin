@@ -11,7 +11,7 @@ import Foundation
 struct ConnectionModel:Codable{
     var bankID:String?
     var clientUserID:String?
-    var coolDownPeriod:CoolDownPeriodModel
+    var coolDownPeriod:BeneficiaryCoolDownPeriod
     var country:String?
     var fullBankName:String?
     var isCreateBeneficiaryRequired:Bool?

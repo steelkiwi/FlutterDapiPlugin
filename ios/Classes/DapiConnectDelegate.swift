@@ -159,7 +159,7 @@ class DapiConnectDelegate: NSObject {
                 let connectionModel=ConnectionModel(
                     bankID:it.bankID,
                     clientUserID: it.clientUserID,
-                    coolDownPeriod:CoolDownPeriodModel(unit: "", value:it.beneficiaryCoolDownPeriod),
+                    coolDownPeriod:BeneficiaryCoolDownPeriod(unit: "", value:it.beneficiaryCoolDownPeriod),
                     country: it.countryName,
                     fullBankName: it.bankName,
                     isCreateBeneficiaryRequired: it.isCreateBeneficiaryEndpointRequired,
@@ -214,12 +214,11 @@ class DapiConnectDelegate: NSObject {
             
             let address=AddressModel(line1: bankMetadata.linesAddress.line1, line2:bankMetadata.linesAddress.line1, line3: bankMetadata.linesAddress.line1);
                
-            let coolDownPeriod=CoolDownPeriodModel(unit: "", value: 24)
             
                
             let dapiBankMetaData = DapiBankMetadataModel(
                    bankName: bankMetadata.bankName,
-                   coolDownPeriod: coolDownPeriod,
+                   beneficiaryCoolDownPeriod: BeneficiaryCoolDownPeriod(unit: "", value:bankMetadata.beneficiaryCoolDownPeriod),
                    country: CountryModel(name: bankMetadata.country.name, code: bankMetadata.country.code),
                    branchAddress: bankMetadata.branchAddress,
                    branchName:bankMetadata.branchName,

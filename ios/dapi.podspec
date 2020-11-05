@@ -1,6 +1,6 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint dapi_plugin.podspec' to validate before publishing.
+# Run pod lib lint dapi_plugin.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
   s.name             = 'dapi'
@@ -15,7 +15,7 @@ A new flutter plugin project.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'DapiConnect','0.3.0'
+  s.dependency 'DapiConnect','0.3.4'
   s.platform = :ios, '10.3'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.

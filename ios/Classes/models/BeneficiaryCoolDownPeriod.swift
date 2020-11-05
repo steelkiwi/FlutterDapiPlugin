@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CoolDownPeriodModel:Codable{
+struct BeneficiaryCoolDownPeriod:Codable{
     var unit:String?
     var value:Double?
 

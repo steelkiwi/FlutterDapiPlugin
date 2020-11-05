@@ -10,7 +10,7 @@ import Foundation
 
 struct DapiBankMetadataModel:Codable{
     var bankName:String?
-    var coolDownPeriod:CoolDownPeriodModel?
+    var beneficiaryCoolDownPeriod:BeneficiaryCoolDownPeriod?
     var country:CountryModel?
     var branchAddress:String?
     var branchName:String?

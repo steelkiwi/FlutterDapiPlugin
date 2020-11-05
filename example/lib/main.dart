@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
     Dapi.initEnvironment(
       environment: Environment.SANDBOX,
       appKey:
-      "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4",
+          "7805f8fd9f0c67c886ecfe2f48a04b548f70e1146e4f3a58200bec4f201b2dc4",
       host: "https://api-lune.dev.steel.kiwi",
       port: 4041,
     );
@@ -247,7 +247,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       try {
                         var result =
-                        await Dapi.getConnectionAccounts(userId: _accessId);
+                            await Dapi.getConnectionAccounts(userId: _accessId);
                         if (result.isNotEmpty) {
                           _account = result.first.toString();
                           _accountId = result.first.id;
@@ -270,7 +270,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       try {
                         var result =
-                        await Dapi.getBankMetadata(userId: _accessId);
+                            await Dapi.getBankMetadata(userId: _accessId);
                         accountsMetadata = result;
                         _acountMetaData = result.toString();
 
@@ -290,7 +290,7 @@ class _MyAppState extends State<MyApp> {
                     onPressed: () async {
                       try {
                         var result =
-                        await Dapi.getBeneficiaries(userId: _accessId);
+                            await Dapi.getBeneficiaries(userId: _accessId);
                         _beneficiaries = result.toString();
                         _beneficiariarId = result.first?.id;
                         _beneficiariesList = result;
@@ -312,26 +312,14 @@ class _MyAppState extends State<MyApp> {
                       try {
                         var result = await Dapi.createTransferIDToID(
                           userId: _accessId,
-                          accountId:
-                          "wsqFM5oD+etNQSXx1N2s4I4NBiOkFElBU2cxIX2Yb9CWQsTWMo/wnfqTVQhbKDui6xgP7eCx91j/N0SEQsy+6g==",
+                          accountId: _accountId,
                           paymentId: "Test payment id",
-                          beneficiaryId: "test beneficiaryId",
+                          beneficiaryId: _beneficiariarId,
                           remark:
-                          "{ \"name\":\"John\", \"age\":30, \"car\":null }",
-                          amount: 1.0,);
+                              "{ \"name\":\"John\", \"age\":30, \"car\":null }",
+                          amount: 1.0,
+                        );
 
-                        // var result = await Dapi.createTransferIDToIBan(
-                        // userId: _accessId,
-                        // accountId:
-                        //     "wsqFM5oD+etNQSXx1N2s4I4NBiOkFElBU2cxIX2Yb9CWQsTWMo/wnfqTVQhbKDui6xgP7eCx91j/N0SEQsy+6g==",
-                        // iban: "iban",
-                        // name: "b=name",
-                        // remark:
-                        //     "{ \"name\":\"John\", \"age\":30, \"car\":null }",
-                        // amount: 1.0,
-                        // paymentId: "83515136-9146-523a-9936-3229d51fd49d");
-                        // _beneficiaries = result.toString();
-                        // _beneficiariarId = result.beneficiaries.first?.id;
                         _transferStatus = result.toString();
                         setState(() {});
                       } on PlatformException catch (e) {
