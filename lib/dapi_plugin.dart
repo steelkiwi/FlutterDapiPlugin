@@ -200,7 +200,7 @@ class Dapi {
       ConstParameters.beneficiaryAddressLine3: addres3,
       ConstParameters.accountNumber: accountNumber,
       ConstParameters.beneficiaryName: name,
-      ConstParameters.beneficiaryBankName: branchName,
+      ConstParameters.beneficiaryBankName: bankName,
       ConstParameters.swiftCode: swiftCode,
       ConstParameters.iBan: iban,
       ConstParameters.country: country,
