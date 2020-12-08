@@ -25,6 +25,7 @@ class DapiConnectDelegate: NSObject {
                                          clientUserID: "testUser"
         )
         configs.environment = env
+        configs.isAutoTruncate=true;
         configs.isExperimental = false
         
         if header != nil {
@@ -295,12 +296,21 @@ class DapiConnectDelegate: NSObject {
               beneficiaryInfo.phoneNumber = phone;
         
         
-        client.payment.createBeneficiary(with: beneficiaryInfo) { (response : DapiResult?, Error, String) in
-        
-            if let response = response {
-            let response:DapiResultModel=DapiResultModel(jobID:response.jobID,status:response.status,success:response.success)
-            result.self(getJsonFromModel(from:response))
-            } }
+        client.payment.createBeneficiary(with: beneficiaryInfo) { (response : DapiResult?,error:Error?, String) in
+
+               if let response = response {
+               let response:DapiResultModel=DapiResultModel(jobID:response.jobID,status:response.status,success:response.success)
+
+               result.self(getJsonFromModel(from:response))
+               }
+
+               if error != nil{
+                   self.finishWithError(errorMessage:error?.self.localizedDescription ?? ConstantsMessage.SOMETHING_HAPPENED_DAPI_RESPONSE);
+
+               }
+
+
+           }
 
     }
 

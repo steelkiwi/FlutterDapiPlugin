@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'dapi'
-  s.version          = '0.0.3'
+  s.version          = '1.0.1'
   s.summary          = 'A new flutter plugin project.'
   s.description      = <<-DESC
 A new flutter plugin project.
@@ -15,7 +15,7 @@ A new flutter plugin project.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'DapiConnect','0.3.4'
+  s.dependency 'DapiConnect','1.0.1'
   s.platform = :ios, '10.3'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
